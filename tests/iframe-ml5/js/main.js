@@ -1,8 +1,21 @@
+import CONFIG from "/config.js"
+import Posenet from "/libs/posenet.js";
+import EventBus from "/libs/event-bus.js"
 import { getWebcamStream } from "/utils/video.js";
 
 async function init() {
-
     const webcamStream = await getWebcamStream()
+    // const videoElem = document.createElement('video')
+    // videoElem.width = webcamStream
+    const posenet = new Posenet()
+    await posenet.init({ videoElem: webcamStream.video, mirrored: CONFIG.mirrored })
+
+    posenet.addEventListener('pose', (pose) => {
+        console.log(pose)
+    })
+
+    return;
+
     const iframes = document.body.querySelectorAll('iframe')
     const videos = []
 

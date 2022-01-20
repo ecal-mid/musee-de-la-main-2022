@@ -5,10 +5,11 @@ export async function getWebcamStream({ width, height } = {}) {
     return new Promise(resolve => {
         video.onloadedmetadata = () => {
 
-            // video.play()
+            video.play()
+            video.muted = true
             video.width = width || video.videoWidth
             video.height = height || video.videoHeight
-            resolve({ stream, width: video.width, height: video.height })
+            resolve({ stream, width: video.width, height: video.height, video })
         }
 
         video.srcObject = stream
