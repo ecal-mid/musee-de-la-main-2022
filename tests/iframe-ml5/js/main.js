@@ -4,13 +4,11 @@ import { getWebcamStream } from "/utils/video.js";
 
 async function init() {
 
-
     const iframes = document.body.querySelectorAll('iframe')
-    const webcamStream = await getWebcamStream()
+    const webcamStream = await getWebcamStream({ constraints: CONFIG.cameraConstraints })
 
     const posenet = new Posenet()
     await posenet.init({ videoElem: webcamStream.video, mirrored: CONFIG.mirrored })
-
 
     iframes.forEach(iframe => {
         iframe.onload = () => {
