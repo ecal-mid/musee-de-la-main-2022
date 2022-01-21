@@ -1,6 +1,6 @@
-export async function getWebcamStream({ width, height } = {}) {
+export async function getWebcamStream({ width, height, constraints = {} } = {}) {
     const video = document.createElement('video')
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, ...constraints })
 
     return new Promise(resolve => {
         video.onloadedmetadata = () => {

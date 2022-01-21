@@ -9,7 +9,7 @@ export default class EventBus {
     }
 
     addEventListener(eventName, callback, options) {
-        const listeners = this.listeners.get(eventName) || this.createEventListenerGroup(eventName)
+        const listeners = getListeners(this.listeners, eventName) || createGroup(this.listeners, eventName)
         listeners.push(callback)
     }
 
@@ -20,7 +20,7 @@ export default class EventBus {
     }
 
     triggerEventListener(eventName, data) {
-        const listeners = this.listeners.get(eventName) || emptyGroup()
+        const listeners = getListeners(this.listeners, eventName) || emptyGroup()
         const event = new EventData(data)
         for (const callback of listeners) {
             callback(event)
@@ -28,11 +28,23 @@ export default class EventBus {
     }
 
     removeEventListener(eventName, callback, options) {
-        const listeners = this.listeners.get(eventName) || emptyGroup()
-        const removed = false
-        listeners && removeElementFromArray(listeners, callback)
+        const listeners = getListeners(this.listeners, eventName) || emptyGroup()
+        let removed = false
+        if (listeners.length > 0)
+            removed = removeElementFromArray(listeners, callback)
+        if (listeners.length === 0) this.listeners.delete(eventName)
         return removed
     }
+}
+
+function getListeners(listeners, eventName) {
+    return listeners.get(eventName)
+}
+
+function createGroup(listeners, eventName) {
+    const group = emptyGroup();
+    listeners.set(eventName, group);
+    return group;
 }
 
 function emptyGroup() {
