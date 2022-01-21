@@ -13,12 +13,6 @@ export default class EventBus {
         listeners.push(callback)
     }
 
-    createEventListenerGroup(eventName) {
-        const group = emptyGroup();
-        this.listeners.set(eventName, group);
-        return group;
-    }
-
     triggerEventListener(eventName, data) {
         const listeners = getListeners(this.listeners, eventName) || emptyGroup()
         const event = new EventData(data)

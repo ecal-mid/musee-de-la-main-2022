@@ -4,7 +4,6 @@ export default class Posenet extends EventBus {
 
     constructor() {
         super()
-        // this.bus = new EventBus()
     }
 
     async init({ videoElem, mirrored }) {
