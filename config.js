@@ -1,5 +1,5 @@
 export default Object.freeze({
-    mirrored: false,
+    mirrored: false, //! mirrored feature to mediapipe ?
     smoothenDetection: 0.5, //? between 0 and 1, 0 is no smoothing
     cameraConstraints: {
         audio: false,

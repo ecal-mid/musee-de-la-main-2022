@@ -31,10 +31,11 @@ function requestUpdate() {
 }
 
 function update() {
-    ctx.save()
-    ctx.clearRect(canvas.width, canvas.height, 0, 0)
-    ctx.drawImage(video, 0, 0)
+    const { width, height } = canvas
 
+    ctx.save()
+    ctx.clearRect(0, 0, width, height)
+    ctx.drawImage(video, 0, 0, width, height)
 
     skeleton.show(ctx)
 

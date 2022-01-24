@@ -79,12 +79,12 @@ export default class MediaPipePose extends EventBus {
         });
 
         pose.setOptions({
-            modelComplexity: 1,
-            smoothLandmarks: true,
-            enableSegmentation: false,
-            smoothSegmentation: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5,
+            // modelComplexity: 1,
+            // smoothLandmarks: true,
+            // enableSegmentation: false,
+            // smoothSegmentation: true,
+            // minDetectionConfidence: 0.5,
+            // minTrackingConfidence: 0.5,
             ...mediaPipeOptions
         });
 
