@@ -40,7 +40,7 @@ export default class MediaPipePose extends EventBus {
     remapResults(results) {
 
         const { poseLandmarks, poseWorldLandmarks } = results
-        // console.log(this.videoPlayer)
+
         let skeleton = null
 
         if (poseLandmarks) {

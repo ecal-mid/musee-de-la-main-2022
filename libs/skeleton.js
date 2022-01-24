@@ -77,7 +77,7 @@ export default class Skeleton {
 
         MEDIA_PIPE_BODY_PARTS.forEach(bodyPart => {
             const point = this.result[bodyPart]
-            this.drawPoint(ctx, { x: point.x * width, y: point.y * height }) //! normalized points
+            this.drawPoint(ctx, { x: point.x * width, y: point.y * height }) //! result are normalized points from MediaPipe Pose { x, y, z, visibility }
         })
 
         ctx.stroke()
