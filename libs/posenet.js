@@ -1,3 +1,4 @@
+import "https://unpkg.com/ml5@latest/dist/ml5.min.js"
 import EventBus from "/libs/event-bus.js"
 
 export default class Posenet extends EventBus {

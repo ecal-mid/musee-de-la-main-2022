@@ -1,6 +1,5 @@
 import 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@latest/pose.js'
 import "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
-// import "https://unpkg.com/ml5@latest/dist/ml5.min.js"
 import { VideoPlayer } from "/utils/video.js"
 import EventBus from '/libs/event-bus.js'
 import { lerp } from '/utils/math.js'
