@@ -16,9 +16,18 @@ export default class EventBus {
     triggerEventListener(eventName, data) {
         const listeners = getListeners(this.listeners, eventName) || emptyGroup()
         const event = new EventData(data)
+        const responses = []
         for (const callback of listeners) {
-            callback(event)
+            const resp = callback(event)
+            // if(resp instanceof Promise)
+            responses.push(resp)
         }
+
+        return responses
+    }
+
+    async triggerEventListenerAsync(eventName, data) {
+        await Promise.all(this.triggerEventListener(eventName, data))
     }
 
     removeEventListener(eventName, callback, options) {
