@@ -51,7 +51,7 @@ export default class MediaPipePose extends EventBus {
         return { skeleton, raw: results }
     }
 
-    getPlayer() {
+    getVideoPlayer() {
         return this.videoPlayer;
     }
 

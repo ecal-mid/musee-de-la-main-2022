@@ -4,8 +4,14 @@ import MediaPipePose from "/libs/MediaPipePose.js";
 async function init() {
 
     const iframes = document.body.querySelectorAll('iframe') //? dynamic list
-    const pose = await MediaPipePose.create({ cameraConstraints: CONFIG.cameraConstraints, mediaPipeOptions: CONFIG.mediaPipeOptions, smoothen: CONFIG.smoothenDetection })
-    const player = pose.getPlayer()
+    const pose = await MediaPipePose.create({
+        cameraConstraints: CONFIG.cameraConstraints,
+        mediaPipeOptions: CONFIG.mediaPipeOptions,
+        smoothen: CONFIG.smoothenDetection
+    })
+
+    const player = pose.getVideoPlayer()
+
     pose.startDetection()
 
     iframes.forEach(iframe => {
