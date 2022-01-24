@@ -6,7 +6,7 @@ const ctx = canvas.getContext('2d')
 
 const skeleton = new Skeleton();
 
-window.init = ({ stream, width, height, posenet }) => {
+window.init = ({ stream, width, height, pose }) => {
     video.srcObject = stream
 
     video.width = width
@@ -19,12 +19,11 @@ window.init = ({ stream, width, height, posenet }) => {
     video.play()
     requestUpdate()
 
-    posenet.addEventListener('pose', onPose)
+    pose.addEventListener('pose', onPose)
 }
 
 function onPose(event) {
-    const {firstResult, height, width} = event.data
-    skeleton.update(firstResult)
+    skeleton.update(event.data.skeleton)
 }
 
 function requestUpdate() {
