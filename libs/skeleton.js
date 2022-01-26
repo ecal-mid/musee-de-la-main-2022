@@ -54,7 +54,7 @@ const MEDIA_PIPE_BODY_PARTS = [
     "RIGHT_FOOT_INDEX"
 ]
 
-export default class Skeleton {
+class Skeleton {
     constructor() {
         this.result
         this.width
@@ -93,3 +93,5 @@ export default class Skeleton {
         ctx.lineTo(x + 0.01, y)
     }
 }
+window.Skeleton = Skeleton
+export default Skeleton

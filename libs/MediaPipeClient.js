@@ -30,7 +30,7 @@ class MediaPipeClient extends EventBus {
     const pose = await MediaPipePose.create({
       cameraConstraints: CONFIG.cameraConstraints,
       mediaPipeOptions: CONFIG.mediaPipeOptions,
-      smoothen: CONFIG.smoothenDetection
+      smoothen: CONFIG.smoothenDetection,
     })
 
     const player = pose.getVideoPlayer()
