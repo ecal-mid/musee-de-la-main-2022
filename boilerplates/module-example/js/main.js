@@ -1,5 +1,5 @@
-import Skeleton from '/libs/Skeleton.js'
-import MediaPipeClient from '/libs/MediaPipeClient.js'
+import Skeleton from '/scripts/skeleton.js'
+import MediaPipeClient from '/scripts/mediapipe-client.js'
 
 const canvas = document.querySelector('.main-canvas')
 const ctx = canvas.getContext('2d')

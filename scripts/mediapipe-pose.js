@@ -1,8 +1,8 @@
 import 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@latest/pose.js'
 import "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
 import { VideoPlayer } from "/utils/video.js"
-import EventBus from '/libs/event-bus.js'
 import { lerp } from '/utils/math.js'
+import EventBus from '/scripts/event-bus.js'
 
 const LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
 const LANDMARK_KEYS = ['x', 'y', 'z', 'visibility']

@@ -1,5 +1,5 @@
 import CONFIG from "/config.js"
-import MediaPipePose from "/libs/MediaPipePose.js"
+import MediaPipePose from "/scripts/mediapipe-pose.js"
 import { delay } from "/utils/time.js"
 
 async function init() {

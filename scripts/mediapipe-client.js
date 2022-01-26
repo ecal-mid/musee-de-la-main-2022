@@ -1,4 +1,4 @@
-import EventBus from '/libs/event-bus.js'
+import EventBus from '/scripts/event-bus.js'
 
 class MediaPipeClient extends EventBus {
   constructor(params = {}) {
@@ -22,7 +22,7 @@ class MediaPipeClient extends EventBus {
   }
 
   async setupLocally() {
-    const { default: MediaPipePose } = await import("/libs/MediaPipePose.js")
+    const { default: MediaPipePose } = await import("./mediapipe-pose.js")
     const { default: CONFIG } = await import('/config.js')
 
     console.log('running locally')

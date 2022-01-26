@@ -1,4 +1,4 @@
-import EventBus from '/libs/event-bus.js'
+import EventBus from '/scripts/event-bus.js'
 
 export async function getWebcamStream({ width, height, constraints = {} } = {}) {
     const video = document.createElement('video')
