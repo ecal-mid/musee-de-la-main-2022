@@ -53,11 +53,14 @@ mediaPipe.addEventListener('pose', (event) => {
 
 ---
 # Skeleton
-Utilitary class to show keypoints, won't work with Pixi, Webgl, ..
+Utilitary class to show keypoints
 ```javascript
 const skeleton = new Skeleton()
 ```
-### .update()
+```diff
+- Not compatible with a webgl canvas (Pixi, three, ...)
+```
+### .update(MediapipeSkeleton)
 Update with the last skeleton results from MediaPipeClient
 ```javascript
 mediaPipe.addEventListener('pose', (event) => {
@@ -65,7 +68,7 @@ mediaPipe.addEventListener('pose', (event) => {
   // skeleton.update(event.data.skeletonNormalized)
 })
 ```
-### .show()
+### .show(HTMLCanvasContext, \[options\])
 Display the skeleton on a specified HTMLCanvas context
 ```javascript
 skeleton.show(ctx, {color: 'red'}) // optionally set the color
