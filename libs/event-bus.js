@@ -31,11 +31,15 @@ export default class EventBus {
     }
 
     removeEventListener(eventName, callback, options) {
+
         const listeners = getListeners(this.listeners, eventName) || emptyGroup()
+
         let removed = false
-        if (listeners.length > 0)
+        if (listeners.length > 0) {
             removed = removeElementFromArray(listeners, callback)
+        }
         if (listeners.length === 0) this.listeners.delete(eventName)
+
         return removed
     }
 }

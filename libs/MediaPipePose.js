@@ -7,7 +7,7 @@ import { lerp } from '/utils/math.js'
 const LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
 const LANDMARK_KEYS = ['x', 'y', 'z', 'visibility']
 
-export default class MediaPipePose extends EventBus {
+class MediaPipePose extends EventBus {
     constructor(options = {}) {
         super()
 
@@ -17,41 +17,47 @@ export default class MediaPipePose extends EventBus {
         Object.assign(this, options)
 
         this.smoothLandmarks = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
+        this.smoothLandmarksNormalized = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
 
         this.pose.onResults(async (results) => {
             super.triggerEventListener('pose', this.remapResults(results))
-        });
+        })
 
         this.videoPlayer.addEventListener('frame', async (event) => {
             await this.pose.send({ image: event.data.video })
         })
     }
 
-    smoothenLandmarks(newLandmarks, amt) {
+    smoothenLandmarks(smoothLandmarks, newLandmarks, amt) {
         newLandmarks.forEach((newLandmark, index) => {
-            const smoothLandmark = this.smoothLandmarks[index]
+            const smoothLandmark = smoothLandmarks[index]
             LANDMARK_KEYS.forEach(key => {
                 smoothLandmark[key] = lerp(smoothLandmark[key], newLandmark[key], amt)
             })
-        });
+        })
     }
 
     remapResults(results) {
 
         const { poseLandmarks, poseWorldLandmarks } = results
 
-        let skeleton = null
+        let skeleton, skeletonNormalized
 
         if (poseLandmarks) {
-            this.smoothenLandmarks(poseLandmarks, 1 - this.smoothen)
+            this.smoothenLandmarks(this.smoothLandmarks, poseLandmarks, 1 - this.smoothen)
             skeleton = this.constructor.remapLandmarks(this.smoothLandmarks)
         }
 
-        return { skeleton, raw: results }
+        if (poseWorldLandmarks) {
+            this.smoothenLandmarks(this.smoothLandmarksNormalized, poseWorldLandmarks, 1 - this.smoothen)
+            skeletonNormalized = this.constructor.remapLandmarks(this.smoothLandmarksNormalized)
+        }
+
+        return { skeleton, skeletonNormalized, raw: results }
     }
 
     getVideoPlayer() {
-        return this.videoPlayer;
+        return this.videoPlayer
     }
 
     startDetection() {
@@ -76,7 +82,7 @@ export default class MediaPipePose extends EventBus {
 
         const pose = new window.Pose({
             locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-        });
+        })
 
         pose.setOptions({
             // modelComplexity: 1,
@@ -86,8 +92,10 @@ export default class MediaPipePose extends EventBus {
             // minDetectionConfidence: 0.5,
             // minTrackingConfidence: 0.5,
             ...mediaPipeOptions
-        });
+        })
 
         return new this({ videoPlayer, pose, smoothen })
     }
 }
+
+export default MediaPipePose
