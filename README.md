@@ -1,6 +1,7 @@
 # Examples
 - **boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/ab0cc4e719028b10271c9a9e64da92c29c767b86/boilerplates))
 - Run these folders with a http server / live server
+- Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)
 
 ---
 # CDN
