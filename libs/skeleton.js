@@ -54,26 +54,29 @@ const MEDIA_PIPE_BODY_PARTS = [
     "RIGHT_FOOT_INDEX"
 ]
 
-export default class Skeleton {
+class Skeleton {
     constructor() {
-        this.result;
-        this.width;
-        this.height;
+        this.result
+        this.width
+        this.height
     }
 
     update(result) {
         this.result = result
     }
 
-    show(ctx) {
+    show(ctx, { color = 'red' } = {}) {
         if (!this.result) return
 
-        ctx.lineWidth = 10
-        ctx.strokeStyle = 'lime'
-        ctx.lineCap = 'round'
+        ctx.save()
+
         const { width, height } = ctx.canvas
 
         ctx.beginPath()
+
+        ctx.strokeStyle = color
+        ctx.lineWidth = 10
+        ctx.lineCap = 'round'
 
         MEDIA_PIPE_BODY_PARTS.forEach(bodyPart => {
             const point = this.result[bodyPart]
@@ -81,6 +84,8 @@ export default class Skeleton {
         })
 
         ctx.stroke()
+
+        ctx.restore()
     }
 
     drawPoint(ctx, { x, y }) {
@@ -88,3 +93,5 @@ export default class Skeleton {
         ctx.lineTo(x + 0.01, y)
     }
 }
+window.Skeleton = Skeleton
+export default Skeleton

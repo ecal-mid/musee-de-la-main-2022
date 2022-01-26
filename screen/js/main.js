@@ -1,5 +1,6 @@
 import CONFIG from "/config.js"
-import MediaPipePose from "/libs/MediaPipePose.js";
+import MediaPipePose from "/libs/MediaPipePose.js"
+import { delay } from "/utils/time.js"
 
 async function init() {
 
@@ -16,10 +17,11 @@ async function init() {
 
     iframes.forEach(iframe => {
         iframe.onload = () => {
-            // iframe.contentWindow.postMessage({ type: 'init', data: '{ pose }' })
-            iframe.contentWindow.init({ stream: player.stream, width: player.width, height: player.height, pose })
+            // await delay(10)
+            const { mediaPipe } = iframe.contentWindow
+            mediaPipe?.setup({ stream: player.stream, width: player.width, height: player.height, pose })
         }
-        iframe.src = './frames/iframe-posenet/index.html'
+        iframe.src = '/boilerplates/p5-example/index.html'
     })
 
 }
