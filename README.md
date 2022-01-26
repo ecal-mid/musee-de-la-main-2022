@@ -21,4 +21,4 @@
 <script src="./js/main.js" defer></script>
 ```
 
-If you use `import` modules, check out the [boilerplates](#Examples).
+If you use `import` modules, check out the [boilerplates/module-example](/boilerplates/module-example).
