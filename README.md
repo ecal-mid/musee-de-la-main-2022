@@ -1,8 +1,2 @@
-# posenet-musee-de-la-main
-
-## tests
-### webcam + posenet to iframes
-- ./tests/iframe-ml5/index.html
-- Remarques:
-  - accès au DOM et objet globaux js de l'iframe via `contentWindow`
-  - Les vidéos doivent être muted pour autoplay
+# Examples
+- [/boilerplates](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates) [DOWNLOAD](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates)
