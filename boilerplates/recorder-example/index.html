@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorder Example</title>
+
+    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/reset.css">
+    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/main.css">
+
+    <style>
+        #Record-btn {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: white;
+            padding: 1em;
+            cursor: pointer;
+        }
+
+        #Record-btn::after {
+            content: 'RECORD';
+        }
+
+        #Record-btn.--recording::after {
+            content: 'STOP';
+        }
+    </style>
+
+    <script src="https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js" type="module"></script>
+    <script src="https://mediapipe.ecal-mid.ch/scripts/skeleton.js" type="module"></script>
+    <script src="/scripts/mediapipe-player.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-state-machine/3.1.0/state-machine.min.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body>
+    <canvas class="main-canvas"></canvas>
+    <button id="Record-btn"></button>
+</body>
+</html>
