@@ -6,8 +6,9 @@
 ---
 # CDN
 ### Scripts
-- [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js)
-- [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js)
+- [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](/#Skeleton))
+- [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](/#MediaPipeClient))
+- [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](/#MediapipeSmoothPose))
 
 ### CSS
 - [reset.css](https://mediapipe.ecal-mid.ch/styles/reset.css)
