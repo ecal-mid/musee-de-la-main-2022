@@ -1,0 +1,40 @@
+{
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.2.1"
+  },
+  "dependencies": {
+    "babel-plugin-transform-remove-console": "^6.9.4"
+  },
+  "name": "posenet-musee-de-la-main",
+  "description": "1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/7c337190f793f5b7656cfee02ca31ffe693cf20f/boilerplates)) 3. Run these folders with a http server / live server 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">= 16"
+  },
+  "targets": {
+    "pages": {
+      "source": "pages/index.html",
+      "distDir": "dist/public/"
+    },
+    "admin": {
+      "source": "server/index.js",
+      "distDir": "dist/"
+    }
+  },
+  "scripts": {
+    "parcel:build": "parcel build",
+    "parcel:watch": "parcel watch",
+    "live:dev": "nodemon dist/server/index.js",
+    "dev": "npm run parcel:build && npm run live:dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecal-mid/musee-de-la-main-2022.git"
+  },
+  "author": "Sébastien Matos <matos.sebastien@gmail.com> (http://ecal-mid.ch/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ecal-mid/musee-de-la-main-2022/issues"
+  },
+  "homepage": "https://github.com/ecal-mid/musee-de-la-main-2022#readme"
+}
