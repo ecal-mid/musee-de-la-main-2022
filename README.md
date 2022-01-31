@@ -76,13 +76,11 @@ mediaPipe.addEventListener('pose', (event) => {
 ## Retrieve smoothing
 Use it on your draw loop.
 ### .smoothDamp()
-Recommended
-```javascript
-const pose = smoother.smoothDamp() // updates and returns lerped MediapipeSkeleton or undefined (if nobody is here)
-```
 ### .lerp()
-Alternative
 ```javascript
+//! Recommended
+const pose = smoother.smoothDamp() // updates and returns lerped MediapipeSkeleton or undefined (if nobody is here)
+// Alternative
 const pose = smoother.lerp() // updates and returns smoothened MediapipeSkeleton or undefined (if nobody is here)
 ```
 ---
