@@ -1,5 +1,5 @@
 # Examples
-1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/d44d1b5ecc8feb16583fb3de453c856863f89c2b/boilerplates))
+1. **download boilerplates** ([folder](/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/d44d1b5ecc8feb16583fb3de453c856863f89c2b/boilerplates))
 3. Run these folders with a http server / live server
 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)
 
