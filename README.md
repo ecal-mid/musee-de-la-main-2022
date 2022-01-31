@@ -71,15 +71,17 @@ mediaPipe.addEventListener('pose', (event) => {
   smoother.target(event.data.skeleton)
 })
 ```
-## Smoothing
-### .smoothDamp() // recommended
+## Retrieve smoothing
+Use it on your draw loop.
+### .smoothDamp()
+Recommended
 ```javascript
-smoother.smoothDamp()
+const pose = smoother.smoothDamp() // updates and returns lerped MediapipeSkeleton or undefined (if nobody is here)
 ```
 ### .lerp()
+Alternative
 ```javascript
-smoother.lerp()
-smoother.smoothDamp()
+const pose = smoother.lerp() // updates and returns smoothened MediapipeSkeleton or undefined (if nobody is here)
 ```
 ---
 
