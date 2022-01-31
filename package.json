@@ -3,7 +3,13 @@
     "@parcel/transformer-sass": "^2.2.1"
   },
   "dependencies": {
-    "babel-plugin-transform-remove-console": "^6.9.4"
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "concurrently": "^7.0.0",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
+    "parcel": "^2.2.1",
+    "uuid": "^8.3.2",
+    "ws": "^8.4.2"
   },
   "name": "posenet-musee-de-la-main",
   "description": "1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/7c337190f793f5b7656cfee02ca31ffe693cf20f/boilerplates)) 3. Run these folders with a http server / live server 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)",
@@ -24,7 +30,7 @@
   "scripts": {
     "parcel:build": "parcel build",
     "parcel:watch": "parcel watch",
-    "live:dev": "nodemon dist/server/index.js",
+    "live:dev": "concurrently \"npm run parcel:watch\" \"nodemon dist/index\"",
     "dev": "npm run parcel:build && npm run live:dev"
   },
   "repository": {

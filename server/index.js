@@ -2,7 +2,6 @@ import http from 'http'
 import express from 'express'
 import ws from "ws"
 import { v4 as uuidv4 } from "uuid"
-
 import path from 'path'
 
 const { PORT = 1575, HOST = "0.0.0.0" } = process.env
