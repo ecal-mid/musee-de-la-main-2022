@@ -3,17 +3,11 @@
 3. Run these folders with a http server / live server
 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)
 
----
-# CDN
 ### Scripts
 - Skeleton - [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](#Skeleton))
 - MediaPipeClient - [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](#MediaPipeClient))
 - MediaPipeSmoothPose - [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediaPipeSmoothPose))
 - MediaPipePlayer (+ Recorder) - [mediapipe-player.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipePlayer))
-
-### CSS
-- [reset.css](https://mediapipe.ecal-mid.ch/styles/reset.css)
-- [main.css](https://mediapipe.ecal-mid.ch/styles/main.css)
 
 ---
 # HTML example
