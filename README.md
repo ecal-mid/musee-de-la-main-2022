@@ -1,7 +1,7 @@
 # Examples
-1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/ab0cc4e719028b10271c9a9e64da92c29c767b86/boilerplates))
-2. Run these folders with a http server / live server
-3. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)
+1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/2c5bcdfb99faf957e8d316c13a47b6206d1d048a/boilerplates))
+3. Run these folders with a http server / live server
+4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)
 
 ---
 # CDN
@@ -53,6 +53,36 @@ mediaPipe.addEventListener('pose', (event) => {
 ```
 
 ---
+# MediapipeSmoothPose
+Skeleton Smoothing
+```javascript
+const smoother = new MediapipeSmoothPose()
+// or with parameters
+const smoother = new MediapipeSmoothPose({
+  lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
+  dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
+  dampMaxSpeed: Infinity // max speed, used by smoothDamp()
+})
+```
+### .target(MediapipeSkeleton)
+Update with the last skeleton results from MediaPipeClient
+```javascript
+mediaPipe.addEventListener('pose', (event) => {
+  smoother.target(event.data.skeleton)
+})
+```
+## Smoothing
+### .smoothDamp() // recommended
+```javascript
+smoother.smoothDamp()
+```
+### .lerp()
+```javascript
+smoother.lerp()
+smoother.smoothDamp()
+```
+---
+
 # Skeleton
 Utilitary class to show keypoints
 ```javascript
