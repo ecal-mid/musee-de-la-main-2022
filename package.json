@@ -1,9 +1,6 @@
 {
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.2.1"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "babel-plugin-transform-remove-console": "^6.9.4",
     "concurrently": "^7.0.0",
     "express": "^4.17.2",
     "nodemon": "^2.0.15",
