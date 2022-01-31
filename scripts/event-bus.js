@@ -12,7 +12,7 @@ export default class EventBus {
         const listeners = getListeners(this.listeners, eventName) || createGroup(this.listeners, eventName)
         listeners.push(callback)
     }
-
+    
     triggerEventListener(eventName, data) {
         const listeners = getListeners(this.listeners, eventName) || emptyGroup()
         const event = new EventData(data)
@@ -22,27 +22,32 @@ export default class EventBus {
             // if(resp instanceof Promise)
             responses.push(resp)
         }
-
+        
         return responses
     }
-
+    
+    
     async triggerEventListenerAsync(eventName, data) {
         await Promise.all(this.triggerEventListener(eventName, data))
     }
-
+    
     removeEventListener(eventName, callback, options) {
-
+        
         const listeners = getListeners(this.listeners, eventName) || emptyGroup()
-
+        
         let removed = false
         if (listeners.length > 0) {
             removed = removeElementFromArray(listeners, callback)
         }
         if (listeners.length === 0) this.listeners.delete(eventName)
-
+        
         return removed
     }
 }
+
+EventBus.prototype.on = EventBus.prototype.addEventListener
+EventBus.prototype.off = EventBus.prototype.removeEventListener
+EventBus.prototype.emit = EventBus.prototype.triggerEventListener
 
 function getListeners(listeners, eventName) {
     return listeners.get(eventName)
