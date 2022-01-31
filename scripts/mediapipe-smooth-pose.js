@@ -6,6 +6,7 @@ import { Timer } from "/utils/time.js"
 const { LANDMARK_ENTRIES, LANDMARK_KEYS } = MediaPipePose
 
 class MediaPipeSmoothPose {
+
   /**
    * @param {Object} [params={}]
    * @param {number} [params.lerpAmount=0.33] // range [0-1], 0 is slowest, used by lerp()

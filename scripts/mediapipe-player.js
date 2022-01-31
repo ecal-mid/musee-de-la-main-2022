@@ -1,20 +1,24 @@
 import EventBus from './event-bus.js'
-import 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@latest/pose.js'
-import { Timer, delay } from '/utils/time.js'
+import MediaPipePose from './mediapipe-pose.js'
+import { Timer } from '/utils/time.js'
 import { loadJSON } from '/utils/file.js'
+import StateMachine from "/scripts/state-machine.js"
 
-const LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
-const PlayerState = window.StateMachine.factory({
-  init: 'idle',
-  transitions: [
-    { name: 'startRecord', from: 'idle', to: 'recording' },
-    { name: 'stopRecord', from: 'recording', to: 'idle' },
-    { name: 'startPlayback', from: 'idle', to: 'playing' },
-    { name: 'stopPlayback', from: 'playing', to: 'idle' },
-  ],
-  methods: {
-    // onStartRecord() { console.log('recording started') },
-    // onStopRecord() { console.log('recording stopped') },
+const PlayerState = StateMachine.factory({
+  initState: "idle",
+  states: {
+    idle: {
+      startRecord: { to: "recording" },
+      startPlayback: { to: "playing" },
+    },
+
+    playing: {
+      stopPlayback: { to: "idle" }
+    },
+
+    recording: {
+      stopRecord: { to: "idle" }
+    }
   }
 })
 
@@ -28,6 +32,7 @@ class MediaPipePlayer extends EventBus {
       frames: [],
       timer: new Timer(),
       status: new PlayerState(),
+      timeDrift: 15, //! prevent frame drop issue
     }
 
     Object.assign(this, defaults, params)
@@ -35,13 +40,13 @@ class MediaPipePlayer extends EventBus {
     this.clearPlayback()
 
     this.currFrameIndex = 0
-    this.status.observe('onStartRecord', () => {
+    this.status.on('startRecord', () => {
       this.timer.start()
     })
-    this.status.observe('onStopRecord', () => {
+    this.status.on('stopRecord', () => {
       this.timer.stop()
     })
-    this.status.observe('onStartPlayback', () => { })
+    this.status.on('startPlayback', () => { })
   }
 
   resumeRecord() {
@@ -55,7 +60,7 @@ class MediaPipePlayer extends EventBus {
 
   stopRecord() {
     if (!this.status.is('idle'))
-      this.status.stopRecord()
+      this.status.emit('stopRecord')
   }
 
   startRecord({ skipFrames = 0, bufferMaxDuration = Infinity } = {}) {
@@ -64,7 +69,7 @@ class MediaPipePlayer extends EventBus {
     this.skipFrames = skipFrames
     this.bufferMaxDuration = bufferMaxDuration
 
-    this.status.startRecord()
+    this.status.emit('startRecord')
   }
 
   update(pose) {
@@ -92,7 +97,7 @@ class MediaPipePlayer extends EventBus {
 
     this.clearPlayback()
     this.loop = loop
-    this.status.startPlayback()
+    this.status.emit('startPlayback')
     this.updateFrame()
   }
 
@@ -105,7 +110,7 @@ class MediaPipePlayer extends EventBus {
 
     const timeNow = performance.now()
 
-    if (this.playbackTime + deltaTime > timeNow) { this.requestFrame(); return }
+    if (this.playbackTime + deltaTime > timeNow + this.timeDrift) { this.requestFrame(); return }
 
     super.triggerEventListener('playbackpose', { recordedSkeleton: pose })
     this.playbackTime = timeNow
@@ -129,7 +134,7 @@ class MediaPipePlayer extends EventBus {
 
     if (this.status.is('idle')) return
 
-    this.status.stopPlayback()
+    this.status.emit('stopPlayback')
     super.triggerEventListener('playbackstop')
   }
 
@@ -170,7 +175,7 @@ function compress(pose) {
 
   if (!pose) return null
 
-  const compressedPose = new Array(LANDMARK_ENTRIES.length).fill(null)
+  const compressedPose = new Array(MediaPipePose.LANDMARK_ENTRIES.length).fill(null)
 
   Object.entries(pose).forEach(([key, value]) => {
     const index = window.POSE_LANDMARKS[key]
@@ -186,7 +191,7 @@ function decompress(compressedPose) {
 
   const pose = {}
 
-  LANDMARK_ENTRIES.forEach(([key, index]) => {
+  MediaPipePose.LANDMARK_ENTRIES.forEach(([key, index]) => {
     const [x, y, z, visibility] = compressedPose[index]
     pose[key] = { x, y, z, visibility }
   })
