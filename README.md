@@ -6,9 +6,10 @@
 ---
 # CDN
 ### Scripts
-- [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](#Skeleton))
-- [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](#MediaPipeClient))
-- [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipeSmoothPose))
+- [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](#Skeleton)) - Skeleton debug points
+- [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](#MediaPipeClient)) - Mediapipe controller
+- [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipeSmoothPose)) - Mediapipe smoothing
+- [mediapipe-player.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipePlayer)) - Mediapipe Recorder/Player
 
 ### CSS
 - [reset.css](https://mediapipe.ecal-mid.ch/styles/reset.css)
@@ -106,4 +107,60 @@ mediaPipe.addEventListener('pose', (event) => {
 Display the skeleton on a specified HTMLCanvas context
 ```javascript
 skeleton.show(ctx, {color: 'red'}) // optionally set the color
+```
+---
+
+# Player
+Record and playback Mediapipe poses
+```javascript
+let recorder = new MediaPipePlayer()
+```
+### .update(MediapipeSkeleton)
+Update with the last skeleton results from MediaPipeClient
+```javascript
+mediaPipe.addEventListener('pose', (event) => {
+  recorder.update(event.data.skeleton)
+})
+```
+### .is(state)
+Returns true is passed state matches current state of recorder.
+- state: `"idle"`, `"playing"`, `"recording"`
+```javascript
+if (recorder.is('playing')) return
+```
+### .startPlayback(\[options\])
+### .stopPlayback()
+Will trigger the event playbackpose on eache poses
+**Options:**
+- loop: `Boolean` make it loop
+```javascript
+recorder.startPlayback({ loop: false })
+recorder.stopPlayback()
+```
+### .startRecord(\[options\])
+### .stopRecord()
+```javascript
+recorder.startPlayback()
+// or
+recorder.startPlayback({
+  skipFrames: 10, // will save 1 frame every 10 frames, file will be lighter
+  bufferMaxDuration: 10 * 1000, // milliseconds, recording will be of 10s max, then rewrites on its frames
+})
+recorder.stopPlayback()
+```
+### .getRecording()
+### .setRecording(jsonData)
+Get and set compressed record data.
+```javascript
+const jsonData = recorder.getRecording()
+recorder.setRecording(jsonData)
+```
+### Events
+```javascript
+recorder.addEventListener('playbackpose', (event) => {
+    // console.log(event.data.recordedSkeleton)
+})
+recorder.addEventListener('playbackstop', () => { // doesn't trigger if playback is looping
+    // only triggers if playback not looping
+})
 ```
