@@ -6,10 +6,10 @@
 ---
 # CDN
 ### Scripts
-- [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](#Skeleton)) - Skeleton debug points
-- [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](#MediaPipeClient)) - Mediapipe controller
-- [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipeSmoothPose)) - Mediapipe smoothing
-- [mediapipe-player.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipePlayer)) - Mediapipe Recorder/Player
+- Skeleton - [skeleton.js](https://mediapipe.ecal-mid.ch/scripts/skeleton.js) ([doc](#Skeleton))
+- MediaPipeClient - [mediapipe-client.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js) ([doc](#MediaPipeClient))
+- MediaPipeSmoothPose - [mediapipe-smooth-pose.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediaPipeSmoothPose))
+- MediaPipePlayer (+ Recorder) - [mediapipe-player.js](https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js) ([doc](#MediapipePlayer))
 
 ### CSS
 - [reset.css](https://mediapipe.ecal-mid.ch/styles/reset.css)
@@ -55,7 +55,7 @@ mediaPipe.addEventListener('pose', (event) => {
 ```
 
 ---
-# MediapipeSmoothPose
+# MediaPipeSmoothPose
 Skeleton Smoothing
 ```javascript
 const smoother = new MediapipeSmoothPose()
