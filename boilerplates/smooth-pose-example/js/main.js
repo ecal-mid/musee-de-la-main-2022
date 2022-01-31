@@ -31,7 +31,7 @@ function update() {
     ctx.clearRect(0, 0, width, height)
     ctx.drawImage(mediaPipe.video, 0, 0, width, height)
 
-    const pose = smoother.lerp() // or smoother.lerp()
+    const pose = smoother.smoothDamp() // or smoother.lerp()
 
     skeleton.update(pose)
     skeleton.show(ctx, { color: 'red' })
