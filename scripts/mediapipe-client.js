@@ -65,6 +65,7 @@ class MediaPipeClient extends EventBus {
   }
 
   triggerPose(event) {
+    // this.smoothSkeleton
     super.triggerEventListener('pose', event.data)
   }
 

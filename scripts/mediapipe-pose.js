@@ -1,13 +1,19 @@
 import 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@latest/pose.js'
 import "https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+
 import { VideoPlayer } from "/utils/video.js"
 import { lerp } from '/utils/math.js'
 import EventBus from '/scripts/event-bus.js'
 
-const LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
-const LANDMARK_KEYS = ['x', 'y', 'z', 'visibility']
+// const LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
+// const LANDMARK_KEYS = ['x', 'y', 'z', 'visibility']
 
 class MediaPipePose extends EventBus {
+
+    static POSE_LANDMARKS = window.POSE_LANDMARKS
+    static LANDMARK_ENTRIES = Object.entries(window.POSE_LANDMARKS)
+    static LANDMARK_KEYS = ['x', 'y', 'z', 'visibility']
+
     constructor(options = {}) {
         super()
 
@@ -16,8 +22,8 @@ class MediaPipePose extends EventBus {
 
         Object.assign(this, options)
 
-        this.smoothLandmarks = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
-        this.smoothLandmarksNormalized = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
+        // this.smoothLandmarks = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
+        // this.smoothLandmarksNormalized = LANDMARK_ENTRIES.map(() => this.constructor.createLandmark())
 
         this.pose.onResults(async (results) => {
             super.triggerEventListener('pose', this.remapResults(results))
@@ -28,14 +34,14 @@ class MediaPipePose extends EventBus {
         })
     }
 
-    smoothenLandmarks(smoothLandmarks, newLandmarks, amt) {
-        newLandmarks.forEach((newLandmark, index) => {
-            const smoothLandmark = smoothLandmarks[index]
-            LANDMARK_KEYS.forEach(key => {
-                smoothLandmark[key] = lerp(smoothLandmark[key], newLandmark[key], amt)
-            })
-        })
-    }
+    // smoothenLandmarks(smoothLandmarks, newLandmarks, amt) {
+    //     newLandmarks.forEach((newLandmark, index) => {
+    //         const smoothLandmark = smoothLandmarks[index]
+    //         LANDMARK_KEYS.forEach(key => {
+    //             smoothLandmark[key] = lerp(smoothLandmark[key], newLandmark[key], amt)
+    //         })
+    //     })
+    // }
 
     remapResults(results) {
 
@@ -44,13 +50,13 @@ class MediaPipePose extends EventBus {
         let skeleton, skeletonNormalized
 
         if (poseLandmarks) {
-            this.smoothenLandmarks(this.smoothLandmarks, poseLandmarks, 1 - this.smoothen)
-            skeleton = this.constructor.remapLandmarks(this.smoothLandmarks)
+            // this.smoothenLandmarks(this.smoothLandmarks, poseLandmarks, 1 - this.smoothen)
+            skeleton = this.constructor.remapLandmarks(poseLandmarks)
         }
 
         if (poseWorldLandmarks) {
-            this.smoothenLandmarks(this.smoothLandmarksNormalized, poseWorldLandmarks, 1 - this.smoothen)
-            skeletonNormalized = this.constructor.remapLandmarks(this.smoothLandmarksNormalized)
+            // this.smoothenLandmarks(this.smoothLandmarksNormalized, poseWorldLandmarks, 1 - this.smoothen)
+            skeletonNormalized = this.constructor.remapLandmarks(poseWorldLandmarks)
         }
 
         return { skeleton, skeletonNormalized, raw: results }
@@ -66,15 +72,11 @@ class MediaPipePose extends EventBus {
 
     static remapLandmarks(poseLandmarks, width, height) {
 
-        return Object.fromEntries(LANDMARK_ENTRIES.map(([name, index]) => {
+        return Object.fromEntries(this.LANDMARK_ENTRIES.map(([name, index]) => {
             const landmark = poseLandmarks[index]
             // const x = poseLandmarks[index] * 
             return [name, landmark]
         }))
-    }
-
-    static createLandmark(value = 0) {
-        return Object.fromEntries(LANDMARK_KEYS.map(key => [key, value]))
     }
 
     static async create({ cameraConstraints, width, height, mediaPipeOptions, smoothen = 1 }) {
