@@ -1,0 +1,25 @@
+{
+  "projects": [
+    {
+      "title": "ecal",
+      "url": "https://www.ecal.ch",
+      "students": ["Loris Briguet", "Martial Grin"],
+      "description": "description text here",
+      "images": []
+    },
+    {
+      "title": "sold-out.ch",
+      "url": "https://www.sold-out.ch",
+      "students": ["Loris Briguet", "Martial Grin"],
+      "description": "description text here",
+      "images": []
+    },
+    {
+      "title": "matos",
+      "url": "https://utils.matoseb.com/",
+      "students": ["Loris Briguet", "Martial Grin"],
+      "description": "description text here",
+      "images": []
+    }
+  ]
+}
