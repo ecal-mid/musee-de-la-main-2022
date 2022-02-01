@@ -100,4 +100,6 @@ class MediaPipePose extends EventBus {
     }
 }
 
+window.MediaPipePose = MediaPipePose
+
 export default MediaPipePose

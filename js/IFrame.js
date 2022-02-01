@@ -9,6 +9,7 @@ export default class IFrame {
       load: this.onIFrameLoaded.bind(this),
     }
     this.frame = document.getElementById("frame")
+    this.frame.src = frame.src // force iframe reload
     this.frame.addEventListener("load", this.handlers.load)
     this.socket = new Socket()
     this.socket.addEventListener("message", this.handlers.message)
@@ -17,11 +18,12 @@ export default class IFrame {
 
   async initData() {
     this.studentsData = await Utils.loadJSON("/json/studentProjects.json")
-
   }
   onIFrameLoaded(e) {
     console.log("::iframe loaded::", e)
+    this.onFrameLoad(e);
   }
+
   onMessage(data) {
     if ("project_id" in data) {
       const id = parseInt(data["project_id"])
@@ -29,4 +31,6 @@ export default class IFrame {
       this.frame.src = url + `?_v=${new Date().getTime()}`
     }
   }
+  // overwritten
+  onFrameLoad(event) {}
 }

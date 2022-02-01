@@ -43,19 +43,10 @@ export default class EventBus {
         
         return removed
     }
-
-    removeAllEventListeners(eventName) {
-        const listeners = getListeners(this.listeners, eventName) || emptyGroup()
-        const anyRemoved = listeners.length > 0
-        listeners.length = 0 // empty array
-        this.listeners.delete(eventName)
-        return anyRemoved
-    }
 }
 
 EventBus.prototype.on = EventBus.prototype.addEventListener
 EventBus.prototype.off = EventBus.prototype.removeEventListener
-EventBus.prototype.offAll = EventBus.prototype.removeAllEventListeners
 EventBus.prototype.emit = EventBus.prototype.triggerEventListener
 
 function getListeners(listeners, eventName) {

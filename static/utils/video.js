@@ -2,6 +2,11 @@ import EventBus from '/scripts/event-bus.js'
 
 export async function getWebcamStream({ width, height, constraints = {} } = {}) {
     const video = document.createElement('video')
+
+    if(!navigator.mediaDevices) {
+        throw new Error("Please run with localhost or with on https://")
+    }
+
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, ...constraints })
 
     return new Promise(resolve => {

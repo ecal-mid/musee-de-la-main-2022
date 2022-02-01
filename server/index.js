@@ -16,7 +16,8 @@ const server = http.createServer(app)
 const wss = new ws.Server({ server })
 
 server.listen(PORT, HOST, () => {
-    console.log(`Running on http://${ip.address()}:${PORT}/`)
+    console.log(`Local: http://localhost:${PORT}/`)
+    console.log(`IP: http://${ip.address()}:${PORT}/`)
 })
 
 const clients = new Map()
