@@ -7,7 +7,7 @@ import path from 'path'
 const { PORT = 1575, HOST = "0.0.0.0" } = process.env
 
 const app = express()
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static('dist'))
 
 const server = http.createServer(app)
 const wss = new ws.Server({ server })
@@ -22,7 +22,7 @@ wss.on("connection", (client) => {
 
     const client_id = uuidv4()
 
-    clients.set(clientID, client_id)
+    clients.set(client_id, client)
 
     client.send(JSON.stringify({ client_id }))
 

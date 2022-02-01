@@ -1,9 +1,5 @@
-// import EventEmitter from "@onemorestudio/eventemitterjs";
-import EventBus from '~/scripts/event-bus';
-/**
- *  IP ADDRESS TO BE CHANGED
- */
-const IP = `localhost`;
+import EventBus from "/libs/event-bus";
+
 export default class Socket extends EventBus {
   constructor() {
     super();
@@ -24,7 +20,7 @@ export default class Socket extends EventBus {
     }
   }
   initConnection() {
-    this.connection = new WebSocket("ws://" + IP + ":1337");
+    this.connection = new WebSocket(`ws://${window.location.host}`);
     // on ouvre la connection
     this.connection.onopen = this.handlers.open;
     this.connection.onerror = this.handlers.error;

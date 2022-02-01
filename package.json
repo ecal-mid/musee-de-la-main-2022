@@ -1,40 +1,29 @@
 {
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.2.1"
-  },
-  "dependencies": {
-    "concurrently": "^7.0.0",
-    "express": "^4.17.2",
-    "nodemon": "^2.0.15",
-    "parcel": "^2.2.1",
-    "reset-css": "^5.0.1",
-    "uuid": "^8.3.2",
-    "ws": "^8.4.2"
-  },
   "name": "posenet-musee-de-la-main",
-  "description": "1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/7c337190f793f5b7656cfee02ca31ffe693cf20f/boilerplates)) 3. Run these folders with a http server / live server 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)",
   "version": "1.0.0",
-  "targets": {
-    "backend": {
-      "source": "server/index.js",
-      "context": "node",
-      "distDir": "dist/",
-      "engines": {
-        "node": ">= 16"
-      }
-    },
-    "frontend": {
-      "context" : "browser",
-      "source": "pages/index.html",
-      "distDir": "dist/public/"
-    }
-  },
+  "description": "1. **download boilerplates** ([folder](https://github.com/ecal-mid/musee-de-la-main-2022/tree/main/boilerplates), [download](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/ecal-mid/musee-de-la-main-2022/tree/7c337190f793f5b7656cfee02ca31ffe693cf20f/boilerplates)) 3. Run these folders with a http server / live server 4. Go to your localhost (with the proper port) [localhost:5500/boilerplates](http://localhost:5500/boilerplates/)",
+  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "server:build": "parcel build --target backend",
-    "parcel:watch": "mkdir dist/public && parcel watch --target frontend",
-    "live:dev": "concurrently \"npm run parcel:watch\" \"nodemon dist/index\"",
-    "dev": "rm -rf dist && mkdir dist && npm run parcel:watch"
+    "build-watch": "parcel watch ./src/index.html",
+    "start-watch": "nodemon server/index.js",
+    "dev": "concurrently --kill-others \"npm run start-watch\" \"npm run build-watch\"",
+    "build": "parcel build ./src/index.html --no-cache --no-minify",
+    "start": "npm run build && node server/index.js"
   },
+  "staticFiles": {
+    "staticPath": [
+      {
+        "staticPath": "static",
+        "staticOutDir": "static/"
+      },
+      {
+        "staticPath": "static-scripts",
+        "staticOutDir": "scripts/"
+      }
+    ]
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ecal-mid/musee-de-la-main-2022.git"
@@ -44,5 +33,24 @@
   "bugs": {
     "url": "https://github.com/ecal-mid/musee-de-la-main-2022/issues"
   },
-  "homepage": "https://github.com/ecal-mid/musee-de-la-main-2022#readme"
+  "homepage": "https://github.com/ecal-mid/musee-de-la-main-2022#readme",
+  "devDependencies": {
+    "@babel/core": "^7.16.12",
+    "concurrently": "^7.0.0",
+    "nodemon": "^2.0.15",
+    "parcel-bundler": "^1.12.5",
+    "parcel-plugin-static-files-copy": "^2.6.0",
+    "sass": "^1.49.4"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.16.10",
+    "@babel/runtime": "^7.16.7",
+    "@onemorestudio/eventemitterjs": "^1.0.0",
+    "assemble": "^0.3.83",
+    "express": "^4.17.2",
+    "grunt": "^0.4.5",
+    "reset-css": "^5.0.1",
+    "styles": "^0.2.1",
+    "uuid": "^8.3.2"
+  }
 }
