@@ -1,13 +1,15 @@
 import "~/styles/iframe.scss"
 import IFrame from "~/js/IFrame"
-import CONFIG from "~/config.js"
 
+import CONFIG from "~/static/config.js"
 import { execExternalScript } from '~/static/utils/file.js'
-const mediapipeLoader = execExternalScript('/scripts/mediapipe-pose.js', { type: 'module' })
+
+// hack parcel..
+const loadMediapipe = execExternalScript('/scripts/mediapipe-pose.js', { type: 'module' })
 
 window.onload = async () => {
 
-  await mediapipeLoader
+  await loadMediapipe
   const pose = await window.MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
     mediaPipeOptions: CONFIG.mediaPipeOptions,
