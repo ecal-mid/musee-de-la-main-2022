@@ -3,7 +3,7 @@ export async function loadJSON(url, ...options) {
 }
 
 export async function execExternalScript(src, options = {}) {
-  return scriptPromise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const script = document.createElement('script')
     document.head.appendChild(script)
     script.onload = resolve

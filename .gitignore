@@ -105,3 +105,6 @@ dist
 
 # Mac OS
 *.DS_Store
+
+# Parcl
+.parcel-cache/
