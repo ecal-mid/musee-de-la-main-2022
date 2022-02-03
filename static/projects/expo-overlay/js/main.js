@@ -1,24 +1,39 @@
-import Skeleton from 'https://mediapipe.ecal-mid.ch/scripts/skeleton.js'
+// https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_dof2.html
+// https://threejs.org/examples/?q=bokeh#webgl_postprocessing_dof2
+
+import * as THREE from 'https://cdn.skypack.dev/three@0.137.5'
+
 import MediaPipeClient from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js'
+import MediapipeSmoothPose from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js'
+import ThreeSkeleton from './threeSkeleton.js'
 
-const canvas = document.querySelector('.main-canvas')
-const ctx = canvas.getContext('2d')
+const smoother = new MediapipeSmoothPose({
+    lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
+    dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
+    dampMaxSpeed: Infinity // max speed, used by smoothDamp()
+})
 
-const skeleton = new Skeleton()
-const normalSkeleton = new Skeleton()
-
+let SCENE, CAMERA, RENDERER, skeleton
 const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe // global object mediaPipe
 
 mediaPipe.addEventListener('setup', () => {
-    canvas.width = mediaPipe.video.width
-    canvas.height = mediaPipe.video.height
+    const canvas = document.querySelector('.main-canvas')
+    const { width, height } = mediaPipe.video
+
+    const ratio = width / height
+    const canvasWidth = window.innerWidth * 2
+    const canvasHeight = canvasWidth * ratio
+
+    canvas.width = canvasWidth
+    canvas.height = canvasHeight
+    buildScene(canvas)
+
     requestUpdate()
 })
 
 mediaPipe.addEventListener('pose', (event) => {
-    skeleton.update(event.data.skeleton)
-    normalSkeleton.update(event.data.skeletonNormalized)
+    smoother.target(event.data.skeletonNormalized)
 })
 
 function requestUpdate() {
@@ -26,21 +41,38 @@ function requestUpdate() {
 }
 
 function update() {
-    const { width, height } = canvas
+    RENDERER.render(SCENE, CAMERA)
 
-    ctx.save()
-    ctx.clearRect(0, 0, width, height)
-    ctx.drawImage(mediaPipe.video, 0, 0, width, height)
-
-
-    skeleton.show(ctx, { color: 'red' })
-
-
-    ctx.translate(width / 2, height / 2)
-    ctx.scale(0.5, 0.5)
-    normalSkeleton.show(ctx, { color: '#00ff00' })
-
-    ctx.restore()
+    const pose = smoother.smoothDamp()
+    skeleton.update(pose)
 
     requestUpdate()
+}
+
+function buildScene(canvas) {
+    SCENE = new THREE.Scene()
+    CAMERA = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000)
+    RENDERER = new THREE.WebGLRenderer({ canvas, alpha: true })
+    CAMERA.position.z = 3
+    RENDERER.setClearColor(0x000000, 0) // the default
+
+    const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
+
+    skeleton = new ThreeSkeleton({ material })
+    SCENE.add(skeleton.getObject())
+
+    // // const geometry = new THREE.BoxGeometry(1, 1, 1)
+    // // const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+    // // const cube = new THREE.Mesh(geometry, material)
+    // // SCENE.add(cube)
+
+
+    // const points = []
+    // points.push(new THREE.Vector3(- 0, 0, 0))
+    // points.push(new THREE.Vector3(5, 0, 5))
+
+    // const geometry = new THREE.BufferGeometry().setFromPoints(points)
+
+    // const line = new THREE.Line(geometry, material)
+    // SCENE.add(line)
 }
