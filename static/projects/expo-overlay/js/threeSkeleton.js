@@ -1,5 +1,4 @@
 import * as THREE from 'https://cdn.skypack.dev/three@0.137.5'
-// import ThreeJoints from 'ThreeJoints'
 
 export default class ThreeSkeleton {
   constructor(options = {}) {
