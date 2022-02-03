@@ -7,6 +7,8 @@ import MediaPipeClient from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-cli
 import MediapipeSmoothPose from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js'
 import ThreeSkeleton from './threeSkeleton.js'
 
+const { degToRad } = THREE.MathUtils
+
 const smoother = new MediapipeSmoothPose({
     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
@@ -28,6 +30,8 @@ mediaPipe.addEventListener('setup', () => {
     canvas.width = canvasWidth
     canvas.height = canvasHeight
     buildScene(canvas)
+
+    console.log(THREE.MathUtils)
 
     requestUpdate()
 })
@@ -54,6 +58,7 @@ function buildScene(canvas) {
     CAMERA = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000)
     RENDERER = new THREE.WebGLRenderer({ canvas, alpha: true })
     CAMERA.position.z = 3
+    CAMERA.rotation.z = degToRad(180)
     RENDERER.setClearColor(0x000000, 0) // the default
 
     const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
