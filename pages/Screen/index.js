@@ -20,11 +20,16 @@ window.onload = async () => {
   pose.startDetection()
 
   const frame = new IFrame()
-  
-  frame.onFrameLoad = function (event) {
-    const iframe = event.target
-    const mediaPipe = iframe.contentWindow?.mediaPipe
-    if (!mediaPipe) return
-    mediaPipe.setup({ stream: player.stream, width: player.width, height: player.height, pose })
-  }
+
+  frame.onFrameLoad = (event) => insertIFrame({ player, iframe: event.target, pose })
+
+  const overlayFrame = document.querySelector('#overlay')
+  overlayFrame.onload = (event) => insertIFrame({ player, iframe: event.target, pose })
+  overlayFrame.src = '/projects/expo-overlay'
+}
+
+function insertIFrame({ player, pose, iframe }) {
+  const mediaPipe = iframe.contentWindow?.mediaPipe
+  if (!mediaPipe) return
+  mediaPipe.setup({ stream: player.stream, width: player.width, height: player.height, pose })
 }
