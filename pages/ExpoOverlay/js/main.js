@@ -1,21 +1,22 @@
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_dof2.html
 // https://threejs.org/examples/?q=bokeh#webgl_postprocessing_dof2
 
-import * as THREE from 'https://cdn.skypack.dev/three@0.137.5'
+import * as THREE from 'three'
 
-import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.137.5/jsm/loaders/GLTFLoader.js'
-import { EffectComposer } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/RenderPass.js'
-import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/UnrealBloomPass.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 
-
-import MediaPipeClient from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js'
-import MediapipeSmoothPose from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js'
 import ThreeSkeleton from './threeSkeleton.js'
+
+import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
+import '@ecal-mid/mediapipe/umd/css/index.css'
+
 
 const { degToRad } = THREE.MathUtils
 
-const smoother = new MediapipeSmoothPose({
+const smoother = new MediaPipeSmoothPose({
     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
     dampMaxSpeed: Infinity // max speed, used by smoothDamp()
@@ -36,8 +37,6 @@ mediaPipe.addEventListener('setup', () => {
     canvas.width = canvasWidth
     canvas.height = canvasHeight
     buildScene(canvas)
-
-    console.log(THREE.MathUtils)
 
     requestUpdate()
 })

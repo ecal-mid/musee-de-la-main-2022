@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.137.5'
+import * as THREE from 'three'
 
 export default class ThreeSkeleton {
   constructor(options = {}) {
