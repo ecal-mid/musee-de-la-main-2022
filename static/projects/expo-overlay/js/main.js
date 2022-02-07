@@ -3,6 +3,12 @@
 
 import * as THREE from 'https://cdn.skypack.dev/three@0.137.5'
 
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.137.5/jsm/loaders/GLTFLoader.js'
+import { EffectComposer } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.137.5/jsm/postprocessing/UnrealBloomPass.js'
+
+
 import MediaPipeClient from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js'
 import MediapipeSmoothPose from 'https://mediapipe.ecal-mid.ch/scripts/mediapipe-smooth-pose.js'
 import ThreeSkeleton from './threeSkeleton.js'
@@ -59,7 +65,9 @@ function buildScene(canvas) {
     RENDERER = new THREE.WebGLRenderer({ canvas, alpha: true })
     CAMERA.position.z = 3
     CAMERA.rotation.z = degToRad(180)
+    RENDERER.setPixelRatio(1)
     RENDERER.setClearColor(0x000000, 0) // the default
+    RENDERER.autoClear = false;
 
     const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
 
