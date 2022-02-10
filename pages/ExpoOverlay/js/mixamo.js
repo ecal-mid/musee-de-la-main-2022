@@ -49,16 +49,16 @@ mediaPipe.on('setup', async () => {
         smoother.target(event.data.skeletonNormalized)
     })
 
-    
+
     await init(canvas)
 })
 
 async function init(canvas) {
-    
+
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
     scene.fog = new THREE.Fog(0x000000, 10, 50);
-    
+
     skeletonRemapper = new SkeletonRemapper()
     model = await Model.fromFile(CONFIG.models.simple.path).catch(error => {
         console.log(error)
@@ -119,23 +119,27 @@ function animate() {
 
     requestAnimationFrame(animate);
 
-    const pose = smoother.smoothDamp()
-    skeletonRemapper.update(pose)
-    model.update(skeletonRemapper.getPose());
+    // smoothing
+    let pose = smoother.smoothDamp()
+    // remap mediapipe to mixamo landmarks 
+    pose = skeletonRemapper.update(pose)
+    model.update(pose);
+
     stats.update();
 
+    if (pose) {
+        model.params.skinnedMesh.skeleton.bones.forEach(bone => {
+            const { name } = bone
+            // if (name !== "mixamorig_Hips") return
 
-    // model.params.skinnedMesh.skeleton.bones.forEach(bone => {
-    //     const { name } = bone
-    //     if (name !== "mixamorig_LeftArm") return
+            const firstChild = bone.children?.[0]
+            if (!firstChild) return;
 
-    //     // console.log(bone)
-    //     // bone.rotation.z=0;
-    //     // bone.rotation.y=0;
-    //     // bone.rotation.x=0
-    //     // bone.lookAt(camera.position)
-    // })
-
+            const point = pose[firstChild.name]
+            // console.log(point)
+            bone.lookAt(point)
+        })
+    }
 
 
     renderer.render(scene, camera);

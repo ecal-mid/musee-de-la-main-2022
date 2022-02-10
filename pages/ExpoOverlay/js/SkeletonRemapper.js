@@ -213,7 +213,8 @@ export default class SkeletonRemapper {
     }
 
     getPose() {
-        return MIXAMO_LANDMARKS.forEach(key => this.points[key])
+        // return MIXAMO_LANDMARKS.map(key => this.points[key])
+        return this.points
     }
 
     addTo(scene) {
@@ -247,6 +248,8 @@ export default class SkeletonRemapper {
         })
 
         this.debugPoints.forEach(point => point.update())
+
+        return this.getPose()
         // console.log(this.points["BETWEEN_HIPS"])
         // this.target.position.copy(this.points["BETWEEN_HIPS"])
 
