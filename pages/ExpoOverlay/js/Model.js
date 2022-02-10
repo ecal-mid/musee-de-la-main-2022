@@ -1,16 +1,21 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three'
 
-const REQUIRED = Symbol('required')
+const REQUIRED = Symbol('required'),
+    EMPTY = Symbol('empty')
+
 const loader = new GLTFLoader();
+
 const DEBUG_MODE = true;
-const NO_OP = () => {}
+
+const NO_OP = () => { }
 
 export default class Model {
     constructor(params = {}) {
         this.params = {
             model: REQUIRED,
             gltf: REQUIRED,
+            skinnedMesh: REQUIRED,
             allActions: [],
             mixer: null,
             clock: new THREE.Clock(),
@@ -33,8 +38,14 @@ export default class Model {
         scene.remove(this.params.helper)
     }
 
-    update() {
-        const { gltf, mixer, clock } = this.params
+    update(pose) {
+
+        const { model, gltf, mixer, clock, helper } = this.params
+
+        // const isVisible = Boolean(pose)
+        model.visible = false
+        // helper.visible = isVisible
+
         gltf.animations.forEach((clip, index) => {
             // const action = this.params.allActions[i];
             // const clip = action.getClip();
@@ -53,22 +64,24 @@ export default class Model {
     }
 
     setupAnimations() {
-        
+
         //! skeleton = new THREE.SkeletonHelper(model);
-        const { gltf, model, allActions } = this.params
+        const { gltf, model, allActions, skinnedMesh } = this.params
         // skeleton.visible = true;
         // scene.add(skeleton);
 
         const animations = gltf.animations;
         const mixer = new THREE.AnimationMixer(model);
-
+        // console.log(model)
         // numAnimations = animations.length;
 
-        const clip = THREE.AnimationClip.findByName( animations, 'Backflip' );
+        const clip = THREE.AnimationClip.findByName(animations, 'Idle');
+        console.log(skinnedMesh.skeleton.bones.map(({ name }) => name))
 
-        console.log(animations)
-        const action = mixer.clipAction( clip );
-        action.play();
+        // console.log(mixer)
+        // console.log(animations)
+        const action = mixer.clipAction(clip);
+        // action.play();
         // action.setEffectiveTimeScale(1);
         // action.setEffectiveWeight(1);
 
@@ -192,26 +205,32 @@ export default class Model {
     static async fromFile(path) {
 
         const gltf = await asyncLoad(loader, path)
-        console.log('test')
         const model = gltf.scene;
+        let skinnedMesh = EMPTY;
         //! scene.add(model);
 
-        console.log(gltf)
+        // console.log(gltf)
 
         const lineMaterial = new THREE.MeshBasicMaterial({
-            skinning : true,
+            // skinning: true,
             wireframe: true
         });
 
         model.traverse((object) => {
             if (!object.isMesh) return
+
+            //* skinned mesh
             object.castShadow = false;
-            console.log(object)
+
+            if (object.constructor.name === 'SkinnedMesh')
+                skinnedMesh = object
+
             // geometry.setAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
+
             object.material = lineMaterial
         });
 
-        return new this({ model, gltf })
+        return new this({ model, gltf, skinnedMesh })
 
         //! skeleton = new THREE.SkeletonHelper(model);
         // skeleton.visible = true;
@@ -221,7 +240,6 @@ export default class Model {
         mixer = new THREE.AnimationMixer(model);
 
         numAnimations = animations.length;
-        console.log(animations)
 
         for (let i = 0; i !== numAnimations; ++i) {
 
