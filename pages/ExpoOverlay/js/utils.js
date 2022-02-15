@@ -14,10 +14,10 @@ export function boneLookAt(bone, position) {
 
 //* https://discourse.threejs.org/t/need-help-figuring-out-bone-rotations-please-help/29059/5
 
-export function boneLookAtWorld(bone, v) {
-    const parent = bone.parent;
+export function boneLookAtWorld(scene, bone, vector3) {
+    const { parent } = bone;
     scene.attach(bone)
-    boneLookAtLocal(bone, v)
+    boneLookAtLocal(bone, vector3)
     parent.attach(bone)
 }
 

@@ -21,6 +21,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import Model from './model.js'
 import SkeletonRemapper from './SkeletonRemapper.js'
 import CONFIG from '../config.js'
+import { boneLookAtWorld } from './utils.js';
 
 let scene, renderer, camera, stats
 let model, skeletonRemapper
@@ -130,14 +131,15 @@ function animate() {
     if (pose) {
         model.params.skinnedMesh.skeleton.bones.forEach(bone => {
             const { name } = bone
-            // if (name !== "mixamorig_Hips") return
+            // // if (name !== "mixamorig_Hips") return
 
-            const firstChild = bone.children?.[0]
-            if (!firstChild) return;
+            // const firstChild = bone.children?.[0]
+            // if (!firstChild) return;
 
-            const point = pose[firstChild.name]
-            // console.log(point)
-            bone.lookAt(point)
+            // const point = pose[firstChild.name]
+            // // console.log(point)
+            // // bone.lookAt(point)
+            // boneLookAtWorld(scene, bone, point)
         })
     }
 

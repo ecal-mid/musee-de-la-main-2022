@@ -1,0 +1,126 @@
+body {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: Arial;
+  font-weight: lighter;
+  font-size: 32pt;
+  /* letter-spacing: 1px; */
+}
+
+/* html {
+  cursor: none;
+} */
+
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: linear-gradient(
+    0deg,
+    rgb(18, 30, 56) 0%,
+    rgb(7, 12, 24) 35%,
+    rgb(2, 3, 3) 100%
+  );
+}
+
+#loading {
+  position: fixed;
+  z-index: 1000000;
+  transform: translate(-50%, -50%) scale(30%);
+  top: 50%;
+  left: 50%;
+  opacity: 1;
+  transition: 1s;
+  filter: blur(0.5px);
+}
+#loading_label {
+  color: #61ffc5;
+  position: fixed;
+  z-index: 1000000;
+  top: 15%;
+  left: 50%;
+  width: 80%;
+  font-family: Messapia;
+  transition: 1s;
+  opacity: 1;
+  text-align: center;
+  transform: translate(-50%, 0%);
+  font-size: 24pt;
+}
+
+#three {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+#rd {
+  /* background-color: red; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+video {
+  z-index: 1;
+  position: relative;
+  object-fit: fill;
+  /* transform: scale(0.5) translate(-50%, 50%); */
+}
+
+#hide {
+  background-color: black;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  transition: 2s;
+  position: absolute;
+  z-index: 100000;
+}
+
+#webcam {
+  display: none;
+}
+#debug_canvas {
+  display: none;
+}
+
+#debug_canvas {
+  z-index: 1;
+  position: fixed;
+  /* top: 0px;
+  left: 0px; */
+  /* width: 100%;
+  height: 100%; */
+}
+
+.indicator {
+  text-align: center;
+  z-index: 10;
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  color: rgba(255, 255, 255, 1);
+  mix-blend-mode: difference;
+}
+
+#still {
+  opacity: 1;
+}
+#move {
+  opacity: 0;
+}
+
+@font-face {
+  font-family: Messapia;
+  src: url(./Messapia-Regular.otf);
+}

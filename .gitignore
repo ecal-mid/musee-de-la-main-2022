@@ -108,3 +108,6 @@ dist
 
 # Parcl
 .parcel-cache/
+
+storage/*
+!/storage/.gitkeep

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>You & You</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        cursor: none;
+        overflow: hidden;
+        /* background: blue; */
+      }
+
+      svg {
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      canvas {
+        /* backdrop-filter: blur(20px);
+        filter: blur(); */
+        /* transform: scaleX(-1); */
+        /* 2 HANDS GET CAPTED */
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://www.unpkg.com/@ecal-mid/mediapipe@latest/umd/css/index.css"
+    />
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.slim.js"
+      integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://unpkg.com/@ecal-mid/mediapipe@latest"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/BrushStroke.js"></script>
+    <script src="./js/Smoother.js"></script>
+    <script src="./js/rainday.js"></script>
+
+    <script src="./sparkle.js"></script>
+    <script src="./sketch.js" defer></script>
+  </head>
+
+  <body>
+    <style>
+      #image {
+        width: 100%;
+        height: 100vh;
+        opacity: 0.2;
+      }
+    </style>
+
+    <svg
+      width="100"
+      height="100"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+      <filter id="blurMe">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+      </filter>
+    </svg>
+  </body>
+</html>
