@@ -5,14 +5,23 @@ import AudioAllower from "~/js/AudioAllower"
 import CONFIG from "~/static/config.js"
 
 import { MediaPipePose } from '@ecal-mid/mediapipe'
+// import * as p5 from 'p5'
 
-// hack parcel..
 
-window.onload = async () => {
+let p5Microphone
 
+// window.setup = () => {
+//   microphone = new p5.AudioIn();
+//   microphone.start();
+// }
+
+//! use the self called setup function from p5 to use microphone (for jamy project)
+window.setup = async () => {
   await AudioAllower.allow()
 
-  // await loadMediapipe
+  p5Microphone = new p5.AudioIn();
+  p5Microphone.start();
+
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
     mediaPipeOptions: CONFIG.mediaPipeOptions,
@@ -35,8 +44,15 @@ window.onload = async () => {
 }
 
 function insertIFrame({ player, pose, iframe }) {
-  const mediaPipe = iframe.contentWindow?.mediaPipe
-  console.log(mediaPipe)
-  if (!mediaPipe) return
-  mediaPipe.setup({ stream: player.stream, width: player.width, height: player.height, pose })
+  const { mediaPipe, applyMicrophone } = iframe.contentWindow || {}
+
+  mediaPipe?.setup({
+    stream: player.stream,
+    width: player.width,
+    height: player.height,
+    pose,
+    mirrored: CONFIG.mediaPipeOptions.selfieMode,
+  })
+
+  applyMicrophone?.(p5Microphone)
 }
