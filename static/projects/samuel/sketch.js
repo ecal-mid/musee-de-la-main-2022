@@ -103,10 +103,6 @@ function setup() {
   jambeGauche = new BrushStroke({ p5Graphics: maskLayer });
 }
 
-function modelReady() {
-  console.log("Model ready!");
-}
-
 function draw() {
   if (fullWidthCapture.elt.readyState === 0) return;
 
@@ -114,7 +110,6 @@ function draw() {
   updatePoints();
   // console.log("up");
   updateWebcamBuffer();
-  console.log(captures.length)
   drawMaskLayer();
 
   // draw delayed capture
@@ -213,14 +208,14 @@ function drawSkeleton() {
   //   }
   // }
 }
-function gotPoses(results) {
-  poses = results;
-  console.log(poses);
+// function gotPoses(results) {
+//   poses = results;
+//   // console.log(poses);
 
-  if (poses.length > 0) {
-    pose = poses[0].pose;
-  }
-}
+//   if (poses.length > 0) {
+//     pose = poses[0].pose;
+//   }
+// }
 
 function updateWebcamBuffer() {
   if (captures.length === maxCaptures) captures.shift();

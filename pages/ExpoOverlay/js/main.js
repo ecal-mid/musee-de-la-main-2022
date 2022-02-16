@@ -40,11 +40,12 @@ mediaPipe.addEventListener('setup', () => {
     buildScene(canvas)
 
     requestUpdate()
+
+    mediaPipe.addEventListener('pose', (event) => {
+        smoother.target(event.data.skeletonNormalized)
+    })
 })
 
-mediaPipe.addEventListener('pose', (event) => {
-    smoother.target(event.data.skeletonNormalized)
-})
 
 function requestUpdate() {
     requestAnimationFrame(update)
@@ -67,7 +68,7 @@ function buildScene(canvas) {
     CAMERA.rotation.z = degToRad(180)
     RENDERER.setPixelRatio(1)
     RENDERER.setClearColor(0x000000, 0) // the default
-    RENDERER.autoClear = false;
+    RENDERER.autoClear = false
 
     const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
 

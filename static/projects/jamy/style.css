@@ -8,7 +8,7 @@
   src: url(rsc/font/NeueBit-Regular.otf);
 }
 
-body{
+body {
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -18,30 +18,48 @@ body{
   overflow-y: hidden;
 }
 
-.margin{
-position: absolute;
-top: 2vw;
-left: 2vw;
-height: calc(100vh - 4vw);
-width: calc(100vw - 4vw);
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-direction: column;
-z-index: 998;
+#defaultCanvas0 {
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1000;
+  opacity: 0.5;
+  position: absolute;
 }
 
-.background{
+#defaultCanvas0.--mirrored {
+  transform: scaleX(-1);
+}
+
+#defaultCanvas0:not(.--debugMode) {
+  display: none;
+}
+
+.margin {
+  position: absolute;
+  top: 2vw;
+  left: 2vw;
+  height: calc(100vh - 4vw);
+  width: calc(100vw - 4vw);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  z-index: 998;
+}
+
+.background {
   background: white;
-position: absolute;
-z-index: 0;
-left: 0;
-top: 0;
-width: 100vw;
-height: 100vh;
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
-.textBox{
+.textBox {
   width: 100%;
   height: 50%;
   display: flex;
@@ -49,20 +67,20 @@ height: 100vh;
   align-items: center;
 }
 
-#upBox{
+#upBox {
   flex-direction: row-reverse;
 }
 
-.text{
-  background-position:center center;
-  background-repeat:no-repeat;
-  width:100%;
-  height:100%;
-  transition: all 500ms cubic-bezier(0.670, 0.005, 0.410, 1.000); /* custom */
-  transition-timing-function: cubic-bezier(0.670, 0.005, 0.410, 1.000); /* custom */
+.text {
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  transition: all 500ms cubic-bezier(0.67, 0.005, 0.41, 1); /* custom */
+  transition-timing-function: cubic-bezier(0.67, 0.005, 0.41, 1); /* custom */
 }
 
-svg{
+svg {
   margin: 0;
   width: 100%;
   height: 100%;
@@ -70,113 +88,135 @@ svg{
   z-index: 999;
 }
 
-.text{
+.text {
   z-index: 999;
 }
 
-.level{
+.level {
   position: absolute;
   left: 0vw;
   top: 0vw;
   height: calc(100vh - 0vw);
   width: calc(100vw - 0vw);
   transition: ease 1s;
-  background: linear-gradient(0deg, rgba(255,0,0,0) 0%, rgba(255,0,0,1) 50%, rgba(255,0,0,1) 50%, rgba(255,0,0,0) 100%);
+  background: linear-gradient(
+    0deg,
+    rgba(255, 0, 0, 0) 0%,
+    rgba(255, 0, 0, 1) 50%,
+    rgba(255, 0, 0, 1) 50%,
+    rgba(255, 0, 0, 0) 100%
+  );
 }
 
-#sound1{
-  background: url("rsc/svg/sound1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#sound1 {
+  background: url("rsc/svg/sound1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#sound2{
-  background: url("rsc/svg/sound2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#sound2 {
+  background: url("rsc/svg/sound2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#distance1{
-  background: url("rsc/svg/distance1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#distance1 {
+  background: url("rsc/svg/distance1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#distance2{
-  background: url("rsc/svg/distance2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#distance2 {
+  background: url("rsc/svg/distance2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#width1{
-  background: url("rsc/svg/width1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#width1 {
+  background: url("rsc/svg/width1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#width2{
-  background: url("rsc/svg/width2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#width2 {
+  background: url("rsc/svg/width2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#speed1{
-  background: url("rsc/svg/speed1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#speed1 {
+  background: url("rsc/svg/speed1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#speed2{
-  background: url("rsc/svg/speed2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#speed2 {
+  background: url("rsc/svg/speed2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-
-#color1{
-  background: url("rsc/svg/color1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#color1 {
+  background: url("rsc/svg/color1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#color2{
-  background: url("rsc/svg/color2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#color2 {
+  background: url("rsc/svg/color2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-
-#position1{
-  background: url("rsc/svg/position1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#position1 {
+  background: url("rsc/svg/position1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#position2{
-  background: url("rsc/svg/position2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#position2 {
+  background: url("rsc/svg/position2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#yes1{
-  background: url("rsc/svg/yes1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#yes1 {
+  background: url("rsc/svg/yes1.svg#svgView(preserveAspectRatio(none))") center
+    center no-repeat;
   background-size: 100% 100%;
 }
 
-#yes2{
-  background: url("rsc/svg/yes2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#yes2 {
+  background: url("rsc/svg/yes2.svg#svgView(preserveAspectRatio(none))") center
+    center no-repeat;
   background-size: 100% 100%;
 }
 
-#height1{
-  background: url("rsc/svg/height1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#height1 {
+  background: url("rsc/svg/height1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#height2{
-  background: url("rsc/svg/height2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#height2 {
+  background: url("rsc/svg/height2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#humain1{
-  background: url("rsc/svg/humain2.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#humain1 {
+  background: url("rsc/svg/humain2.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-#humain2{
-  background: url("rsc/svg/humain1.svg#svgView(preserveAspectRatio(none))") center center no-repeat;
+#humain2 {
+  background: url("rsc/svg/humain1.svg#svgView(preserveAspectRatio(none))")
+    center center no-repeat;
   background-size: 100% 100%;
 }
 
-.debug{
+.debug {
   display: none;
   position: absolute;
   right: 0;
@@ -190,9 +230,8 @@ svg{
   background: rgba(247, 0, 0, 0.233);
 }
 
-#defaultCanvas0{
+#defaultCanvas0 {
   /*display: none;*/
   z-index: 999;
   pointer-events: none;
 }
-

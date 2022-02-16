@@ -475,10 +475,8 @@ mediaPipe.addEventListener("setup", () => {
   const video = mediaPipe.video;
   const canvas = document.querySelector(".main-canvas");
 
-  app.init({ canvas, video, pixelDensity: 2, mirrored: mediaPipe.mirrored });
+  app.init({ canvas, video, pixelDensity: 1, mirrored: mediaPipe.mirrored });
   app.draw();
-
-  console.log('Mélanie loaded')
 
   mediaPipe.addEventListener("pose", (event) => {
     app.onPose(event.data.skeleton);
