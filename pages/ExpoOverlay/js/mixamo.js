@@ -18,7 +18,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 //* scripts
-import Model from './model.js'
+import Model from './Model.js'
 import SkeletonRemapper from './SkeletonRemapper.js'
 import CONFIG from '../config.js'
 import { boneLookAtWorld } from './utils.js';

@@ -3,7 +3,7 @@ const microphone = new Microphone() // microphone.js
 const mediaPipe = new MediaPipeClient()
 let PERSON = new Person()
 let MIRRORED = true
-let DEBUG_MODE = true
+let DEBUG_MODE = false
 
 
 // make sure serve over https is enabled in the sketch settings window!!
@@ -12,7 +12,7 @@ let DEBUG_MODE = true
 let mic, video;
 
 
-let states = ["distance", "height", "sound", "width", "position",];
+let states = ["distance", "height", "sound", "width", "position"];
 let state = "distance";
 let nbState = 0;
 
@@ -279,7 +279,7 @@ function draw() {
 
     // map level
     // level = map(level, 300, 800, 0, sensi);
-    level = map(level, 0.5, 1, 0, sensi);
+    level = map(level, 0.2, 1.5, 0, sensi);
   }
   //-----------------------------------------------------------WIDTH
   if (state == "width") {

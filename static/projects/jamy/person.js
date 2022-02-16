@@ -3,9 +3,11 @@
 class Person {
     constructor() {
         this.shown = false
+        this.distance = 0
         this.width = 0
         this.height = 0
-        this.distance = 0
+        this.x = 0
+        this.y = 0
 
         this.skeletonNormalized = new MediaPipeSmoothPose({
             dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
@@ -40,6 +42,8 @@ class Person {
         this.distance = this.dist3D(sk.LEFT_SHOULDER, sk.RIGHT_HEEL)
         this.height = this.dist2D(normal.RIGHT_EYE, normal.LEFT_HEEL, "xy")
         this.width = this.dist2D(normal.LEFT_WRIST, normal.RIGHT_WRIST, "xy")
+        this.x = sk.NOSE.x
+        this.y = sk.NOSE.y
 
         // console.log(this.width)
     }
