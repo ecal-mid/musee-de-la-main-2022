@@ -35,7 +35,7 @@
     "server-watch": "nodemon server/index.js",
     "server": "node server/index.js",
     "storage": "node server/storage.js",
-    "dev": "rm -rf dist && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
+    "dev": "rm -rf dist && rm -rf \".parcel-cache\" && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
     "build": "parcel build ./index.html",
     "start": "node server/index.js"
   },

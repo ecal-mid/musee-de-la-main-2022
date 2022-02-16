@@ -4,6 +4,7 @@ import AudioAllower from "~/js/AudioAllower"
 import { MediaPipePose } from '@ecal-mid/mediapipe'
 
 let p5Microphone
+
 const CONFIG = {
   smoothenDetection: 0.5, //? between 0 and 1, 0 is no smoothing
   cameraConstraints: {
@@ -54,7 +55,7 @@ window.setup = async () => {
 }
 
 function insertIFrame({ player, pose, iframe }) {
-  const { mediaPipe, applyMicrophone } = iframe.contentWindow || {}
+  const { mediaPipe, microphone } = iframe.contentWindow || {}
 
   mediaPipe?.setup({
     stream: player.stream,
@@ -64,5 +65,5 @@ function insertIFrame({ player, pose, iframe }) {
     mirrored: CONFIG.mediaPipeOptions.selfieMode,
   })
 
-  applyMicrophone?.(p5Microphone)
+  microphone?.plugIn(p5Microphone)
 }
