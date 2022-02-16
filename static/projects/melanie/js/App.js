@@ -1,16 +1,18 @@
 const PICTURE_COUNTDOWN = 2;
+const STORAGE_LIMIT = 50;
 
 const storage = new Storage({
   path: "melanie",
-  origin: "http://localhost:1080",
+  origin: "http://0.0.0.0:1080",
 });
 
 class App {
   constructor() { }
-  init({ canvas, video, pixelDensity = 1 }) {
+  init({ canvas, video, pixelDensity = 1, mirrored = false }) {
     // this.video_wrapper = document.getElementById("video");
     this.canvas = canvas;
     this.ctx = this.canvas.getContext("2d");
+    this.mirrored = mirrored
 
     this.smoother = new MediaPipeSmoothPose({
       dampAmount: 0.1, // range ~1-10 [0 is fastest]
@@ -64,7 +66,7 @@ class App {
 
     const audioCtx = new AudioContext();
     this.audio = new Audio("./sound/camera_sound.mp3");
-    
+
     audioCtx.resume().then(() => {
       const source = audioCtx.createMediaElementSource(this.audio);
       source.connect(audioCtx.destination);
@@ -102,6 +104,8 @@ class App {
         this.dataURLs = list.map((item) => {
           return item.url;
         });
+
+        console.log(this.dataURLs)
         // console.log(this.dataURLs);
       })
       .catch((e) => { });
@@ -151,31 +155,6 @@ class App {
     this.poses.length = 0; //? clear array
     if (pose) this.poses.push(pose);
   }
-  // --------------------------------------------------
-  // TRY TO ADD DETECTION
-  loadFaceDetection() {
-    this.faceApi = ml5.faceApi(
-      this.video,
-      this.detectionOptions,
-      this.faceDetectionLoaded.bind(this)
-    );
-  }
-  faceDetectionLoaded() {
-    console.log("face detection ready");
-    // this.isReady = true;
-    this.draw();
-    this.faceApi.detect(this.gotResults.bind(this));
-  }
-  gotResults(err, results) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    this.faceDetections = results;
-    this.faceApi.detect(this.gotResults.bind(this));
-    this.isReadyFace = true;
-  }
 
   normalizeDensity(n) {
     return n / this.pixelDensity;
@@ -208,10 +187,16 @@ class App {
     // console.log(imageString);
     const image = new Image();
     image.src = imageString;
-    image.onload = async () => {
+    image.addEventListener('load', async () => {
+      image.onload = null;
       const path = await storage.upload(`images/${picIndex}.jpg`, image);
       this.dataURLs.push(path);
-    }
+
+      if (this.dataURLs.length > STORAGE_LIMIT) {
+        const firstElem = this.dataURLs.shift()
+        await storage.delete(firstElem)
+      }
+    }, { once: true })
     // SEND_MESSAGE("PICTURES-GESTS/PICTURES-STORAGE/" + picIndex, imageString);
 
     // console.log(this.dataURLs);
@@ -376,14 +361,18 @@ class App {
     this.ctx.fillStyle = "lightgrey";
 
     const smoothedPose = this.smoother.smoothDamp();
-
-    // if (!this.person && smoothedPose)
-    // this.person = new Person(smoothedPose, this.MATTER);
-
     const { width, height } = this.canvas;
 
-    // this.ctx.fillRect(0, 0, width, height);
+    this.ctx.save()
+
+    if (this.mirrored) {
+      this.ctx.scale(-1, 1)
+      this.ctx.translate(-width, 0)
+    }
+
     this.ctx.drawImage(this.video, 0, 0, width, height);
+    this.ctx.restore()
+
     this.MATTER.Engine.update(this.MATTER.engine); //! was in a state before
     // console.log(this.MATTER.engine.world.bodies.length);
 
@@ -486,7 +475,7 @@ mediaPipe.addEventListener("setup", () => {
   const video = mediaPipe.video;
   const canvas = document.querySelector(".main-canvas");
 
-  app.init({ canvas, video, pixelDensity: 2 });
+  app.init({ canvas, video, pixelDensity: 2, mirrored: mediaPipe.mirrored });
   app.draw();
 
   console.log('Mélanie loaded')

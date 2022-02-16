@@ -12,8 +12,15 @@ class Storage {
     }
 
     getFullURL(path) {
-        const url = new URL(path, this.params.origin)
-        url.pathname = this.getFullPath([this.params.path, url.pathname])
+        let url = ''
+
+        try {
+            url = new URL(path)
+        } catch (e) {
+            url = new URL(path, this.params.origin)
+            url.pathname = this.getFullPath([this.params.path, url.pathname])
+        }
+
         return url
     }
 

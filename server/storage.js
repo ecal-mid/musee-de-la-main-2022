@@ -101,6 +101,7 @@ app.post('/*', async (request, response) => {
 
 app.delete('/*', async (request, response) => {
     const { pathname } = PATH.getAbsolutePath(CONFIG.folder, request.path)
+    console.log(pathname, request.path)
 
     try {
         await fs.rm(pathname, { recursive: true, force: true })

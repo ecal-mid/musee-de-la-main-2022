@@ -1,19 +1,29 @@
 import "~/styles/iframe.scss"
 import IFrame from "~/js/IFrame"
 import AudioAllower from "~/js/AudioAllower"
-
-import CONFIG from "~/static/config.js"
-
 import { MediaPipePose } from '@ecal-mid/mediapipe'
-// import * as p5 from 'p5'
-
 
 let p5Microphone
+const CONFIG = {
+  smoothenDetection: 0.5, //? between 0 and 1, 0 is no smoothing
+  cameraConstraints: {
+      audio: false,
+      video: true,
+      // video: {
+      //     deviceId: "977315e0713f6d873c7028ba8221c652a0fcb866e151903ccd95efd5371153b3"
+      // }
+  },
 
-// window.setup = () => {
-//   microphone = new p5.AudioIn();
-//   microphone.start();
-// }
+  mediaPipeOptions: {
+      selfieMode: true, // mirror mode
+      modelComplexity: 1,
+      smoothLandmarks: true,
+      enableSegmentation: false,
+      smoothSegmentation: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+  }
+}
 
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
