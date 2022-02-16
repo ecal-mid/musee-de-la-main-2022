@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <base href="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="noise.js"></script>
+    <source src=”https://olafwempe.com/mp3/Septium.mp3″ type=”audio/mp3″> </audio> <!-- <script
+        src="./node_modules/@mediapipe/hands/hands.js" type="text/javascript">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script> -->
+
+    <!-- ECAL -->
+
+    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/reset.css">
+    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/main.css">
+    <script src="https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js" type="module"></script>
+    <script src="https://mediapipe.ecal-mid.ch/scripts/skeleton.js" type="module"></script>
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script> -->
+    <script src="./node_modules/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="./node_modules/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <!-- <script src="node_modules/three/build/three.min.js"></script> -->
+
+
+    <script src="./node_modules/three/build/three.js"></script>
+    <script src="./node_modules/three/examples/js/loaders/BasisTextureLoader.js"></script>
+    <script src="./node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="./node_modules/three/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/Pass.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/CopyShader.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/DepthLimitedBlurShader.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/UnpackDepthRGBAShader.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/SAOShader.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/SAOPass.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/ConvolutionShader.js"></script>
+    <!-- <script src="./node_modules/three/examples/js/postprocessing/BloomPass.js"></script> -->
+    <script src="./node_modules/three/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="./node_modules/three/examples/js/shaders/BokehShader2.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/SSAARenderPass.js"></script>
+    <script src="./node_modules/three/examples/js/postprocessing/TAARenderPass.js"></script>
+
+    <!-- <script src="gpu.js"></script> -->
+    <script src="./gpu-particles.js" defer></script>
+    <!-- <script src="rd.js"></script> -->
+    <script src="./node_modules/stats.js/build/stats.min.js" defer></script>
+    <script src="./boids.js" type="module" defer></script>
+    <script src="./app.js" type="module" defer></script>
+
+    <link rel="stylesheet" href="style.css">
+    <title>Still Hands</title>
+</head>
+
+<body>
+    <div id="loading_label">Si vous fixez trop longtemps l' ⁣abîme, c'est l'abîme qui vous fixe.
+    </div>
+    <video id="loading" loop=true muted=true autoplay=true src="./out.webm"></video>
+    <!-- <div id="loading_label">If you gaze into the abyss, the
+        abyss also gazes back into you</div> -->
+    <div id="hide"></div>
+    <div id="bg"></div>
+    <!-- <div class="indicator" id="still" alt="keep your hand still">garde ta main immobile</div> -->
+    <div class="indicator" id="still" alt="move your hand slowly">
+        <!-- garde la main immobile -->
+    </div>
+    <!-- <div class="indicator" id="move" alt="move your hand, slowly">bouge ta main doucement</div> -->
+    <video id="webcam" width="320" height="480" autoplay=true></video>
+    <canvas id="debug_canvas" width="320" height="480"></canvas>
+</body>
+
+</html>

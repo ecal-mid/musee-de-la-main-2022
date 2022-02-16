@@ -1,23 +1,30 @@
 {
   "projects": [
     {
-      "title": "ecal",
-      "url": "/boilerplates/canvas-example/",
-      "students": ["Loris Briguet", "Martial Grin"],
+      "title": "Bubble Pool",
+      "url": "/projects/melanie/",
+      "students": ["Mélanie Fontaine"],
       "description": "description text here",
       "images": []
     },
     {
-      "title": "sold-out.ch",
-      "url": "/boilerplates/p5-example/",
-      "students": ["Loris Briguet", "Martial Grin"],
+      "title": "You & You",
+      "url": "/projects/samuel/",
+      "students": ["Samuel Dumez"],
       "description": "description text here",
       "images": []
     },
     {
-      "title": "matos",
-      "url": "/boilerplates/recorder-example/",
-      "students": ["Loris Briguet", "Martial Grin"],
+      "title": "Oui Non",
+      "url": "/projects/jamy/",
+      "students": ["Jamy Herrmann"],
+      "description": "description text here",
+      "images": []
+    },
+    {
+      "title": "PlayZone",
+      "url": "/projects/elodie-soraya/",
+      "students": ["Elodie Anglade", "Soraya Camina"],
       "description": "description text here",
       "images": []
     }

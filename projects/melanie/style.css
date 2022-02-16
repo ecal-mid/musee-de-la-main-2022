@@ -1,0 +1,36 @@
+/* @font-face {
+  font-family: 'Roboto-Black';
+  src: local('Roboto-Black'), url("./font/Roboto-Black.ttf"), format('truetype');
+  }
+@font-face {
+  font-family: 'MontSerrat';
+  src: url("font/MontserratSubrayada-Bold.ttf");
+  }
+  
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: Roboto-Black;
+}
+canvas {
+  display: block;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  font-family: Roboto-Black;
+}
+video {
+  display: none;
+} */
+canvas {
+  width: 100%;
+  top: 0;
+  /* object-position: left top; */
+  height: 100%;
+  left: 0;
+  /* object-fit: cover; */
+  position: absolute;
+}
