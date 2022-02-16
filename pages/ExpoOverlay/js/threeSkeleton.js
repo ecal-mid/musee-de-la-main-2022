@@ -74,39 +74,3 @@ class BufferPoint {
     })
   }
 }
-
-// MEDIA_PIPE_BODY_PARTS = {
-//   NOSE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_EYE_INNER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_EYE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_EYE_OUTER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_EYE_INNER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_EYE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_EYE_OUTER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_EAR: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_EAR: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_RIGHT: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_LEFT: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_SHOULDER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_SHOULDER: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_ELBOW: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_ELBOW: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_WRIST: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_WRIST: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_PINKY: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_PINKY: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_INDEX: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_INDEX: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_THUMB: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_THUMB: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_HIP: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_HIP: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_KNEE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_KNEE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_ANKLE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_ANKLE: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_HEEL: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_HEEL: { x: 0, y: 0, z: 0, visibility: 0 },
-//   LEFT_FOOT_INDEX: { x: 0, y: 0, z: 0, visibility: 0 },
-//   RIGHT_FOOT_INDEX: { x: 0, y: 0, z: 0, visibility: 0 }
-// }

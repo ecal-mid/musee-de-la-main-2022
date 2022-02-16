@@ -1,5 +1,6 @@
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_dof2.html
 // https://threejs.org/examples/?q=bokeh#webgl_postprocessing_dof2
+import '@ecal-mid/mediapipe/umd/css/index.css'
 
 import * as THREE from 'three'
 
@@ -9,9 +10,9 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 
 import ThreeSkeleton from './threeSkeleton.js'
+import RiggedSkeleton from './RiggedSkeleton.js'
 
 import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
-import '@ecal-mid/mediapipe/umd/css/index.css'
 
 
 const { degToRad } = THREE.MathUtils
@@ -70,7 +71,7 @@ function buildScene(canvas) {
 
     const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
 
-    skeleton = new ThreeSkeleton({ material })
+    skeleton = new RiggedSkeleton({ material })
     SCENE.add(skeleton.getObject())
 
     // // const geometry = new THREE.BoxGeometry(1, 1, 1)
