@@ -36,9 +36,10 @@
     "server-watch": "nodemon server/index.js",
     "server": "node server/index.js",
     "storage": "node server/storage.js",
-    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
+    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run server-watch\" \"npm run storage\" \"npm run build-watch\"",
     "build": "parcel build ./index.html",
-    "start": "concurrently \"npm run server\" \"npm run storage\""
+    "start": "concurrently \"npm run server\" \"npm run storage\"",
+    "expo": "start chrome --kiosk http://localhost:1575/pages/Screen/index.html & concurrently \"npm run build\" \"npm run start\""
   },
   "keywords": [],
   "author": "",
