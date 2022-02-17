@@ -36,9 +36,11 @@ class App {
         this.composer;
 
         //! sound
-        this.ambiantSound = new Audio('../sounds/forest_long_loop.mp3');
-        this.soundEffectLeft = new Audio('../sounds/forest_short_left.mp3');
-        this.soundEffectRight = new Audio('../sounds/forest_short_right.mp3');
+        this.ambiantSound = new Audio('./sounds/forest_long_loop.mp3');
+        this.ambiantSound.oncanplay = this.ambiantSound.play;
+
+        this.soundEffectLeft = new Audio('./sounds/forest_short_left.mp3');
+        this.soundEffectRight = new Audio('./sounds/forest_short_right.mp3');
 
         //! mediapipe
         this.skeleton = new Skeleton();
@@ -129,7 +131,7 @@ class App {
     addListeners() {
         window.addEventListener('resize', this.onWindowResize.bind(this));
         window.addEventListener('keydown', this.keyDown.bind(this));
-        document.body.addEventListener('click', this.onClick.bind(this), true);
+        // document.body.addEventListener('click', this.onClick.bind(this), true);
 
     }
 
@@ -139,10 +141,10 @@ class App {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    onClick() {
-        console.log('test')
-        this.ambiantSound.play();
-    }
+    // onClick() {
+    //     console.log('test')
+    //     this.ambiantSound.play();
+    // }
 
     animate() {
         let dt = this.clock.getDelta();
@@ -173,42 +175,43 @@ class App {
     keyDown(e) {
         //permet de debug les hitbox en utilisant les touches 1 à 6
         //touche 1
-        if (e.keyCode == 49) {
+
+        if (e.key == '1') {
             this.toggleHitBox(1);
             this.delayBodyDetection("hitBox1", 5000, 1);
             this.soundEffectLeft.currentTime = 0
             this.soundEffectLeft.play();
         }
         //touche 2
-        if (e.keyCode == 50) {
+        if (e.key == '2') {
             this.toggleHitBox(2);
             this.delayBodyDetection("hitBox2", 5000, 2);
             this.soundEffectRight.currentTime = 0
             this.soundEffectRight.play();
         }
         //touche 3
-        if (e.keyCode == 51) {
+        if (e.key == '3') {
             this.toggleHitBox(3);
             this.delayBodyDetection("hitBox3", 5000, 3);
             this.soundEffectLeft.currentTime = 0
             this.soundEffectLeft.play();
         }
         //touche 4
-        if (e.keyCode == 52) {
+        if (e.key == '4') {
             this.toggleHitBox(4);
             this.delayBodyDetection("hitBox4", 5000, 4);
             this.soundEffectRight.currentTime = 0
             this.soundEffectRight.play();
         }
         //touche 5
-        if (e.keyCode == 53) {
+        if (e.key == '5') {
             this.toggleHitBox(5);
             this.delayBodyDetection("leftKnee", 5000, 5);
             this.soundEffectLeft.currentTime = 0
             this.soundEffectLeft.play();
         }
         //touche 6
-        if (e.keyCode == 54) {
+        if (e.key == '6') {
             this.toggleHitBox(6);
             this.delayBodyDetection("rightKnee", 5000, 6);
             this.soundEffectRight.currentTime = 0
