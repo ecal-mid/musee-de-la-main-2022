@@ -3,7 +3,7 @@ const STORAGE_LIMIT = 50;
 
 const storage = new Storage({
   path: "melanie",
-  origin: "http://0.0.0.0:1080",
+  origin: "http://localhost:1080",
 });
 
 class App {

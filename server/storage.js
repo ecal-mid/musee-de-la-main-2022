@@ -35,6 +35,7 @@ if (CONFIG.cors === true)
 app.use(cors())
 
 app.use('/', express.static(PATH.getAbsolutePath(CONFIG.folder).pathname))
+console.log("path",PATH.getAbsolutePath(CONFIG.folder).pathname)
 
 app.get('/*', (request, response, next) => {
 
