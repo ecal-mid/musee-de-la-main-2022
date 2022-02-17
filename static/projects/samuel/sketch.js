@@ -233,7 +233,10 @@ function updateWebcamBuffer() {
   videoCtx.drawImage(mediaPipe.video, 0, 0)
   const pixels = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height)
 
-  if (captures.length === maxCaptures) captures.shift();
+  while (captures.length > maxCaptures) {
+    captures.shift()
+  }
+
   captures.push(pixels);
 }
 
