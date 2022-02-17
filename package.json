@@ -38,7 +38,7 @@
     "storage": "node server/storage.js",
     "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
     "build": "parcel build ./index.html",
-    "start": "node server/index.js"
+    "start": "concurrently \"npm run server\" \"npm run storage\""
   },
   "keywords": [],
   "author": "",
