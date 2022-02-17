@@ -225,7 +225,7 @@ export default class SkeletonRemapper {
 
         const isVisible = Boolean(pose)
         const scaleFactor = 1.5
-        const mirrorFactor = this.mirror ? -1 : 1
+        const mirrorFactor = 1
         const translationY = 1
 
         this.group.visible = isVisible

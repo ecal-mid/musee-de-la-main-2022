@@ -42,9 +42,9 @@ export default class Model {
 
         const { model, gltf, mixer, clock, helper } = this.params
 
-        // const isVisible = Boolean(pose)
-        // model.visible = false
-        // helper.visible = isVisible
+        const isVisible = Boolean(pose)
+        model.visible = isVisible
+        helper.visible = isVisible
 
         gltf.animations.forEach((clip, index) => {
             // const action = this.params.allActions[i];

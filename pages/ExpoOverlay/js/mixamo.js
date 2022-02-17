@@ -10,9 +10,11 @@ import '@ecal-mid/mediapipe/umd/css/index.css'
 import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
 import * as THREE from 'three';
 
-import Stats from 'three/examples/jsm/libs/stats.module.js';
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+
+
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -23,8 +25,10 @@ import SkeletonRemapper from './SkeletonRemapper.js'
 import CONFIG from '../config.js'
 import { boneLookAtWorld } from './utils.js';
 
-let scene, renderer, camera, stats
+let scene, renderer, camera
 let model, skeletonRemapper
+
+let control, dot;
 
 const smoother = new MediaPipeSmoothPose({
     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
@@ -99,18 +103,32 @@ async function init(canvas) {
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enablePan = true;
-    controls.enableZoom = true;
-    controls.target.set(0, 1, 0);
-    controls.update();
-
-    stats = new Stats();
+    const orbit = new OrbitControls(camera, renderer.domElement);
+    orbit.enablePan = true;
+    orbit.enableZoom = true;
+    orbit.target.set(0, 1, 0);
+    orbit.update();
 
     const container = document.body;
     container.appendChild(renderer.domElement);
-    container.appendChild(stats.dom);
 
+
+    //! debug
+    control = new TransformControls(camera, renderer.domElement);
+    control.addEventListener('dragging-changed', (event) => {
+        orbit.enabled = !event.value;
+    });
+
+
+    let dotGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1, 0, 0)])
+    const dotMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: false });
+    dot = new THREE.Points(dotGeometry, dotMaterial);
+    scene.add(dot);
+
+    // console.log(model.params.skinnedMesh.skeleton.bones[0])
+
+    control.attach(dot);
+    scene.add(control);
 
     animate();
 
@@ -126,17 +144,76 @@ function animate() {
     pose = skeletonRemapper.update(pose)
     model.update(pose);
 
-    stats.update();
-
     if (pose) {
-        model.params.skinnedMesh.skeleton.bones.forEach(bone => {
-            const { name } = bone
-            // // if (name !== "mixamorig_Hips") return
+        model.params.skinnedMesh.skeleton.bones.forEach((bone, index) => {
+            const { name, parent } = bone
 
-            // const firstChild = bone.children?.[0]
-            // if (!firstChild) return;
+            // if(index > 2) return;
+            const childName = bone.children[0]?.name
 
-            // const point = pose[firstChild.name]
+            if (childName) {
+
+                // if (index <= 3) {
+                scene.attach(bone); // detach from parent and add to scene
+                bone.updateMatrixWorld()
+                bone.position.copy(pose[name]);
+
+
+                const child = pose[childName]
+                bone.lookAt(child)
+                bone.rotateX(Math.PI / 2)
+
+                parent.attach(bone);
+                bone.updateMatrix()
+            }
+            // }
+
+            // if (index === 1) {
+            //     // console.log(name)
+            //     scene.attach(bone); // detach from parent and add to scene
+            //     bone.position.copy(pose[name]);
+
+            //     const childName = bone.children[0].name
+            //     const child = pose[childName]
+
+            //     bone.lookAt(child)
+            //     bone.rotateX(Math.PI / 2)
+            //     parent.attach(bone);
+            // }
+
+
+            // const pos = new THREE.Vector3()
+            // const pos1 = dot.getWorldPosition(pos)
+
+            // // console.log(dot.position)
+            // scene.attach(bone)
+            // bone.updateMatrixWorld()
+            // // bone.up = new THREE.Vector3(0, -1, 0)
+            // bone.lookAt(pos)
+            // parent.attach(bone)
+            // bone.updateMatrix()
+
+
+            // if (index === 1) {
+            //     const pos = new THREE.Vector3()
+            //     const pos1 = dot.getWorldPosition(pos)
+
+            //     // console.log(dot.position)
+            //     scene.attach(bone)
+            //     bone.updateMatrixWorld()
+            //     // bone.up = new THREE.Vector3(0, -1, 0)
+            //     bone.lookAt(pos)
+            //     parent.attach(bone)
+            //     bone.updateMatrix()
+            //     // boneLookAt(bone, pos1)
+            // }
+
+
+            // // const firstChild = bone.children?.[0]
+            // if (index > 0) return;
+
+            // console.log(name)
+
             // // console.log(point)
             // // bone.lookAt(point)
             // boneLookAtWorld(scene, bone, point)
@@ -147,4 +224,27 @@ function animate() {
     renderer.render(scene, camera);
     composer.render();
 
+}
+
+function boneLookAt(bone, position) {
+    // const { parent } = bone
+
+    // scene.attach(bone)
+    // boneLookAtLocal(bone, vector3)
+    // parent.attach(bone)
+
+    const target = new THREE.Vector3(
+        position.x - bone.matrixWorld.elements[12],
+        position.y - bone.matrixWorld.elements[13],
+        position.z - bone.matrixWorld.elements[14]
+    ).normalize();
+
+    let v = new THREE.Vector3(1, 0, 0);
+    let q = new THREE.Quaternion().setFromUnitVectors(v, target);
+    let tmp = q.z;
+
+    q.z = -q.y;
+    q.y = tmp;
+
+    bone.quaternion.copy(q);
 }
