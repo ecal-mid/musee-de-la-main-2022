@@ -12,6 +12,7 @@
     "minimist": "^1.2.5",
     "p5": "^1.4.1",
     "parcel": "*",
+    "robotjs": "^0.6.0",
     "swipejs": "^2.3.1",
     "three": "^0.137.5",
     "uuid": "^8.3.2"
@@ -36,9 +37,11 @@
     "server-watch": "nodemon server/index.js",
     "server": "node server/index.js",
     "storage": "node server/storage.js",
-    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
+    "click": "node server/clicker.cjs",
+    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run server-watch\" \"npm run storage\" \"npm run build-watch\" ",
     "build": "parcel build ./index.html",
-    "start": "concurrently \"npm run server\" \"npm run storage\""
+    "start": "concurrently \"npm run server\" \"npm run storage\"",
+    "expo": "concurrently \"npm run build\" && start chrome --kiosk http://localhost:1575/pages/Screen/index.html & concurrently \"npm run click\" \"npm run start\""
   },
   "keywords": [],
   "author": "",
