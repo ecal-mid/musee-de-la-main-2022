@@ -38,10 +38,11 @@
     "server": "node server/index.js",
     "storage": "node server/storage.js",
     "click": "node server/clicker.cjs",
-    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run server-watch\" \"npm run storage\" \"npm run build-watch\" ",
+    "clean": "rimraf ./dist && rimraf \".parcel-cache\"",
+    "dev": "npm run clean && concurrently --kill-others \"npm run server-watch\" \"npm run storage\" \"npm run build-watch\" ",
     "build": "parcel build ./index.html",
     "start": "concurrently \"npm run server\" \"npm run storage\"",
-    "expo": "concurrently \"npm run build\" && start chrome --kiosk http://localhost:1575/pages/Screen/index.html & concurrently \"npm run click\" \"npm run start\""
+    "expo": "npm run clean && concurrently \"npm run build\" && start chrome --kiosk http://localhost:1575/pages/Screen/index.html & concurrently \"npm run click\" \"npm run start\""
   },
   "keywords": [],
   "author": "",
