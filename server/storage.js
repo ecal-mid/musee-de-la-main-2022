@@ -5,11 +5,9 @@ import formidable from 'formidable'
 import minimist from 'minimist'
 import { Path } from './utils.js'
 
-let PATH
-
 const CONFIG = {
     port: 1080,
-    host: '0.0.0.0',
+    host: 'localhost',
     cors: true,
     folder: '../storage',
     ...minimist(process.argv.slice(2), {
@@ -22,20 +20,20 @@ const CONFIG = {
 }
 
 const app = express()
-PATH = new Path({ address: CONFIG.host, port: CONFIG.port })
+const PATH = new Path({ address: CONFIG.host, port: CONFIG.port })
 
 const server = app.listen(CONFIG.port, CONFIG.host, () => {
     const { address, port } = server.address()
     console.log(`Server: ${PATH.getServerPath()}`)
-    console.log(`Example: ${PATH.getServerPath('example')}`)
+    // console.log(`Example: ${PATH.getServerPath('example')}`)
     // PATH.getAbsolutePath(CONFIG.folder, dirPath)
 })
 
 if (CONFIG.cors === true)
 app.use(cors())
 
-app.use('/', express.static(PATH.getAbsolutePath(CONFIG.folder).pathname))
-console.log("path",PATH.getAbsolutePath(CONFIG.folder).pathname)
+app.use('/', express.static(PATH.getAbsolutePath(CONFIG.folder)))
+// console.log(PATH.getAbsolutePath(CONFIG.folder))
 
 app.get('/*', (request, response, next) => {
 
@@ -101,8 +99,8 @@ app.post('/*', async (request, response) => {
 })
 
 app.delete('/*', async (request, response) => {
-    const { pathname } = PATH.getAbsolutePath(CONFIG.folder, request.path)
-    console.log(pathname, request.path)
+    const pathname = PATH.getAbsolutePath(CONFIG.folder, request.path)
+    // console.log(pathname, request.path)
 
     try {
         await fs.rm(pathname, { recursive: true, force: true })
