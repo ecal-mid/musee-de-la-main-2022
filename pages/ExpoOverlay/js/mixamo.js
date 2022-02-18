@@ -23,18 +23,19 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import Model from './Model.js'
 import SkeletonRemapper from './SkeletonRemapper.js'
 import CONFIG from '../config.js'
-import { boneLookAtWorld } from './utils.js';
+import { boneLookAtWorld, interpolateLandmarks } from './utils.js';
 
 let scene, renderer, camera
 let model, skeletonRemapper
 
-let control, dot;
+let control, dot, orbit;
 
-const smoother = new MediaPipeSmoothPose({
+const smootherN = new MediaPipeSmoothPose({
     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
     dampMaxSpeed: Infinity // max speed, used by smoothDamp()
 })
+const smoother = new MediaPipeSmoothPose()
 
 const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe
@@ -51,7 +52,9 @@ mediaPipe.on('setup', async () => {
     canvas.height = canvasHeight
 
     mediaPipe.on('pose', (event) => {
-        smoother.target(event.data.skeletonNormalized)
+        smootherN.target(event.data.skeletonNormalized)
+        smoother.target(event.data.skeleton)
+        // smoother.target(event.data.skeleton)
     })
 
 
@@ -62,7 +65,7 @@ async function init(canvas) {
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.Fog(0x000000, 10, 50);
+    scene.fog = new THREE.Fog(0x000000, 0, 10);
 
     skeletonRemapper = new SkeletonRemapper()
     model = await Model.fromFile(CONFIG.models.simple.path).catch(error => {
@@ -88,7 +91,10 @@ async function init(canvas) {
 
     // camera
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 100);
-    camera.position.set(- 1, 2, 3);
+    const camParent = new THREE.Group()
+    camera.position.set(0, 2, 3);
+    camParent.add(camera)
+    scene.add(camParent);
 
     // bloom
     const renderScene = new RenderPass(scene, camera);
@@ -103,7 +109,7 @@ async function init(canvas) {
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    const orbit = new OrbitControls(camera, renderer.domElement);
+    orbit = new OrbitControls(camera, renderer.domElement);
     orbit.enablePan = true;
     orbit.enableZoom = true;
     orbit.target.set(0, 1, 0);
@@ -111,6 +117,8 @@ async function init(canvas) {
 
     const container = document.body;
     container.appendChild(renderer.domElement);
+
+    console.log(orbit)
 
 
     //! debug
@@ -134,92 +142,26 @@ async function init(canvas) {
 
 }
 
+function panCam(camera) {
+    let screenPose = smoother.smoothDamp()
+    if (!screenPose) return;
+    const { x, y, z } = interpolateLandmarks(screenPose['LEFT_HIP'], screenPose['LEFT_RIGHT'], 0.5)
+    camera.parent.position.set(-(x - 0.5), (y - 2) * 2, 0);
+    camera.lookAt(new THREE.Vector3(0, 1, 0))
+}
+
 function animate() {
 
     requestAnimationFrame(animate);
 
+    panCam(camera)
+
     // smoothing
-    let pose = smoother.smoothDamp()
+    let pose = smootherN.smoothDamp()
     // remap mediapipe to mixamo landmarks 
     pose = skeletonRemapper.update(pose)
+    // console.log(pose)
     model.update(pose);
-
-    if (pose) {
-        model.params.skinnedMesh.skeleton.bones.forEach((bone, index) => {
-            const { name, parent } = bone
-
-            // if(index > 2) return;
-            const childName = bone.children[0]?.name
-
-            if (childName) {
-
-                // if (index <= 3) {
-                scene.attach(bone); // detach from parent and add to scene
-                bone.updateMatrixWorld()
-                bone.position.copy(pose[name]);
-
-
-                const child = pose[childName]
-                bone.lookAt(child)
-                bone.rotateX(Math.PI / 2)
-
-                parent.attach(bone);
-                bone.updateMatrix()
-            }
-            // }
-
-            // if (index === 1) {
-            //     // console.log(name)
-            //     scene.attach(bone); // detach from parent and add to scene
-            //     bone.position.copy(pose[name]);
-
-            //     const childName = bone.children[0].name
-            //     const child = pose[childName]
-
-            //     bone.lookAt(child)
-            //     bone.rotateX(Math.PI / 2)
-            //     parent.attach(bone);
-            // }
-
-
-            // const pos = new THREE.Vector3()
-            // const pos1 = dot.getWorldPosition(pos)
-
-            // // console.log(dot.position)
-            // scene.attach(bone)
-            // bone.updateMatrixWorld()
-            // // bone.up = new THREE.Vector3(0, -1, 0)
-            // bone.lookAt(pos)
-            // parent.attach(bone)
-            // bone.updateMatrix()
-
-
-            // if (index === 1) {
-            //     const pos = new THREE.Vector3()
-            //     const pos1 = dot.getWorldPosition(pos)
-
-            //     // console.log(dot.position)
-            //     scene.attach(bone)
-            //     bone.updateMatrixWorld()
-            //     // bone.up = new THREE.Vector3(0, -1, 0)
-            //     bone.lookAt(pos)
-            //     parent.attach(bone)
-            //     bone.updateMatrix()
-            //     // boneLookAt(bone, pos1)
-            // }
-
-
-            // // const firstChild = bone.children?.[0]
-            // if (index > 0) return;
-
-            // console.log(name)
-
-            // // console.log(point)
-            // // bone.lookAt(point)
-            // boneLookAtWorld(scene, bone, point)
-        })
-    }
-
 
     renderer.render(scene, camera);
     composer.render();

@@ -14,7 +14,7 @@ console.log(LANDMARK_KEYS)
 export default class SkeletonRemapper {
     constructor() {
 
-        this.points = {}
+        this.landmarks = {} // { THREE.Vector3, visibility }
         this.addedPointKeys = []
         this.updaters = []
         this.debugPoints = []
@@ -28,7 +28,7 @@ export default class SkeletonRemapper {
         LANDMARK_KEYS.forEach(name => {
             const sphere = new THREE.Mesh(geometry, red);
 
-            this.points[name] = sphere.position
+            this.landmarks[name] = new Landmark(sphere.position)
             // this.group.add(sphere)
         })
 
@@ -93,43 +93,43 @@ export default class SkeletonRemapper {
         })
 
             ;[
-                // "NOSE",
-                // "LEFT_EYE_INNER",
-                // "LEFT_EYE",
-                // "LEFT_EYE_OUTER",
-                // "RIGHT_EYE_INNER",
-                // "RIGHT_EYE",
-                // "RIGHT_EYE_OUTER",
-                // "LEFT_EAR",
-                // "RIGHT_EAR",
-                // "LEFT_RIGHT",
-                // "RIGHT_LEFT",
-                // "LEFT_SHOULDER",
-                // "RIGHT_SHOULDER",
-                // "LEFT_ELBOW",
-                // "RIGHT_ELBOW",
-                // "LEFT_WRIST",
-                // "RIGHT_WRIST",
-                // "LEFT_PINKY",
-                // "RIGHT_PINKY",
-                // "LEFT_INDEX",
-                // "RIGHT_INDEX",
-                // "LEFT_THUMB",
-                // "RIGHT_THUMB",
-                // "LEFT_HIP",
-                // "RIGHT_HIP",
-                // "LEFT_KNEE",
-                // "RIGHT_KNEE",
-                // "LEFT_ANKLE",
-                // "RIGHT_ANKLE",
-                // "LEFT_HEEL",
-                // "RIGHT_HEEL",
-                // "LEFT_FOOT_INDEX",
-                // "RIGHT_FOOT_INDEX"
+                "NOSE",
+                "LEFT_EYE_INNER",
+                "LEFT_EYE",
+                "LEFT_EYE_OUTER",
+                "RIGHT_EYE_INNER",
+                "RIGHT_EYE",
+                "RIGHT_EYE_OUTER",
+                "LEFT_EAR",
+                "RIGHT_EAR",
+                "LEFT_RIGHT",
+                "RIGHT_LEFT",
+                "LEFT_SHOULDER",
+                "RIGHT_SHOULDER",
+                "LEFT_ELBOW",
+                "RIGHT_ELBOW",
+                "LEFT_WRIST",
+                "RIGHT_WRIST",
+                "LEFT_PINKY",
+                "RIGHT_PINKY",
+                "LEFT_INDEX",
+                "RIGHT_INDEX",
+                "LEFT_THUMB",
+                "RIGHT_THUMB",
+                "LEFT_HIP",
+                "RIGHT_HIP",
+                "LEFT_KNEE",
+                "RIGHT_KNEE",
+                "LEFT_ANKLE",
+                "RIGHT_ANKLE",
+                "LEFT_HEEL",
+                "RIGHT_HEEL",
+                "LEFT_FOOT_INDEX",
+                "RIGHT_FOOT_INDEX"
             ].forEach(name => {
-                const point = this.points[name]
-                if (!point) return
-                this.debugPoints.push(new DebugPoint({ point, name, parent: this.group, material: RED }))
+                const obj = this.landmarks[name]
+                if (!obj) return
+                // this.debugPoints.push(new DebugPoint({ point: obj.point, name, parent: this.group, material: RED }))
             })
 
             ;[
@@ -159,31 +159,30 @@ export default class SkeletonRemapper {
                 "mixamorig_RightToeBase",
                 "mixamorig_RightToe_End"
             ].forEach(name => {
-                const point = this.points[name]
-                if (!point) {
-                    return
-                }
-                this.debugPoints.push(new DebugPoint({ point, name, parent: this.group, material: GREEN }))
+                const obj = this.landmarks[name]
+                // console.log(obj)
+                if (!obj) return
+                this.debugPoints.push(new DebugPoint({ point: obj.point, name, parent: this.group, material: GREEN }))
             })
     }
 
     offsetPoint({ targetKey, name, multiplier = [1, 1, 1] }) {
 
-        if (name in this.points) return
+        if (name in this.landmarks) return
 
         multiplier = Array.isArray(multiplier) ? new THREE.Vector3(...multiplier) : multiplier;
 
-        const targetPoint = this.points[targetKey]
+        const targetPoint = this.landmarks[targetKey].point
         const pointOffset = new PointOffset({ targetPoint, multiplier })
         const { point } = pointOffset
-        this.points[name] = point
+        this.landmarks[name] = new Landmark(point)
         this.updaters.push(pointOffset)
         // this.debugPoints.push(new DebugPoint({ point, name, parent: this.group }))
     }
 
     constructJoint({ keyA, keyB, newKeys }) {
 
-        const { [keyA]: pointA, [keyB]: pointB } = this.points
+        const { [keyA]: objA, [keyB]: objB } = this.landmarks
         const mapRange = newKeys.length + 1
 
         const newPoints = newKeys.map((entry, index) => {
@@ -198,14 +197,14 @@ export default class SkeletonRemapper {
             }
 
             const point = new THREE.Vector3()
-            if (key in this.points) console.error(`${key} already exists!`, this.points)
-            this.points[key] = point
+            if (key in this.landmarks) console.error(`${key} already exists!`, this.landmarks)
+            this.landmarks[key] = new Landmark(point)
             // this.debugPoints.push(new DebugPoint({ point, parent: this.group, material: RED }))
             //! this.addedPointKeys.push(key)
             return { point, interpolation }
         })
 
-        const newJoint = new Joint({ pointA, pointB, newPoints })
+        const newJoint = new Joint({ pointA: objA.point, pointB: objB.point, newPoints })
         this.updaters.push(newJoint)
 
 
@@ -213,8 +212,8 @@ export default class SkeletonRemapper {
     }
 
     getPose() {
-        // return MIXAMO_LANDMARKS.map(key => this.points[key])
-        return this.points
+        // return MIXAMO_LANDMARKS.map(key => this.landmarks[key])
+        return this.landmarks
     }
 
     addTo(scene) {
@@ -233,14 +232,15 @@ export default class SkeletonRemapper {
         if (!isVisible) return
 
         LANDMARK_KEYS.forEach((name) => {
-            const position = this.points[name]
-            const { x, y, z } = pose[name]
+            const landmark = this.landmarks[name]
+            const { x, y, z, visibility } = pose[name]
 
-            position.set(
+            landmark.setPosition(
                 x * scaleFactor * mirrorFactor,
                 -y * scaleFactor + translationY,
                 -z * scaleFactor
             )
+            landmark.setVisibility(visibility)
         })
 
         this.updaters.forEach(joint => {
@@ -250,10 +250,23 @@ export default class SkeletonRemapper {
         this.debugPoints.forEach(point => point.update())
 
         return this.getPose()
-        // console.log(this.points["BETWEEN_HIPS"])
-        // this.target.position.copy(this.points["BETWEEN_HIPS"])
+        // console.log(this.landmarks["BETWEEN_HIPS"])
+        // this.target.position.copy(this.landmarks["BETWEEN_HIPS"])
 
         // this.landmarks['RIGHT_WRIST'].getWorldPosition(this.target.position)
 
+    }
+}
+
+class Landmark {
+    constructor(point, visibility = null) {
+        this.point = point
+        this.visibility = visibility
+    }
+    setPosition(x, y, z) {
+        this.point.set(x, y, z)
+    }
+    setVisibility(visibility) {
+        this.visibility = visibility
     }
 }
