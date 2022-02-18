@@ -4,7 +4,6 @@ export default class AudioAllower {
 
     static async allow({ parent = document.body, audioCtx = new AudioContext() } = {}) {
 
-
         if (audioCtx.state === "running") return;
 
 
@@ -20,7 +19,7 @@ export default class AudioAllower {
         `
 
         button.classList.add('button__allowAudio')
-        button.textContent = "Click to enable audio"
+        button.textContent = "Enabling audio (click if this message persist)"
         parent.appendChild(button)
 
         await new Promise(resolve => button.onclick = resolve);
@@ -29,6 +28,7 @@ export default class AudioAllower {
         await audioCtx.resume()
 
         await this.allow({ parent, audioCtx })
+    
     }
 
 }
