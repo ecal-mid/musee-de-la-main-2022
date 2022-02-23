@@ -13,6 +13,7 @@
     "minimist": "^1.2.5",
     "p5": "^1.4.1",
     "parcel": "*",
+    "robotjs": "^0.6.0",
     "swipejs": "^2.3.1",
     "three": "^0.137.5",
     "three-spritetext": "^1.6.5",
@@ -34,14 +35,17 @@
     "staticOutPath": "/"
   },
   "scripts": {
-    "build-watch": "parcel watch ./index.html",
+    "parcel-watch": "parcel watch ./index.html",
+    "parcel-build": "parcel build ./index.html",
+    "parcel-serve": "parcel serve ./index.html",
     "server-watch": "nodemon server/index.js",
     "server": "node server/index.js",
     "storage": "node server/storage.js",
-    "dev-serve": "parcel serve ./index.html",
-    "dev": "rimraf ./dist && rimraf \".parcel-cache\" && concurrently --kill-others \"npm run build-watch\" \"npm run server-watch\" \"npm run storage\"",
-    "build": "parcel build ./index.html",
-    "start": "concurrently \"npm run server\" \"npm run storage\""
+    "click": "node server/clicker.cjs",
+    "clean": "rimraf ./dist && rimraf \".parcel-cache\"",
+    "dev": "npm run clean && concurrently --kill-others \"npm run server-watch\" \"npm run storage\" \"npm run parcel-watch\" ",
+    "backend": "concurrently \"npm run server\" \"npm run storage\"",
+    "expo": "npm run clean && concurrently \"npm run parcel-build\" && start chrome --kiosk http://localhost:1575/pages/Screen/index.html & concurrently \"npm run click\" \"npm run backend\""
   },
   "keywords": [],
   "author": "",
