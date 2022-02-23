@@ -1,3 +1,5 @@
+import * as THREE from 'three'
+
 export function boneLookAt(bone, position) {
     var target = new THREE.Vector3(
         position.x - bone.matrixWorld.elements[12],
@@ -31,4 +33,31 @@ export function boneLookAtLocal(bone, position) {
 
     // console.log(roll, yaw, pitch);
     // console.log(roll, THREE.MathUtils.radToDeg(yaw), THREE.MathUtils.radToDeg(pitch));
+}
+
+export function toPercentString(number) {
+    const n = (number * 100).toFixed(0)
+    return `${n}%`
+}
+
+export function clamp(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+}
+
+export function landmarkToVector(land) {
+    const { x, y, z } = land
+    return new THREE.Vector3(x, y, z)
+}
+
+export function interpolateLandmarks(land1, land2, interpolation) {
+    const vec1 = landmarkToVector(land1)
+    const vec2 = landmarkToVector(land2)
+    return interpolateVectors(vec1, vec2, interpolation)
+}
+
+export function interpolateVectors(vec1, vec2, interpolation) {
+    const dir = vec1.clone().sub(vec2);
+    const len = dir.length();
+    const vect = dir.clone().setLength(len * interpolation);
+    return vec1.clone().add(vect);
 }
