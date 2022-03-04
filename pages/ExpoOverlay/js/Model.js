@@ -1,21 +1,21 @@
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MediaPipePose } from '@ecal-mid/mediapipe'
 
-import { MIXAMO_LANDMARKS } from '../landmarks.js';
+import { MIXAMO_LANDMARKS } from '../landmarks.js'
 
-import * as SceneUtils from 'three/examples/jsm/utils/SceneUtils.js';
+import * as SceneUtils from 'three/examples/jsm/utils/SceneUtils.js'
 import * as THREE from 'three'
 
-import { wireframe1 } from './materials/wireframe';
-import TextLandmark from './texts/TextLandmark.js';
+import { wireframe1 } from './materials/wireframe'
+import TextLandmark from './texts/TextLandmark.js'
 
 const POSE_LANDMARKS_NAMES = Object.keys(MediaPipePose.POSE_LANDMARKS)
 const REQUIRED = Symbol('required'),
     EMPTY = Symbol('empty')
 
-const loader = new GLTFLoader();
+const loader = new GLTFLoader()
 
-const DEBUG_MODE = true;
+const DEBUG_MODE = true
 const TEXT_SIZE = 0.02
 
 const NO_OP = () => { }
@@ -73,57 +73,69 @@ export default class Model {
         //     // settings.weight = action.getEffectiveWeight();
         // })
 
-        const mixerUpdateDelta = clock.getDelta();
-        mixer.update(mixerUpdateDelta);
+        const mixerUpdateDelta = clock.getDelta()
+        mixer.update(mixerUpdateDelta)
 
         const { manualControl, scene, skinnedMesh } = this.params
 
-        if (!manualControl || !pose) return;
+        if (!manualControl || !pose) return
+
+
+        var correctedUp = new THREE.Vector3(0, 1, 0)
+        var axis = new THREE.Vector3(1, 0, 0)
+        correctedUp.applyAxisAngle(axis, -Math.PI / 2)
 
         skinnedMesh.skeleton.bones.forEach((bone, index) => {
             const { name, parent } = bone
 
-            // if(index > 2) return;
+            // if (index >= 1) return
             const childName = bone.children[0]?.name
             const { point } = pose[name]
 
             // this.texts[name].update({ position: point, visibility })
+            // console.log(bone, childName);
+
+            // up: Vector3 {x: 0, y: 1, z: 0}
 
             if (childName) {
 
                 // if (index <= 3) {
-                scene.attach(bone); // detach from parent and add to scene
+                scene.attach(bone) // detach from parent and add to scene
                 bone.updateMatrixWorld()
 
-                bone.position.copy(point);
+                bone.position.copy(point)
                 if (name === "mixamorig_Hips") {
                     // console.log(pose[name])
                 }
 
                 const child = pose[childName].point
+
+
+                bone.up.copy(correctedUp)
                 bone.lookAt(child)
+                bone.up.set(0, 1, 0)
                 bone.rotateX(Math.PI / 2)
 
-                parent.attach(bone);
+                parent.attach(bone)
                 bone.updateMatrix()
             }
             // }
         })
 
-        POSE_LANDMARKS_NAMES.forEach(name => {
-            this.texts[name].update(pose[name])
-        })
+        // POSE_LANDMARKS_NAMES.forEach(name => {
+        //     this.texts[name].update(pose[name])
+        // })
     }
 
     setupTexts() {
         POSE_LANDMARKS_NAMES.forEach(name => {
-            this.texts[name] = new TextLandmark();
+            this.texts[name] = new TextLandmark()
         })
     }
 
     setupHelper() {
-        const helper = new THREE.SkeletonHelper(this.params.model);
-        helper.visible = true;
+        const helper = new THREE.SkeletonHelper(this.params.model)
+        helper.visible = true
         this.params.helper = helper
     }
 
@@ -134,18 +146,18 @@ export default class Model {
         // skeleton.visible = true;
         // scene.add(skeleton);
 
-        const animations = gltf.animations;
-        const mixer = new THREE.AnimationMixer(model);
+        const animations = gltf.animations
+        const mixer = new THREE.AnimationMixer(model)
         // console.log(model)
         // numAnimations = animations.length;
 
-        const clip = THREE.AnimationClip.findByName(animations, 'Idle');
+        const clip = THREE.AnimationClip.findByName(animations, 'Idle')
         // console.log(skinnedMesh)
         // console.log(skinnedMesh.skeleton.bones.map(({ name }) => name))
 
         // console.log(mixer)
         // console.log(animations)
-        const action = mixer.clipAction(clip);
+        const action = mixer.clipAction(clip)
         // action.play();
         // action.setEffectiveTimeScale(1);
         // action.setEffectiveWeight(1);
@@ -201,14 +213,14 @@ export default class Model {
     synchronizeCrossFade(startAction, endAction, duration) {
         const { mixer } = this.params
 
-        mixer.addEventListener('loop', onLoopFinished);
+        mixer.addEventListener('loop', onLoopFinished)
 
         function onLoopFinished(event) {
 
             if (event.action !== startAction) return
 
-            mixer.removeEventListener('loop', onLoopFinished);
-            this.executeCrossFade(startAction, endAction, duration);
+            mixer.removeEventListener('loop', onLoopFinished)
+            this.executeCrossFade(startAction, endAction, duration)
         }
 
     }
@@ -220,11 +232,11 @@ export default class Model {
 
         if (this.currentBaseAction === 'idle' || !startAction || !endAction) {
 
-            this.executeCrossFade(startAction, endAction, duration);
+            this.executeCrossFade(startAction, endAction, duration)
 
         } else {
 
-            this.synchronizeCrossFade(startAction, endAction, duration);
+            this.synchronizeCrossFade(startAction, endAction, duration)
 
         }
 
@@ -232,36 +244,36 @@ export default class Model {
 
         if (endAction) {
 
-            const clip = endAction.getClip();
-            this.currentBaseAction = clip.name;
+            const clip = endAction.getClip()
+            this.currentBaseAction = clip.name
 
         } else {
 
-            this.currentBaseAction = 'None';
+            this.currentBaseAction = 'None'
 
         }
 
         crossFadeControls.forEach((control) => {
-            const name = control.property;
+            const name = control.property
             name === this.currentBaseAction ? control.setActive() : control.setInActive()
-        });
+        })
     }
 
     executeCrossFade(startAction, endAction, duration) {
 
         if (endAction) {
 
-            this.constructor.setWeight(endAction, 1);
-            endAction.time = 0;
+            this.constructor.setWeight(endAction, 1)
+            endAction.time = 0
 
             if (startAction) {
-                startAction.crossFadeTo(endAction, duration, true);
+                startAction.crossFadeTo(endAction, duration, true)
             } else {
-                endAction.fadeIn(duration);
+                endAction.fadeIn(duration)
             }
 
         } else {
-            startAction.fadeOut(duration);
+            startAction.fadeOut(duration)
         }
 
     }
@@ -270,8 +282,8 @@ export default class Model {
     static async fromFile(path) {
 
         const gltf = await asyncLoad(loader, path)
-        const model = gltf.scene;
-        let skinnedMesh = EMPTY;
+        const model = gltf.scene
+        let skinnedMesh = EMPTY
         //! scene.add(model);
 
         // console.log(gltf)
@@ -280,7 +292,7 @@ export default class Model {
             // skinning: true,
             color: 0xffffff,
             wireframe: true
-        });
+        })
 
         // console.log(wireframe1)
 
@@ -288,15 +300,17 @@ export default class Model {
             if (!object.isMesh) return
 
             //* skinned mesh
-            object.castShadow = false;
+            object.castShadow = false
 
-            if (object.constructor.name === 'SkinnedMesh')
+            if (object.constructor.name === 'SkinnedMesh') {
+                // console.log(bones);w
                 skinnedMesh = object
+            }
 
             // geometry.setAttribute( 'color', new Float32BufferAttribute( colors, 3 ) );
 
             object.material = lineMaterial
-        });
+        })
 
         // skinnedMesh = SceneUtils.createMultiMaterialObject(skinnedMesh.geometry, [
         //     new THREE.MeshLambertMaterial({ color: 0xffffff }),
@@ -310,61 +324,61 @@ export default class Model {
         // skeleton.visible = true;
         // scene.add(skeleton);
 
-        const animations = gltf.animations;
-        mixer = new THREE.AnimationMixer(model);
+        const animations = gltf.animations
+        mixer = new THREE.AnimationMixer(model)
 
-        numAnimations = animations.length;
+        numAnimations = animations.length
 
         for (let i = 0; i !== numAnimations; ++i) {
 
-            let clip = animations[i];
-            const name = clip.name;
+            let clip = animations[i]
+            const name = clip.name
 
             if (CHOSEN_MODEL.baseActions[name]) {
 
-                const action = mixer.clipAction(clip);
-                activateAction(action);
-                CHOSEN_MODEL.baseActions[name].action = action;
-                allActions.push(action);
+                const action = mixer.clipAction(clip)
+                activateAction(action)
+                CHOSEN_MODEL.baseActions[name].action = action
+                allActions.push(action)
 
             } else if (CHOSEN_MODEL.additiveActions[name]) {
 
                 // Make the clip additive and remove the reference frame
 
-                THREE.AnimationUtils.makeClipAdditive(clip);
+                THREE.AnimationUtils.makeClipAdditive(clip)
 
                 if (clip.name.endsWith('_pose')) {
 
-                    clip = THREE.AnimationUtils.subclip(clip, clip.name, 2, 3, 30);
+                    clip = THREE.AnimationUtils.subclip(clip, clip.name, 2, 3, 30)
 
                 }
 
-                const action = mixer.clipAction(clip);
-                activateAction(action);
-                CHOSEN_MODEL.additiveActions[name].action = action;
-                allActions.push(action);
+                const action = mixer.clipAction(clip)
+                activateAction(action)
+                CHOSEN_MODEL.additiveActions[name].action = action
+                allActions.push(action)
 
             }
 
         }
 
-        createPanel();
+        createPanel()
 
-        animate();
+        animate()
 
     }
 
     static activateAction(action) {
         // const clip = action.getClip();
-        this.setWeight(action, 0);
-        action.play();
+        this.setWeight(action, 0)
+        action.play()
     }
 
 
     static setWeight(action, weight) {
-        action.enabled = true;
-        action.setEffectiveTimeScale(1);
-        action.setEffectiveWeight(weight);
+        action.enabled = true
+        action.setEffectiveTimeScale(1)
+        action.setEffectiveWeight(weight)
     }
 }
 

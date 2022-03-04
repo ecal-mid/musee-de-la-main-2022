@@ -154,7 +154,7 @@ function animate() {
 
     requestAnimationFrame(animate);
 
-    panCam(camera)
+    // panCam(camera)
 
     // smoothing
     let pose = smootherN.smoothDamp()
