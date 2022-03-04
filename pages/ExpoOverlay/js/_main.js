@@ -20,10 +20,10 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 //* scripts
-import Model from './Model.js'
-import SkeletonRemapper from './SkeletonRemapper.js'
+import Model from './rig/Model.js'
+import SkeletonRemapper from './rig/SkeletonRemapper.js'
 import CONFIG from '../config.js'
-import { boneLookAtWorld, interpolateLandmarks } from './utils.js';
+import { interpolateLandmarks } from './utils/three.js';
 
 let scene, renderer, camera
 let model, skeletonRemapper
@@ -100,7 +100,7 @@ async function init(canvas) {
     const renderScene = new RenderPass(scene, camera);
 
     const bloomPass = new UnrealBloomPass(new THREE.Vector2(canvas.width, canvas.height), 1.5, 0.4, 0.85);
-    console.log(bloomPass)
+    // console.log(bloomPass)
     bloomPass.threshold = CONFIG.bloom.bloomThreshold;
     bloomPass.strength = CONFIG.bloom.bloomStrength;
     bloomPass.radius = CONFIG.bloom.bloomRadius;
@@ -118,7 +118,7 @@ async function init(canvas) {
     const container = document.body;
     container.appendChild(renderer.domElement);
 
-    console.log(orbit)
+    // console.log(orbit)
 
 
     //! debug
@@ -166,27 +166,4 @@ function animate() {
     renderer.render(scene, camera);
     composer.render();
 
-}
-
-function boneLookAt(bone, position) {
-    // const { parent } = bone
-
-    // scene.attach(bone)
-    // boneLookAtLocal(bone, vector3)
-    // parent.attach(bone)
-
-    const target = new THREE.Vector3(
-        position.x - bone.matrixWorld.elements[12],
-        position.y - bone.matrixWorld.elements[13],
-        position.z - bone.matrixWorld.elements[14]
-    ).normalize();
-
-    let v = new THREE.Vector3(1, 0, 0);
-    let q = new THREE.Quaternion().setFromUnitVectors(v, target);
-    let tmp = q.z;
-
-    q.z = -q.y;
-    q.y = tmp;
-
-    bone.quaternion.copy(q);
 }

@@ -15,7 +15,7 @@
     "parcel": "*",
     "robotjs": "^0.6.0",
     "swipejs": "^2.3.1",
-    "three": "^0.137.5",
+    "three": "^0.138.3",
     "three-spritetext": "^1.6.5",
     "uuid": "^8.3.2"
   },
@@ -36,7 +36,7 @@
     "staticOutPath": "/"
   },
   "parcelIgnore": [
-    "scripts\/*.*"
+    "scripts/*.*"
   ],
   "scripts": {
     "parcel-watch": "parcel watch ./index.html",

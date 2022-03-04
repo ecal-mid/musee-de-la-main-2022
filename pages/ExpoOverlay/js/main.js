@@ -1,92 +1,189 @@
-// https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_dof2.html
-// https://threejs.org/examples/?q=bokeh#webgl_postprocessing_dof2
+//* Examples
+// mixamo https://threejs.org/examples/?q=skin#webgl_animation_skinning_additive_blending
+// footballer https://rawcdn.githack.com/mrdoob/three.js/r105/examples/webgl_loader_sea3d_bvh_retarget.html
+
+//* styling
 import '@ecal-mid/mediapipe/umd/css/index.css'
+// import "../styles/main.scss"
 
-import * as THREE from 'three'
+//* node_modules
+// import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
+import * as THREE from 'three';
 
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
-
-import ThreeSkeleton from './threeSkeleton.js'
-import RiggedSkeleton from './RiggedSkeleton.js'
-
-import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 
 
-const { degToRad } = THREE.MathUtils
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-const smoother = new MediaPipeSmoothPose({
-    lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
-    dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
-    dampMaxSpeed: Infinity // max speed, used by smoothDamp()
-})
+//* scripts
+import Model from './rig/Model.js'
+import SkeletonRemapper from './rig/SkeletonRemapper.js'
+import CONFIG from '../config.js'
+import { interpolateLandmarks } from './utils/three.js';
+import { random } from './utils/object.js';
 
-let SCENE, CAMERA, RENDERER, skeleton
-const mediaPipe = new MediaPipeClient()
-window.mediaPipe = mediaPipe // global object mediaPipe
+let scene, renderer, camera
+let model, skeletonRemapper
 
-mediaPipe.addEventListener('setup', () => {
-    const canvas = document.querySelector('.main-canvas')
-    const { width, height } = mediaPipe.video
+let control, dot, orbit;
+
+const CLIPS = {}
+
+const canvas = document.querySelector('.main-canvas')
+
+// const smootherN = new MediaPipeSmoothPose({
+//     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
+//     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
+//     dampMaxSpeed: Infinity // max speed, used by smoothDamp()
+// })
+// const smoother = new MediaPipeSmoothPose()
+
+// const mediaPipe = new MediaPipeClient()
+// window.mediaPipe = mediaPipe
+
+// mediaPipe.on('setup', async () => {
+// const { width, height } = mediaPipe.video
+// mediaPipe.on('pose', (event) => {
+// smootherN.target(event.data.skeletonNormalized)
+// smoother.target(event.data.skeleton)
+// smoother.target(event.data.skeleton)
+// })
+window.addEventListener('load', async () => await init(canvas, 1920, 1080))
+// })
+
+
+async function init(canvas, width, height) {
 
     const ratio = width / height
-    const canvasWidth = window.innerWidth * 2
+    const canvasWidth = window.innerWidth
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
     canvas.height = canvasHeight
-    buildScene(canvas)
 
-    requestUpdate()
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+    // scene.fog = new THREE.Fog(0x000000, 0, 10);
 
-    mediaPipe.addEventListener('pose', (event) => {
-        smoother.target(event.data.skeletonNormalized)
+    skeletonRemapper = new SkeletonRemapper()
+    model = await Model.fromFile('/models/basemesh/basemesh-tpose.fbx').catch(error => {
+        console.log(error)
     })
-})
+
+    const [idle] = await Model.loadClipsFromFBX('/models/basemesh/basemesh-idle1.fbx', ['idle'])
+    CLIPS.idle = idle
+
+    model.addTo(scene);
+    skeletonRemapper.addTo(scene)
+
+    const gridHelperFine = new THREE.GridHelper(1000, 60, 0xffff00, 0x111111);
+    const gridHelper = new THREE.GridHelper(1000, 10, new THREE.Color(0, 0.5, 0.3), 0xffffff);
+
+    scene.add(gridHelperFine);
+    scene.add(gridHelper);
+
+    // console.log(canvas.width, canvas.height)
+    renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    // renderer.setSize(canvas.width, canvas.height);
+    renderer.setPixelRatio(CONFIG.density)
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.shadowMap.enabled = true;
+    renderer.toneMappingExposure = Math.pow(CONFIG.bloom.exposure, 4.0);
+
+    // camera
+    camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 2000);
+    const camParent = new THREE.Group()
+    camera.position.set(0, 200, 300);
+    camParent.add(camera)
+    scene.add(camParent);
+
+    // bloom
+    const renderScene = new RenderPass(scene, camera);
+
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(canvas.width, canvas.height), 1.5, 0.4, 0.85);
+    // console.log(bloomPass)
+    bloomPass.threshold = CONFIG.bloom.bloomThreshold;
+    bloomPass.strength = CONFIG.bloom.bloomStrength;
+    bloomPass.radius = CONFIG.bloom.bloomRadius;
+
+    composer = new EffectComposer(renderer);
+    composer.addPass(renderScene);
+    composer.addPass(bloomPass);
+
+    orbit = new OrbitControls(camera, renderer.domElement);
+    orbit.enablePan = true;
+    orbit.enableZoom = true;
+    orbit.target.set(0, 100, 0);
+    orbit.update();
+
+    const container = document.body;
+    container.appendChild(renderer.domElement);
+
+    // console.log(orbit)
 
 
-function requestUpdate() {
-    requestAnimationFrame(update)
+    //! debug
+    control = new TransformControls(camera, renderer.domElement);
+    control.addEventListener('dragging-changed', (event) => {
+        orbit.enabled = !event.value;
+    });
+
+
+    let dotGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1, 0, 0)])
+    const dotMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: false });
+    dot = new THREE.Points(dotGeometry, dotMaterial);
+    scene.add(dot);
+
+
+    const light = new THREE.PointLight(0xff0000, 100, 3500);
+    light.position.set(0, 0, 0);
+    scene.add(light);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x80ffe5, 0.5));
+
+    // console.log(model.params.skinnedMesh.skeleton.bones[0])
+
+    control.attach(light);
+    // scene.add(control);
+
+    animate();
+
+
+    window.addEventListener('click', () => {
+        const randomClip = random(CLIPS)
+        // model.play(randomClip)
+    })
+
 }
 
-function update() {
-    RENDERER.render(SCENE, CAMERA)
-
-    const pose = smoother.smoothDamp()
-    skeleton.update(pose)
-
-    requestUpdate()
+function panCam(camera) {
+    let screenPose = smoother.smoothDamp()
+    if (!screenPose) return;
+    const { x, y, z } = interpolateLandmarks(screenPose['LEFT_HIP'], screenPose['LEFT_RIGHT'], 0.5)
+    camera.parent.position.set(-(x - 0.5), (y - 2) * 2, 0);
+    camera.lookAt(new THREE.Vector3(0, 1, 0))
 }
 
-function buildScene(canvas) {
-    SCENE = new THREE.Scene()
-    CAMERA = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000)
-    RENDERER = new THREE.WebGLRenderer({ canvas, alpha: true })
-    CAMERA.position.z = 3
-    CAMERA.rotation.z = degToRad(180)
-    RENDERER.setPixelRatio(1)
-    RENDERER.setClearColor(0x000000, 0) // the default
-    RENDERER.autoClear = false
+function animate() {
 
-    const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
+    requestAnimationFrame(animate);
 
-    skeleton = new RiggedSkeleton({ material })
-    SCENE.add(skeleton.getObject())
+    // panCam(camera)
 
-    // // const geometry = new THREE.BoxGeometry(1, 1, 1)
-    // // const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
-    // // const cube = new THREE.Mesh(geometry, material)
-    // // SCENE.add(cube)
+    // smoothing
+    // let pose = smootherN.smoothDamp()
+    // // remap mediapipe to mixamo landmarks 
+    // pose = skeletonRemapper.update(pose)
+    // // console.log(pose)
+    model.update(
+        // pose
+    );
 
+    renderer.render(scene, camera);
+    composer.render();
 
-    // const points = []
-    // points.push(new THREE.Vector3(- 0, 0, 0))
-    // points.push(new THREE.Vector3(5, 0, 5))
-
-    // const geometry = new THREE.BufferGeometry().setFromPoints(points)
-
-    // const line = new THREE.Line(geometry, material)
-    // SCENE.add(line)
 }

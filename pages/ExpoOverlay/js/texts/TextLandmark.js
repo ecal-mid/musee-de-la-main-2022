@@ -1,7 +1,7 @@
 import SpriteText from 'three-spritetext';
-import { toPercentString, clamp } from '../utils.js';
-
+import { toPercentString, clamp } from '../utils/math.js';
 import Color from "colorjs.io";
+
 window.Color = Color
 
 const TEXT_SIZE = 0.015

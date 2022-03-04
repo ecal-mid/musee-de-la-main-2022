@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { GREEN } from "./materials.js";
+import { GREEN } from "../materials/colors.js";
 const geometry = new THREE.SphereGeometry(0.01, 6, 6);
 
 export default class DebugPoint {

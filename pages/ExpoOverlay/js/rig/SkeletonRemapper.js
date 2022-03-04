@@ -3,13 +3,13 @@ import * as THREE from 'three'
 
 import DebugPoint from './DebugPoint.js'
 import Joint from './Joint.js'
-import { RED, GREEN } from './materials.js'
+import { RED, GREEN } from '../materials/colors.js'
 import PointOffset from './PointOffset.js'
-import { MIXAMO_LANDMARKS } from '../landmarks.js';
+import { MIXAMO_LANDMARKS } from './landmarks.js';
 
 const LANDMARK_KEYS = Object.keys(MediaPipePose.POSE_LANDMARKS)
 
-console.log(LANDMARK_KEYS)
+// console.log(LANDMARK_KEYS)
 
 export default class SkeletonRemapper {
     constructor() {
