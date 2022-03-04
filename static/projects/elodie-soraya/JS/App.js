@@ -14,8 +14,12 @@ import {
 } from "./plantsBends.js";
 import { TWEEN } from "../src/tween.js";
 
+
+
+
 class App {
   constructor({ width, height, video }) {
+    this.debugMode = false;
     this.container, this.stats, this.clock, this.loader;
 
     this.mixers = [];
@@ -23,7 +27,7 @@ class App {
     this.plants = [];
     this.plantsMixer = [];
 
-    this.camPos = { x: 0, y: 1, z: -35 };
+    this.camPos = { x: 0, y: -1, z: -35 };
     this.camRot = { x: 3, y: 0, z: -3.14 };
 
     this.skeleton;
@@ -50,6 +54,16 @@ class App {
       hitBox5: false,
       hitBox6: false,
     };
+
+    this.hitboxes = [
+      {x:3/4, y:1/6, active : false},
+      {x:1/4, y:1/6, active : false},
+      {x:3/4, y:3/6, active : false},
+      {x:1/4, y:3/6, active : false},
+      {x:3/4, y:5/6, active : false},
+      {x:1/4, y:5/6, active : false}
+    ]
+
 
     this.ambiantSound;
     this.soundEffectLeft;
@@ -169,6 +183,12 @@ class App {
       }, 4000);
     }
 
+    if(!this.debugMode){
+      console.log("hide video");
+      // document.getElemen("video").style.display = "none";
+      document.querySelector('video').style.display = "none";
+    }
+
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -212,29 +232,41 @@ class App {
     TWEEN.update();
 
     if (this.skeleton) {
+      // let pose = event.data.skeleton;
+      // // pose.LEFT_WRIST.y < 0.35 &&
+     
       const pose = this.smoother.smoothDamp();
       this.skeleton.update(pose);
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.skeleton.show(this.ctx, { color: "red" });
-      // console.log("showing")
+      if(this.debugMode){
+        // display skeleton mode
+        this.skeleton.show(this.ctx, { color: "red" });
 
-      this.ctx.strokeStyle = "white";
-      this.ctx.lineWidth = 2;
-      for (let i = 0; i < 2; i++) {
-        const h = (this.canvas.height / 3) * (i + 1);
+
+        //grid and number overlay
+        this.ctx.strokeStyle = "white";
+        this.ctx.lineWidth = 2;
+        for (let i = 0; i < 2; i++) {
+          const h = (this.canvas.height / 3) * (i + 1);
+          this.ctx.beginPath();
+          this.ctx.moveTo(0, h);
+          this.ctx.lineTo(window.innerWidth, h);
+          this.ctx.stroke();
+          this.ctx.closePath();
+        }
+
         this.ctx.beginPath();
-        this.ctx.moveTo(0, h);
-        this.ctx.lineTo(window.innerWidth, h);
+
+        this.ctx.moveTo(this.canvas.width / 2, 0);
+        this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
         this.ctx.stroke();
         this.ctx.closePath();
       }
-
-      this.ctx.beginPath();
-
-      this.ctx.moveTo(this.canvas.width / 2, 0);
-      this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
-      this.ctx.stroke();
-      this.ctx.closePath();
+      if(this.hands != undefined){
+        this.drawHands();
+      }
+      
+      
     }
   }
 
@@ -283,39 +315,102 @@ class App {
       this.soundEffectRight.currentTime = 0;
       this.soundEffectRight.play();
     }
+
+    // ArrowUp
+    // ArrowRight
+    // ArrowLeft
+    // ArrowDown
+
+    const duration = 1000;
+
+    // docu for animation curve 
+    // https://sbcode.net/threejs/tween/
+    let easing = TWEEN.Easing.Sinusoidal.Out;
+
+    if (e.key == "ArrowLeft") {
+      var tweenCamRot = new TWEEN.Tween(this.camRot)
+        .to({  y: this.camRot.y+0.1}, duration)
+        .easing(easing)
+        .start();
+    }
+
+    if (e.key == "ArrowRight") {
+      var tweenCamRot = new TWEEN.Tween(this.camRot)
+      .to({  y: this.camRot.y-0.1}, duration)
+      .easing(easing)
+      .start();
+    }
+    
   }
 
+  map(value, min1, max1, min2, max2){
+    const ratio = (value-min1)/(max1-min1)
+    return ((max2-min2)*ratio)+ min2;
+  }
+
+  moveCamera(nose, ratio){
+    // ratio is varibale base on the distance beetween to shoulder
+    // 0 - 5 | 0 is very far(infinite),  5 close to the screen, 1 around 2.5 meter for average person
+
+    // map the value to "real" distance | meters
+    const distance = this.map(ratio,5,1,0,2.5);
+    const duration = 150;
+
+
+    // docu for animation curve 
+    // https://sbcode.net/threejs/tween/
+    let easing = TWEEN.Easing.Sinusoidal.Out;
+
+    const posZ = -35 - distance*10;
+    const posX = ((nose.x-0.5)*2)*10/(distance+0.3);
+    var tweenCamPosition = new TWEEN.Tween(this.camPos)
+        .to({  x: posX, z:posZ}, duration)
+        .easing(easing)
+        .start();
+    const rotY =  this.calcAngle(posX, 200-posZ);
+   
+    var tweenCamRot = new TWEEN.Tween(this.camRot)
+        .to({  y: rotY}, duration)
+        .easing(easing)
+        .start();
+  }
+
+  calcAngle(opposite, adjacent) {
+    return Math.atan(opposite / adjacent);
+  }
+
+  // à refaire avec une array | dans l'idéal un classe
   toggleHitBox(hitboxIndex) {
     switch (hitboxIndex) {
       case 1:
-        console.log("Hitbox 1 was hit");
+        // console.log("Hitbox 1 was hit");
         this.bendPlants(plantsBend1);
-        this.tweenCamAndLights(0, 12, 22, -15, 3.5, 0.3, -3.14, 0.6);
+        // this.tweenCamAndLights(0, 12, 22, -15, 3.5, 0.3, -3.14, 0.6);
         break;
       case 2:
-        console.log("Hitbox 2 was hit");
+        // console.log("Hitbox 2 was hit");
         this.bendPlants(plantsBend2);
-        this.tweenCamAndLights(1, -12, 20, -20, 3.4, -0.3, -3.14, 0.6);
+        // this.tweenCamAndLights(1, -12, 20, -20, 3.4, -0.3, -3.14, 0.6);
         break;
       case 3:
-        console.log("Hitbox 3 was hit");
+        // console.log("Hitbox 3 was hit");
         this.bendPlants(plantsBend3);
-        this.tweenCamAndLights(2, 12, 5, -25, 3.1, 0.3, -3.14, 0.6);
+        // this.tweenCamAndLights(2, 12, 5, -25, 3.1, 0.3, -3.14, 0.6);
         break;
       case 4:
-        console.log("Hitbox 4 was hit");
+        // console.log("Hitbox 4 was hit");
         this.bendPlants(plantsBend4);
-        this.tweenCamAndLights(3, -12, 0, -25, 2.9, -0.3, -3.14, 0.6);
+        // this.tweenCamAndLights(3, -12, 0, -25, 2.9, -0.3, -3.14, 0.6);
         break;
       case 5:
-        console.log("Hitbox 5 was hit");
+        // console.log("Hitbox 5 was hit");
         this.bendPlants(plantsBend5);
-        this.tweenCamAndLights(4, 10, 1, -20, 3, 0.2, -3.14, 0.8);
+        // this.tweenCamAndLights(4, 10, 1, -20, 3, 0.2, -3.14, 0.8);
         break;
       case 6:
-        console.log("Hitbox 6 was hit");
+        // console.log("Hitbox 6 was hit");
         this.bendPlants(plantsBend6);
-        this.tweenCamAndLights(5, -10, 1, -20, 3, -0.2, -3.14, 0.8);
+        // this.tweenCamAndLights(5, -10, 1, -20, 3, -0.2, -3.14, 0.8);
         break;
     }
   }
@@ -337,6 +432,8 @@ class App {
       .start();
   }
 
+
+  /// wtf is that shit ? 
   bendPlants(bend) {
     let j = 0;
     let bendDirection;
@@ -386,10 +483,55 @@ class App {
     // x: 1 à gauche, 0 à droite
 
     if (!event.data.skeleton) return;
-
     let pose = event.data.skeleton;
+    
+    
 
-    //HAUT GAUCHE
+    //points maps and name
+    //https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
+
+
+
+    /*
+    // Experimentation with Z axis-position
+    // --SPOIL-- it doesn't work as we expected link below
+    // https://developers.google.com/ml-kit/vision/pose-detection
+
+    const extrem = {
+      min:{pos:1000, point:""},
+      center:{pos:1000, point:""},
+      max:{pos:-1000, point:""}
+
+    }
+
+    console.log(this.round2(distance));
+
+    for (const point in pose) {
+      let posZ = this.round2(pose[point].z);
+      
+      if(posZ > extrem.max.pos){
+        extrem.max.pos = posZ;
+        extrem.max.point = point;
+      }else if(posZ < extrem.min.pos){
+        extrem.min.pos = posZ;
+        extrem.min.point = point;
+      }else if(Math.abs(posZ) < extrem.center.pos){
+        extrem.center.pos = Math.abs(posZ);
+        extrem.center.point = point;
+      }
+    }
+
+    console.table(extrem);
+    console.log("");
+    */
+    this.hands = {left:this.findHandsCenter(pose, "LEFT"), right: this.findHandsCenter(pose, "RIGHT")};
+
+    if(this.hands != undefined){
+      this.checkHitBox();
+    }
+
+
+    /*//HAUT GAUCHE
     if (
       pose.LEFT_WRIST.y < 0.35 &&
       pose.LEFT_WRIST.x > 0.7 &&
@@ -400,13 +542,17 @@ class App {
       this.delayBodyDetection("hitBox1", 10000, 1);
     }
 
+
+  
+
+    
     //HAUT DROITE
     if (
       pose.RIGHT_WRIST.y < 0.35 &&
       pose.RIGHT_WRIST.x < 0.3 &&
       this.bodyPartsAreOn.hitBox2 == false
     ) {
-      console.log("bended");
+      // console.log("bended");
       this.toggleHitBox(2);
       this.delayBodyDetection("hitBox2", 10000, 2);
     }
@@ -430,49 +576,135 @@ class App {
       pose.RIGHT_WRIST.x < 0.3 &&
       this.bodyPartsAreOn.hitBox4 == false
     ) {
-      console.log("bended");
+      // console.log("bended");
       this.toggleHitBox(4);
       this.delayBodyDetection("hitBox4", 10000, 4);
     }
 
     //BAS GAUCHE
     if (pose.LEFT_ANKLE.x > 0.7 && this.bodyPartsAreOn.hitBox5 == false) {
-      console.log("bended");
+      // console.log("bended");
       this.toggleHitBox(5);
       this.delayBodyDetection("hitBox5", 10000, 5);
     }
 
     //BAS DROITE
     if (pose.RIGHT_ANKLE.x < 0.3 && this.bodyPartsAreOn.hitBox6 == false) {
-      console.log("bended");
+      // console.log(pose.RIGHT_ANKLE.x);
+      // console.log("bended");
       this.toggleHitBox(6);
       this.delayBodyDetection("hitBox6", 10000, 6);
-    }
+    }*/
+
+    const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL)
+    this.moveCamera(pose.NOSE, distance);
+    
+    
   }
 
-  delayBodyDetection(bodyPart, delay, hitboxIndex) {
-    let easing = TWEEN.Easing.Sinusoidal.In;
-    let duration = 5000;
-    this.bodyPartsAreOn[bodyPart] = true;
+  checkHitBox(){
+    const boxSize  = 1/10 ; //box size/2 --> ray of hit box
+   this.hitboxes.forEach((box,index) =>{
+    //  console.log(this.hands);
+      for(let hand in this.hands){
+        const h = this.hands[hand];
+        if(this.hands[hand].visible && !box.active){
+          if(this.dist(box, h.position)<boxSize){
+            this.triggerHitBox(index)
+          }
+        }
+      }
+   })
+  }
+
+  triggerHitBox(index){
+      console.log(`toucing the box ${index + 1}`);
+      this.toggleHitBox(index+1);
+      this.delayBodyDetection(`hitBox${index+1}`, 10000, index);
+  }
+
+
+  findHandsCenter(pose, side){
+    const parts = ["WRIST", "PINKY","INDEX"];
+    const points = [];
+  
+    parts.forEach(part => {
+      points.push(pose[`${side}_${part}`])
+      
+    });
+
+    let visibleScore = 0;
+    points.forEach(point => visibleScore+= point.visibility)
+    const center = this.centerPoint2D(points)
+    return {position:center, visible : (visibleScore/points.length)>0.3};
+  }
+
+  centerPoint2D(points){
+    let total = {x:0, y:0};
+    points.forEach(point =>{
+      total.x += point.x;
+      total.y += point.y;
+    })
+
+    return {x : total.x/points.length, y: total.y/points.length}
+  }
+
+  round2(number){
+    return (Math.round(number*100)/100)
+  }
+
+  drawHands(){
+
+    this.ctx.strokeStyle = "white";
+    this.ctx.lineWidth = 2;
+
+    // this.canvas.width = width;
+    // this.canvas.height = height;
+    const c = this.canvas;
+    const ctx = this.ctx;
+
+    // console.log(this.hands);
+
+    for(let hand in this.hands){
+      if(this.hands[hand].visible){
+        const h = this.hands[hand].position;
+        ctx.beginPath();
+        ctx.arc(h.x*c.width, h.y*c.height, 30, 0, 2 * Math.PI, false);
+        ctx.stroke();
+      }
+    };
+
+
+    // dessiner un cercle pour chaque main dans le canvas;
+    // console.log(this.round2(hands[1].y));
+  }
+
+  delayBodyDetection(bodyPart, delay,index ) {
+    const hitboxIndex = index +1;
+    const easing = TWEEN.Easing.Sinusoidal.In;
+    const duration = 5000;
+    // console.log(index, this.hitboxes[index].active);
+    this.hitboxes[index].active = true;
 
     var that = this;
-    setTimeout(function () {
-      console.log(hitboxIndex);
+    setTimeout(() =>{
+      // console.log(hitboxIndex);
       var tweenLight = new TWEEN.Tween(that.hitBoxLights[hitboxIndex - 1])
         .to({ intensity: 0 }, 10000)
         .easing(easing)
         .start();
-      var tweenCamPosition = new TWEEN.Tween(that.camPos)
-        .to({ x: 0, y: 1, z: -35 }, duration)
-        .easing(easing)
-        .start();
-      var tweenCamRot = new TWEEN.Tween(that.camRot)
-        .to({ x: 3, y: 0, z: -3.14 }, duration)
-        .easing(easing)
-        .start();
+      // var tweenCamPosition = new TWEEN.Tween(that.camPos)
+      //   .to({ x: 0, y: 1, z: -35 }, duration)
+      //   .easing(easing)
+      //   .start();
+      // var tweenCamRot = new TWEEN.Tween(that.camRot)
+      //   .to({ x: 3, y: 0, z: -3.14 }, duration)
+      //   .easing(easing)
+      //   .start();
     }, 1000);
-    setTimeout(function () {
-      that.bodyPartsAreOn[bodyPart] = false;
+    setTimeout(()=> {
+      this.hitboxes[index].active = false;;
+   
     }, delay);
   }
 
@@ -485,6 +717,21 @@ class App {
     let x = y2 - y1;
     return Math.sqrt(x * x + y * y);
   }
+
+  dist(a, b) {
+    const x = b.x - a.x;
+    const y = b.y - a.y;
+    return Math.sqrt(x * x + y * y);
+}
+
+
+  dist3D(a, b) {
+  
+    const x = b.x - a.x;
+    const y = b.y - a.y;
+    const z = b.z - a.z
+    return Math.sqrt(x * x + y * y + z*z);
+}
 }
 
 const mediaPipe = new MediaPipeClient();
