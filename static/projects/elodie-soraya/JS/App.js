@@ -79,7 +79,9 @@ class App {
 
     //! mediapipe
     this.skeleton = new Skeleton();
-    this.smoother = new MediaPipeSmoothPose();
+    this.smoother = new MediaPipeSmoothPose({
+      dampAmount: 5
+    });
 
     //! webcam
     this.video = video;
@@ -121,7 +123,7 @@ class App {
     this.container.setAttribute("id", "canvas1");
 
     this.camera = new THREE.PerspectiveCamera(
-      25,
+      50,
       window.innerWidth / window.innerHeight,
       1,
       100
@@ -286,6 +288,8 @@ class App {
     //permet de debug les hitbox en utilisant les touches 1 à 6
     //touche 1
 
+    console.log()
+
     if (e.key == "1") {
       this.toggleHitBox(1);
       this.delayBodyDetection("hitBox1", 5000, 1);
@@ -293,35 +297,35 @@ class App {
       this.soundEffectLeft.play();
     }
     //touche 2
-    if (e.key == "2") {
+    else if (e.key == "2") {
       this.toggleHitBox(2);
       this.delayBodyDetection("hitBox2", 5000, 2);
       this.soundEffectRight.currentTime = 0;
       this.soundEffectRight.play();
     }
     //touche 3
-    if (e.key == "3") {
+    else if (e.key == "3") {
       this.toggleHitBox(3);
       this.delayBodyDetection("hitBox3", 5000, 3);
       this.soundEffectLeft.currentTime = 0;
       this.soundEffectLeft.play();
     }
     //touche 4
-    if (e.key == "4") {
+    else if (e.key == "4") {
       this.toggleHitBox(4);
       this.delayBodyDetection("hitBox4", 5000, 4);
       this.soundEffectRight.currentTime = 0;
       this.soundEffectRight.play();
     }
     //touche 5
-    if (e.key == "5") {
+    else if (e.key == "5") {
       this.toggleHitBox(5);
       this.delayBodyDetection("leftKnee", 5000, 5);
       this.soundEffectLeft.currentTime = 0;
       this.soundEffectLeft.play();
     }
     //touche 6
-    if (e.key == "6") {
+   else  if (e.key == "6") {
       this.toggleHitBox(6);
       this.delayBodyDetection("rightKnee", 5000, 6);
       this.soundEffectRight.currentTime = 0;
@@ -334,9 +338,6 @@ class App {
     // ArrowDown
 
     const duration = 1000;
-
-    // docu for animation curve 
-    // https://sbcode.net/threejs/tween/
     let easing = TWEEN.Easing.Sinusoidal.Out;
 
     if (e.key == "ArrowLeft") {
@@ -373,7 +374,7 @@ class App {
     // https://sbcode.net/threejs/tween/
     let easing = TWEEN.Easing.Sinusoidal.Out;
 
-    const posZ = -35 - distance*10;
+    const posZ = 0 - distance*10;
     const posX = ((nose.x-0.5)*2)*10/(distance+0.3);
     var tweenCamPosition = new TWEEN.Tween(this.camPos)
         .to({  x: posX, z:posZ}, duration)
