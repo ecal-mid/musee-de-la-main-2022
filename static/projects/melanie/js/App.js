@@ -1,9 +1,9 @@
 const PICTURE_COUNTDOWN = 2;
-const STORAGE_LIMIT = 50;
+const STORAGE_LIMIT = 200;
 
 const storage = new Storage({
   path: "melanie",
-  origin: "http://0.0.0.0:1080",
+  origin: "http://localhost:1080",
 });
 
 class App {
@@ -105,7 +105,7 @@ class App {
           return item.url;
         });
 
-        console.log(this.dataURLs)
+        //console.log(this.dataURLs)
         // console.log(this.dataURLs);
       })
       .catch((e) => { });
@@ -192,7 +192,7 @@ class App {
       const path = await storage.upload(`images/${picIndex}.jpg`, image);
       this.dataURLs.push(path);
 
-      if (this.dataURLs.length > STORAGE_LIMIT) {
+      while (this.dataURLs.length > STORAGE_LIMIT) {
         const firstElem = this.dataURLs.shift()
         await storage.delete(firstElem)
       }

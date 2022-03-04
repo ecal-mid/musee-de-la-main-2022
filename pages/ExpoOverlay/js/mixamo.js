@@ -10,9 +10,11 @@ import '@ecal-mid/mediapipe/umd/css/index.css'
 import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
 import * as THREE from 'three';
 
-import Stats from 'three/examples/jsm/libs/stats.module.js';
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+
+
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -21,16 +23,19 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import Model from './Model.js'
 import SkeletonRemapper from './SkeletonRemapper.js'
 import CONFIG from '../config.js'
-import { boneLookAtWorld } from './utils.js';
+import { boneLookAtWorld, interpolateLandmarks } from './utils.js';
 
-let scene, renderer, camera, stats
+let scene, renderer, camera
 let model, skeletonRemapper
 
-const smoother = new MediaPipeSmoothPose({
+let control, dot, orbit;
+
+const smootherN = new MediaPipeSmoothPose({
     lerpAmount: 0.33, // range [0-1], 0 is slowest, used by lerp()
     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
     dampMaxSpeed: Infinity // max speed, used by smoothDamp()
 })
+const smoother = new MediaPipeSmoothPose()
 
 const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe
@@ -47,7 +52,9 @@ mediaPipe.on('setup', async () => {
     canvas.height = canvasHeight
 
     mediaPipe.on('pose', (event) => {
-        smoother.target(event.data.skeletonNormalized)
+        smootherN.target(event.data.skeletonNormalized)
+        smoother.target(event.data.skeleton)
+        // smoother.target(event.data.skeleton)
     })
 
 
@@ -58,7 +65,7 @@ async function init(canvas) {
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.Fog(0x000000, 10, 50);
+    scene.fog = new THREE.Fog(0x000000, 0, 10);
 
     skeletonRemapper = new SkeletonRemapper()
     model = await Model.fromFile(CONFIG.models.simple.path).catch(error => {
@@ -84,7 +91,10 @@ async function init(canvas) {
 
     // camera
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 100);
-    camera.position.set(- 1, 2, 3);
+    const camParent = new THREE.Group()
+    camera.position.set(0, 2, 3);
+    camParent.add(camera)
+    scene.add(camParent);
 
     // bloom
     const renderScene = new RenderPass(scene, camera);
@@ -99,52 +109,84 @@ async function init(canvas) {
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enablePan = true;
-    controls.enableZoom = true;
-    controls.target.set(0, 1, 0);
-    controls.update();
-
-    stats = new Stats();
+    orbit = new OrbitControls(camera, renderer.domElement);
+    orbit.enablePan = true;
+    orbit.enableZoom = true;
+    orbit.target.set(0, 1, 0);
+    orbit.update();
 
     const container = document.body;
     container.appendChild(renderer.domElement);
-    container.appendChild(stats.dom);
 
+    console.log(orbit)
+
+
+    //! debug
+    control = new TransformControls(camera, renderer.domElement);
+    control.addEventListener('dragging-changed', (event) => {
+        orbit.enabled = !event.value;
+    });
+
+
+    let dotGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1, 0, 0)])
+    const dotMaterial = new THREE.PointsMaterial({ size: 1, sizeAttenuation: false });
+    dot = new THREE.Points(dotGeometry, dotMaterial);
+    scene.add(dot);
+
+    // console.log(model.params.skinnedMesh.skeleton.bones[0])
+
+    control.attach(dot);
+    scene.add(control);
 
     animate();
 
+}
+
+function panCam(camera) {
+    let screenPose = smoother.smoothDamp()
+    if (!screenPose) return;
+    const { x, y, z } = interpolateLandmarks(screenPose['LEFT_HIP'], screenPose['LEFT_RIGHT'], 0.5)
+    camera.parent.position.set(-(x - 0.5), (y - 2) * 2, 0);
+    camera.lookAt(new THREE.Vector3(0, 1, 0))
 }
 
 function animate() {
 
     requestAnimationFrame(animate);
 
+    panCam(camera)
+
     // smoothing
-    let pose = smoother.smoothDamp()
+    let pose = smootherN.smoothDamp()
     // remap mediapipe to mixamo landmarks 
     pose = skeletonRemapper.update(pose)
+    // console.log(pose)
     model.update(pose);
-
-    stats.update();
-
-    if (pose) {
-        model.params.skinnedMesh.skeleton.bones.forEach(bone => {
-            const { name } = bone
-            // // if (name !== "mixamorig_Hips") return
-
-            // const firstChild = bone.children?.[0]
-            // if (!firstChild) return;
-
-            // const point = pose[firstChild.name]
-            // // console.log(point)
-            // // bone.lookAt(point)
-            // boneLookAtWorld(scene, bone, point)
-        })
-    }
-
 
     renderer.render(scene, camera);
     composer.render();
 
+}
+
+function boneLookAt(bone, position) {
+    // const { parent } = bone
+
+    // scene.attach(bone)
+    // boneLookAtLocal(bone, vector3)
+    // parent.attach(bone)
+
+    const target = new THREE.Vector3(
+        position.x - bone.matrixWorld.elements[12],
+        position.y - bone.matrixWorld.elements[13],
+        position.z - bone.matrixWorld.elements[14]
+    ).normalize();
+
+    let v = new THREE.Vector3(1, 0, 0);
+    let q = new THREE.Quaternion().setFromUnitVectors(v, target);
+    let tmp = q.z;
+
+    q.z = -q.y;
+    q.y = tmp;
+
+    bone.quaternion.copy(q);
 }
