@@ -1,10 +1,10 @@
+import init, * as wasm from "./pkg/still_hands.js"
+
 let w;
 
 let glbLoader = new THREE.GLTFLoader();
 let fish_geo;
 
-
-import init, * as wasm from "./pkg/still_hands.js"
 
 function log(string) {
     console.log(string)

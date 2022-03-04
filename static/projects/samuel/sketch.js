@@ -7,8 +7,6 @@ const smoother = new MediaPipeSmoothPose({
 });
 const mediaPipe = new MediaPipeClient();
 window.mediaPipe = mediaPipe;
-let video;
-
 let poseNet;
 let skeletons = [];
 let pose;
@@ -36,7 +34,7 @@ let blendmode = "source-out";
 let pNoseX;
 let pNoseY;
 
-let fullWidthCapture, maskLayer;
+let maskLayer;
 let eraserSize = 1.2; //? scale value
 let blurSize = 1.2; //? blur Value
 let closing = 100;
@@ -47,6 +45,8 @@ const maxCaptures = closing;
 let leftWrist, rightWrist;
 
 let jambeGauche;
+let videoCanvas = document.createElement('canvas')
+let videoCtx = videoCanvas.getContext('2d')
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -64,8 +64,8 @@ function setup() {
 
   maskLayer.strokeJoin(ROUND);
 
-  fullWidthCapture = createCapture(VIDEO);
-  fullWidthCapture.size(640, 480);
+  // fullWidthCapture = createCapture(VIDEO);
+  // fullWidthCapture.size(640, 480);
 
   // poseNet = ml5.poseNet(fullWidthCapture, modelReady);
   // poseNet.on("pose", function (results) {
@@ -79,12 +79,15 @@ function setup() {
   //       value.x = x;
   //       value.y = y;
   //     });
-  video = createVideo();
+  // video = createVideo();
 
   mediaPipe.addEventListener("setup", () => {
-    const videoElem = mediaPipe.video;
-    video = new p5.MediaElement(videoElem);
-    resizeCanvas(videoElem.width, videoElem.height);
+
+    const { width, height } = mediaPipe.video
+    videoCanvas.width = width
+    videoCanvas.height = height
+    resizeCanvas(width, height);
+    // mediaPipe.mirrored = true
   });
 
   mediaPipe.addEventListener("pose", (event) => {
@@ -95,7 +98,7 @@ function setup() {
   //   poses = results;
   // });
 
-  fullWidthCapture.hide();
+  // fullWidthCapture.hide();
 
   leftWrist = new BrushStroke({ p5Graphics: maskLayer });
   rightWrist = new BrushStroke({ p5Graphics: maskLayer });
@@ -104,7 +107,8 @@ function setup() {
 }
 
 function draw() {
-  if (fullWidthCapture.elt.readyState === 0) return;
+
+  if (mediaPipe.video.readyState === 0) return;
 
   background(255);
   updatePoints();
@@ -114,13 +118,20 @@ function draw() {
 
   // draw delayed capture
   push();
-  if (MIRRORED) {
-    translate(width, 0);
-    scale(-1, 1);
-  }
+  // if (MIRRORED) {
+  //   translate(width, 0);
+  //   scale(-1, 1);
+  // }
 
   if (captures.length > 0) {
-    image(captures[0], 0, 0, width, height);
+
+    if (mediaPipe.mirrored) {
+      translate(width, 0);
+      scale(-1, 1);
+    }
+
+    drawingContext.putImageData(captures[0], 0, 0)
+    // image(captures[0], 0, 0, width, height);
   }
 
   drawSkeleton();
@@ -218,8 +229,15 @@ function drawSkeleton() {
 // }
 
 function updateWebcamBuffer() {
-  if (captures.length === maxCaptures) captures.shift();
-  captures.push(fullWidthCapture.get());
+
+  videoCtx.drawImage(mediaPipe.video, 0, 0)
+  const pixels = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height)
+
+  while (captures.length > maxCaptures) {
+    captures.shift()
+  }
+
+  captures.push(pixels);
 }
 
 function drawMaskLayer() {
@@ -245,12 +263,17 @@ function drawMaskLayer() {
 
   ctx.globalCompositeOperation = blendmode;
 
-  if (MIRRORED) {
+  // if (MIRRORED) {
+  //   maskLayer.scale(-1, 1);
+  //   maskLayer.translate(-width, 0);
+  // }
+
+  if (mediaPipe.mirrored) {
     maskLayer.scale(-1, 1);
     maskLayer.translate(-width, 0);
   }
 
-  maskLayer.image(fullWidthCapture, 0, 0, width, height);
+  maskLayer.drawingContext.drawImage(mediaPipe.video, 0, 0, width, height);
 
   ctx.globalCompositeOperation = "source-over";
 
@@ -261,13 +284,15 @@ function remapCamPosToCanvas(camX, camY) {
   let w1 = 0;
   let w2 = width;
 
-  if (MIRRORED) {
-    w1 = width;
-    w2 = 0;
-  }
+  // if (MIRRORED) {
+  //   w1 = width;
+  //   w2 = 0;
+  // }
 
-  const x = map(camX, 0, fullWidthCapture.width, w1, w2);
-  const y = map(camY, 0, fullWidthCapture.height, 0, height);
+  const { video } = mediaPipe
+
+  const x = map(camX, 0, video.width, w1, w2);
+  const y = map(camY, 0, video.height, 0, height);
   return { x, y };
 }
 

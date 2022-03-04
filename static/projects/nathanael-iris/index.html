@@ -7,21 +7,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="noise.js"></script>
-    <source src=”https://olafwempe.com/mp3/Septium.mp3″ type=”audio/mp3″> </audio> <!-- <script
-        src="./node_modules/@mediapipe/hands/hands.js" type="text/javascript">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script> -->
+    <!-- <audio><source src="https://olafwempe.com/mp3/Septium.mp3" type=”audio/mp3"> </audio> -->
+    
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script> -->
 
     <!-- ECAL -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/reset.css">
-    <link rel="stylesheet" href="https://mediapipe.ecal-mid.ch/styles/main.css">
-    <script src="https://mediapipe.ecal-mid.ch/scripts/mediapipe-client.js" type="module"></script>
-    <script src="https://mediapipe.ecal-mid.ch/scripts/skeleton.js" type="module"></script>
 
+    <link rel="stylesheet" href="https://www.unpkg.com/@ecal-mid/mediapipe@latest/umd/css/index.css"/>
+    <script src="https://unpkg.com/@ecal-mid/mediapipe@latest"></script>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script> -->
     <script src="./node_modules/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="./node_modules/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="./node_modules/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <!-- <script src="node_modules/three/build/three.min.js"></script> -->
 
@@ -40,12 +39,13 @@
     <script src="./node_modules/three/examples/js/shaders/SAOShader.js"></script>
     <script src="./node_modules/three/examples/js/postprocessing/SAOPass.js"></script>
     <script src="./node_modules/three/examples/js/shaders/ConvolutionShader.js"></script>
-    <!-- <script src="./node_modules/three/examples/js/postprocessing/BloomPass.js"></script> -->
     <script src="./node_modules/three/examples/js/shaders/LuminosityHighPassShader.js"></script>
     <script src="./node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="./node_modules/three/examples/js/shaders/BokehShader2.js"></script>
     <script src="./node_modules/three/examples/js/postprocessing/SSAARenderPass.js"></script>
     <script src="./node_modules/three/examples/js/postprocessing/TAARenderPass.js"></script>
+    
+    <!-- <script src="./node_modules/three/examples/js/postprocessing/BloomPass.js"></script> -->
 
     <!-- <script src="gpu.js"></script> -->
     <script src="./gpu-particles.js" defer></script>
@@ -59,9 +59,9 @@
 </head>
 
 <body>
-    <div id="loading_label">Si vous fixez trop longtemps l' ⁣abîme, c'est l'abîme qui vous fixe.
+    <div id="loading_label">Si vous fixez trop longtemps l’abîme, c'est l’abîme qui vous fixe.
     </div>
-    <video id="loading" loop=true muted=true autoplay=true src="./out.webm"></video>
+    <!-- <video id="loading" loop=true muted=true autoplay=true src="./out.webm"></video> -->
     <!-- <div id="loading_label">If you gaze into the abyss, the
         abyss also gazes back into you</div> -->
     <div id="hide"></div>

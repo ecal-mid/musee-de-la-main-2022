@@ -4,29 +4,29 @@
       "title": "Bubble Pool",
       "url": "/projects/melanie/",
       "students": ["Mélanie Fontaine"],
-      "description": "description text here",
-      "images": []
+      "description": "L’utilisateur·ice·x peut jouer avec les bulles qui tombent. Il interagit avec son corps et découvre les personnes lui·la précédent en les touchant avec la tête .",
+      "images": ["/various/template.jpg"]
     },
     {
       "title": "You & You",
       "url": "/projects/samuel/",
       "students": ["Samuel Dumez"],
-      "description": "description text here",
-      "images": []
+      "description": "Cette proposition permet à la personne d’effacer son miroir avec ses mains, afin de faire apparaître un nouveau miroir, retardé dans le temps. L’utilisateur peut donc joué avec son “soi-même retardé”, plus il s’approchera de l’écran peut se des miroirs se rapprocheront dans le temps pour faire qu’un.",
+      "images": ["/various/template.jpg"]
     },
     {
       "title": "Oui Non",
       "url": "/projects/jamy/",
       "students": ["Jamy Herrmann"],
-      "description": "description text here",
-      "images": []
+      "description": "Série typographique d’antonymes que l’utilisateur découvre intuitivement et  comment jouer avec eux d’une manière ludique. ",
+      "images": ["/various/template.jpg"]
     },
     {
       "title": "PlayZone",
       "url": "/projects/elodie-soraya/",
       "students": ["Elodie Anglade", "Soraya Camina"],
-      "description": "description text here",
-      "images": []
+      "description": "L’utilisateur fait face à une jungle colorée avec laquelle il interagit en bougeant.",
+      "images": ["/various/template.jpg"]
     }
   ]
 }

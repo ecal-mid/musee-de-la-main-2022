@@ -1,66 +1,56 @@
-let log = console.log;
-Math.Clamp = (val, min, max) => {
-    return Math.min(Math.max(val, min), max);
-}
-Math.Lerp = (start, end, amt) => {
-    return (1 - amt) * start + amt * end
-}
+// let log = console.log;
+let log = () => { };
+
+import {
+    boid_handler
+} from "./boids.js"
+
+import { clamp, lerp, delay } from './js/utils.js'
 
 const mediaPipe = new MediaPipeClient();
 window.mediaPipe = mediaPipe
-mediaPipe.addEventListener("setup", () => {
-    log("mediapipe set up")
+let app;
+
+mediaPipe.on("setup", () => {
+    // console.log(mediaPipe.mirrored)
     app = new App();
     document.app = app;
+    console.log()
 })
 
-let app;
-window.onload = () => {
-    log("app loaded")
+// window.onload = () => {
+//     log("app loaded")
 
 
-    /* envmap = texload.load("./textures/pool_1k.exr", ((tex) => {
-        envmap = app.PMREMGen.fromEquirectangular(tex);
-    })); */
+//     /* envmap = texload.load("./textures/pool_1k.exr", ((tex) => {
+//         envmap = app.PMREMGen.fromEquirectangular(tex);
+//     })); */
 
-    /* document.body.appendChild(stats.domElement)
-    stats.showPanel(0); */
+//     /* document.body.appendChild(stats.domElement)
+//     stats.showPanel(0); */
+// }
+
+const pops = ["pop1.wav", "pop2.ogg", "pop3.ogg"].map(fileName => {
+    return createAudio(fileName);
+})
+
+const crunches = ["crunch1.wav", "crunch2.wav", "crunch3.wav", "crunch4.wav"].map(fileName => {
+    return createAudio(fileName);
+})
+
+function createAudio(fileName, { loop = false, directory = './sounds/' } = {}) {
+    const audio = new Audio(`${directory}${fileName}`)
+    audio.loop = loop;
+    return audio
 }
-let pops = ["./pop1.wav", "./pop2.ogg", "./pop3.ogg"]
-let crunches = ["./crunch1.wav", "./crunch2.wav", "./crunch3.wav", "./crunch4.wav"]
-for (let i = 0; i < pops.length; i++) {
-    pops[i] = new Audio(pops[i]);
-}
-for (let i = 0; i < crunches.length; i++) {
-    crunches[i] = new Audio(crunches[i]);
-}
-log(pops, crunches)
-
-let bubble = new Audio()
 
 let bg_music_init = false;
-
-let bg_music = new Audio("./background.mp3")
-bg_music.loop = true;
-log(bg_music)
-bg_music.play()
-
-document.onmousemove = e => {
-    if (!bg_music_init) {
-        bg_music_init = true;
-        try {
-            bg_music.play()
-        } catch {
-            bg_music_init = false;
-        }
-        log("playing background music")
-    }
-}
-
+let bg_music = createAudio("background.mp3", { loop: true });
+// bg_music.play()
 
 let SETTINGS = {
     hand_scale: -5,
-    invert_x: false,
+    invert_x: true,
     invert_y: false,
     invert_z: false,
     // used for calibration
@@ -68,9 +58,8 @@ let SETTINGS = {
     offset_y: -0.07,
     offset_z: .44
 }
-/* SETTINGS.offset_z = .7; */
+
 let number = 1500;
-/* number = 750; */
 let initialized = false;
 let tracker_amount = 69;
 
@@ -103,7 +92,6 @@ for (let i = 0; i < tracker_amount; i++) {
 let offset = .01
 let debug_visible = false;
 document.addEventListener("keypress", key => {
-    log(key);
     switch (key.key) {
         case "w":
             SETTINGS.offset_y += offset;
@@ -264,8 +252,8 @@ for (let source of modelSources) {
                 let scale = 1;
                 i.scales[k] =
                     scale = Math.random() < .05 ?
-                    Math.random() * .014 + .01 :
-                    (Math.random() * 1 + .1) * .011
+                        Math.random() * .014 + .01 :
+                        (Math.random() * 1 + .1) * .011
                 m.makeRotationFromEuler(e)
                 m.makeScale(scale, scale, scale)
                 m.setPosition(i.positions[k_2], i.positions[k_2 + 1], i.positions[k_2 + 2]);
@@ -363,12 +351,6 @@ for (let source of modelSources) {
     })
 }
 
-
-
-import {
-    boid_handler
-} from "./boids.js"
-
 let tracking_offset = new THREE.Vector3(-.5, -.5, -.5)
 
 
@@ -421,15 +403,15 @@ export class App {
 
             }
         }) */
-        this.pose = mediaPipe.pose.pose
-        this.pose.setOptions({
-            modelComplexity: 1,
-            smoothLandmarks: true,
-            enableSegmentation: false,
-            smoothSegmentation: false,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
-        });
+        // this.pose = mediaPipe.pose.pose
+        // this.pose.setOptions({
+        //     modelComplexity: 1,
+        //     smoothLandmarks: true,
+        //     enableSegmentation: false,
+        //     smoothSegmentation: false,
+        //     minDetectionConfidence: 0.5,
+        //     minTrackingConfidence: 0.5
+        // });
         this.subdivision_indices = [
             // TORSO
             [11, 12],
@@ -456,10 +438,10 @@ export class App {
             for (let j = 1 / (subdivisons + 1); j < 1; j += 1 / (subdivisons + 1)) {
                 /* log(j); */
                 result.push({
-                    visibility: Math.Lerp(trackers[i].visibility, trackers[i2].visibility, j),
-                    x: Math.Lerp(trackers[i].x, trackers[i2].x, j),
-                    y: Math.Lerp(trackers[i].y, trackers[i2].y, j),
-                    z: Math.Lerp(trackers[i].z, trackers[i2].z, j)
+                    visibility: lerp(trackers[i].visibility, trackers[i2].visibility, j),
+                    x: lerp(trackers[i].x, trackers[i2].x, j),
+                    y: lerp(trackers[i].y, trackers[i2].y, j),
+                    z: lerp(trackers[i].z, trackers[i2].z, j)
                 })
             }
             return result;
@@ -474,269 +456,84 @@ export class App {
             return trackers;
         }
         let prevVisibility = 0;
-        this.pose.onResults(results => {
 
-            if (!initialized) {
-                document.querySelector("#loading").style.opacity = 0;
-                setTimeout(() => {
-                    document.querySelector("#hide").style.opacity = 0;
-                    setTimeout(() => {
-                        document.querySelector("#loading_label").style.opacity = 0;
-                    }, 1400)
-                }, 800);
-                initialized = true
-            }
+        // navigator.mediaDevices.getUserMedia({
+        //     video: true
+        // })
 
+        // let videoSources = []
+        // try {
+        //     navigator.mediaDevices.enumerateDevices().then(devices => {
+        //         for (let d of devices) {
+        //             if (d.kind == "videoinput") {
+        //                 videoSources.push(d)
+        //                 /* log(d) */
+        //                 log("cam" + (videoSources.length - 1) + ": " + d.label)
+        //             }
+        //         }
+        //         /* this.webcam = new Camera(this.video, {
+        //             onFrame: async () => {
+        //                 await this.hands.send({
+        //                     image: this.video
+        //                 });
+        //             },
+        //             width: this.video.width,
+        //             height: this.video.height,
+        //             deviceId: {
+        //                 exact: videoSources[1].deviceId
+        //             }
+        //         })
+        //         this.webcam.start(); */
+        //         // navigator.mediaDevices.getUserMedia({
+        //         //     audio: false,
+        //         //     /* video: {
+        //         //         advanced: [{
+        //         //             width: 1080,
+        //         //             height: 1920
+        //         //         }]
+        //         //     }, */
+        //         //     video: true,
+        //         //     width: 1080,
+        //         //     height: 1920,
+        //         //     aspectRatio: 0.5625,
+        //         //     deviceId: {
+        //         //         exact: videoSources[0].deviceId
+        //         //     }
+        //         //     /* ,
+        //         //                     aspectRatio: 0.5625 */
+        //         // }).then(stream => {
+        //         //     try {
+        //         //         log("received vid")
+        //         //         log(stream.getVideoTracks()[0])
+        //         //         let capa = stream.getVideoTracks()[0].getCapabilities()
+        //         //         this.video.srcObject = stream;
+        //         //         this.video.width = 1080
+        //         //         this.video.height = 1920
+        //         //         /* this.video.width = capa.width.max / 4;
+        //         //         this.video.width = 1080 / 4;
+        //         //         this.video.height = capa.height.max / 4;
+        //         //         this.video.height = 1920 / 4;  */
+        //         //         log(capa)
+        //         //     } catch {}
 
-            if (results.poseLandmarks) {
-                results.poseLandmarks = this.makeFakeTrackers(results.poseLandmarks);
-                handConfidence = Math.min(handConfidence + 6, 100);
-            }
+        //         //     document.interval = async () => {
+        //         //         /* log("fuck") */
+        //         //         /* await this.hands.send({
+        //         //             image: this.video
+        //         //         }) */
+        //         //         await this.pose.send({
+        //         //             image: this.video
+        //         //         })
+        //         //         requestAnimationFrame(document.interval)
+        //         //     }
+        //         //     /* this.video.width = 640;
+        //         //     this.video.height = 360; */
+        //         //     /* document.interval() */
+        //         // })
+        //     })
+        // } catch {
 
-            /* this.hands.setOptions({
-                maxNumHands: 1,
-                modelComplexity: 1,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
-            }); */
-
-            // HANDLE TRACKING DATA
-            /* this.hands.onResults(results => { */
-            /* log(results.image.width + "x" + results.image.height) */
-            this.ctx.save();
-            /* this.ctx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
-            this.ctx.drawImage(results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height); */
-
-            let canvasCtx = this.ctx;
-            canvasCtx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
-            try {
-                canvasCtx.drawImage(results.segmentationMask, 0, 0,
-                    this.debug_canvas.width, this.debug_canvas.height);
-            } catch {}
-            // Only overwrite existing pixels.
-            canvasCtx.globalCompositeOperation = 'source-in';
-            canvasCtx.fillStyle = '#00FF00';
-            canvasCtx.fillRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
-
-            // Only overwrite missing pixels.
-            canvasCtx.globalCompositeOperation = 'destination-atop';
-            canvasCtx.drawImage(
-                results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height);
-
-            canvasCtx.globalCompositeOperation = 'source-over';
-            /* for (let landmarks of results.multiHandLandmarks) {
-                drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
-                    color: '#00FF00',
-                    lineWidth: 5
-                });
-                drawLandmarks(this.ctx, landmarks, {
-                    color: '#FF0000',
-                    lineWidth: 2
-                });
-            } */
-            drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-                color: '#00FF00',
-                lineWidth: 4
-            });
-            drawLandmarks(canvasCtx, results.poseLandmarks, {
-                color: '#FF0000',
-                lineWidth: 2
-            });
-            // if (results.multiHandLandmarks[0]) {
-            // handConfidence = Math.min(handConfidence + 5, 100);
-            // let j = 0;
-            // let tracker_ids = [4, 8, 12, 16, 20]
-            // for (let track_sprite of tracking_sprites) {
-            //     /* log(this.landmark_lights[tracker_ids[j]].position) */
-            //     track_sprite.goal = (this.landmark_trackers[tracker_ids[j]].goal);
-            //     /* log(track_sprite.position) */
-            //     j++;
-            // }
-            let tally = new THREE.Vector3();
-            let i = 0;
-
-            if (results.poseLandmarks) {
-                /* let fac = (quickNoise.noise(this.time / 10000, this.time / 10000, this.time / 10000) + 1) / 2;
-                fac *= .24 
-                log(fac) */
-                /* this.boid_handler.app.set_boid_goal_weight(.3) */
-                for (let l of results.poseLandmarks) {
-                    l.x += SETTINGS.offset_x + offsets[i].x;
-                    l.y += SETTINGS.offset_y + offsets[i].y;
-                    l.z += SETTINGS.offset_z + offsets[i].z;
-                    l.x *= 1.5;
-                    l.z *= .3;
-
-
-                    /* app.landmarks[i].x = l.x;
-                    app.landmarks[i].y = l.y;
-                    app.landmarks[i].z = l.z; */
-
-                    // this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.x : l.x /* * SETTINGS.invert_x ? -1 : 1 */ ;
-                    // this.landmark_trackers[i].goal.y = l.y /* * SETTINGS.invert_y ? -1 : 1 */ ;
-                    // this.landmark_trackers[i].goal.z = l.z /* * SETTINGS.invert_z ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.y : l.y /* * SETTINGS.invert_x ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.y = l.z /* * SETTINGS.invert_y ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.z = l.x - 5 /* * SETTINGS.invert_z ? -1 : 1 */ ;
-
-                    tally.add(new THREE.Vector3(l.x, l.y, l.z));
-
-                    this.boid_handler.app.set_goal(i,
-                        ((SETTINGS.invert_x ? 1 - l.x : l.x) + tracking_offset.x) * SETTINGS.hand_scale,
-                        (l.y + tracking_offset.y) * SETTINGS.hand_scale,
-                        (l.z + tracking_offset.z) * SETTINGS.hand_scale,
-                    )
-
-                    // if (handConfidence > 80 && handStillness < 10) {
-                    //     log(handConfidence, handStillness)
-                    //     /* this.boid_handler.app.set_boid_goal_weight(0.03); */
-                    //     /* log("set goal weight to 0.03, " + handConfidence) */
-                    // }
-
-                    /* let screen_x = this.boid_handler.app */
-                    let trackerPos = this.landmark_trackers[i].goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale);
-                    trackerPos = trackerPos.project(this.camera);
-                    trackerPos.x = (trackerPos.x + 1) * window.innerWidth / 2;
-                    /* trackerPos.x = SETTINGS.invert_x ? window.innerWidth - trackerPos.x : trackerPos.x; */
-                    trackerPos.y = -(trackerPos.y - 1) * window.innerHeight / 2;
-                    /* trackerPos.y = SETTINGS.invert_y ? window.innerHeight - trackerPos.y : trackerPos.y; */
-                    trackerPos.z = 0;
-                    /* log(trackerPos) */
-
-                    /* if (tracker_ids.includes(i)) { */
-                    /* rd.shader.uniforms.mouse.value[i].x +=
-                        (trackerPos.x - rd.shader.uniforms.mouse.value[i].x) * .1;
-                    rd.shader.uniforms.mouse.value[i].y +=
-                        (trackerPos.y - rd.shader.uniforms.mouse.value[i].y) * .1; */
-
-                    /* rd.shader.uniforms.mouse.value[i].x +=
-                        ((1 - l.x) * window.innerWidth - rd.shader.uniforms.mouse.value[i].x) * .1;
-                    rd.shader.uniforms.mouse.value[i].y +=
-                    (l.y * window.innerHeight - rd.shader.uniforms.mouse.value[i].y) * .1; */
-                    /* } */
-
-
-                    /* this.boid_handler.app.set_boid_goal_weight(0.01) */
-                    /* log(i, l.x, l.y, l.z) */
-                    this.particles.trackers[i] = new THREE.Vector3(l.x, l.y, l.z);
-
-                    i++;
-                }
-            }
-
-
-            tally.divideScalar(tracker_amount);
-            /* rd.displayShader.uniforms.hand_position.value.x = tally.x;
-            rd.displayShader.uniforms.hand_position.value.y = tally.y; */
-            hand_pos_history.push(tally);
-            while (hand_pos_history.length > 20) {
-                hand_pos_history.splice(0, 1);
-            }
-
-
-            /* log(hand_pos_history[hand_pos_history.length - 1]) */
-
-
-
-            let prevPos = new THREE.Vector3()
-            let origin = hand_pos_history[0];
-            for (let pos of hand_pos_history) {
-                prevPos.sub(pos.clone().sub(origin));
-            }
-            handStillness += ((Math.Clamp(prevPos.length() * .5, 0, 1) + .1) - handStillness) * .1;
-            /* log("hand stillness: " + handStillness, hand_pos_history) */
-
-            /* if (!this.builtLandmarks) {
-                this.builtLandmarks = true;
-                let lines = buildLines([
-                    [1, 4],
-                    [5, 8],
-                    [9, 12],
-                    [13, 16],
-                    [17, 20]
-                ], results.multiHandLandmarks[0]);
-                log(lines)
-            } */
-            this.ctx.restore();
-        })
-
-        navigator.mediaDevices.getUserMedia({
-            video: true
-        })
-
-        let videoSources = []
-        try {
-            navigator.mediaDevices.enumerateDevices().then(devices => {
-                for (let d of devices) {
-                    if (d.kind == "videoinput") {
-                        videoSources.push(d)
-                        /* log(d) */
-                        log("cam" + (videoSources.length - 1) + ": " + d.label)
-                    }
-                }
-                /* this.webcam = new Camera(this.video, {
-                    onFrame: async () => {
-                        await this.hands.send({
-                            image: this.video
-                        });
-                    },
-                    width: this.video.width,
-                    height: this.video.height,
-                    deviceId: {
-                        exact: videoSources[1].deviceId
-                    }
-                })
-                this.webcam.start(); */
-                navigator.mediaDevices.getUserMedia({
-                    audio: false,
-                    /* video: {
-                        advanced: [{
-                            width: 1080,
-                            height: 1920
-                        }]
-                    }, */
-                    video: true,
-                    width: 1080,
-                    height: 1920,
-                    aspectRatio: 0.5625,
-                    deviceId: {
-                        exact: videoSources[0].deviceId
-                    }
-                    /* ,
-                                    aspectRatio: 0.5625 */
-                }).then(stream => {
-                    try {
-                        log("received vid")
-                        log(stream.getVideoTracks()[0])
-                        let capa = stream.getVideoTracks()[0].getCapabilities()
-                        this.video.srcObject = stream;
-                        this.video.width = 1080
-                        this.video.height = 1920
-                        /* this.video.width = capa.width.max / 4;
-                        this.video.width = 1080 / 4;
-                        this.video.height = capa.height.max / 4;
-                        this.video.height = 1920 / 4;  */
-                        log(capa)
-                    } catch {}
-
-                    document.interval = async () => {
-                        /* log("fuck") */
-                        /* await this.hands.send({
-                            image: this.video
-                        }) */
-                        await this.pose.send({
-                            image: this.video
-                        })
-                        requestAnimationFrame(document.interval)
-                    }
-                    /* this.video.width = 640;
-                    this.video.height = 360; */
-                    /* document.interval() */
-                })
-            })
-        } catch {
-
-        }
+        // }
 
 
         // THREEJS
@@ -935,13 +732,13 @@ export class App {
                 for (let i = 0; i < tracker_amount; i++) {
                     this.boid_handler.app.set_goal(i, 0, 0, -(i / tracker_amount) * 1);
                 }
-                goal = Math.Lerp(goal, .1, .1);
+                goal = lerp(goal, .1, .1);
                 /* log(goal) */
                 this.boid_handler.app.set_boid_goal_weight(goal)
                 /* this.boid_handler.app.set_boid_goal_weight(0) */
                 /* log("set goal weight to 0, " + handConfidence, handStillness) */
             } else if (handConfidence >= 50 && this.boid_handler.app) {
-                goal = Math.Lerp(goal, .3, .1);
+                goal = lerp(goal, .3, .1);
                 if (this.prevState == "no bueno") {
                     log("ON")
                     for (let pop of pops) {
@@ -1063,6 +860,189 @@ export class App {
             requestAnimationFrame(render);
         }
         render()
+
+        mediaPipe.on('pose', async (event) => {
+            if(!this.boid_handler.app) return;
+
+            const results = event.data.raw
+
+            if (!initialized) {
+                document.querySelector("#hide").style.opacity = 0;
+                document.querySelector("#loading_label").style.opacity = 0;
+                initialized = true
+            }
+
+            if (results.poseLandmarks) {
+                results.poseLandmarks = this.makeFakeTrackers(results.poseLandmarks);
+                handConfidence = Math.min(handConfidence + 6, 100);
+            }
+
+            /* this.hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            }); */
+
+            // HANDLE TRACKING DATA
+            /* this.hands.onResults(results => { */
+            /* log(results.image.width + "x" + results.image.height) */
+            this.ctx.save();
+            /* this.ctx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
+            this.ctx.drawImage(results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height); */
+
+            let canvasCtx = this.ctx;
+            canvasCtx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
+            try {
+                canvasCtx.drawImage(results.segmentationMask, 0, 0,
+                    this.debug_canvas.width, this.debug_canvas.height);
+            } catch { }
+            // Only overwrite existing pixels.
+            canvasCtx.globalCompositeOperation = 'source-in';
+            canvasCtx.fillStyle = '#00FF00';
+            canvasCtx.fillRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
+
+            // Only overwrite missing pixels.
+            canvasCtx.globalCompositeOperation = 'destination-atop';
+            canvasCtx.drawImage(
+                results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height);
+
+            canvasCtx.globalCompositeOperation = 'source-over';
+            /* for (let landmarks of results.multiHandLandmarks) {
+                drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
+                    color: '#00FF00',
+                    lineWidth: 5
+                });
+                drawLandmarks(this.ctx, landmarks, {
+                    color: '#FF0000',
+                    lineWidth: 2
+                });
+            } */
+            // drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+            //     color: '#00FF00',
+            //     lineWidth: 4
+            // });
+            // drawLandmarks(canvasCtx, results.poseLandmarks, {
+            //     color: '#FF0000',
+            //     lineWidth: 2
+            // });
+            // if (results.multiHandLandmarks[0]) {
+            // handConfidence = Math.min(handConfidence + 5, 100);
+            // let j = 0;
+            // let tracker_ids = [4, 8, 12, 16, 20]
+            // for (let track_sprite of tracking_sprites) {
+            //     /* log(this.landmark_lights[tracker_ids[j]].position) */
+            //     track_sprite.goal = (this.landmark_trackers[tracker_ids[j]].goal);
+            //     /* log(track_sprite.position) */
+            //     j++;
+            // }
+            let tally = new THREE.Vector3();
+            let i = 0;
+
+            if (results.poseLandmarks) {
+                /* let fac = (quickNoise.noise(this.time / 10000, this.time / 10000, this.time / 10000) + 1) / 2;
+                fac *= .24 
+                log(fac) */
+                /* this.boid_handler.app.set_boid_goal_weight(.3) */
+                for (let l of results.poseLandmarks) {
+                    l.x += SETTINGS.offset_x + offsets[i].x;
+                    l.y += SETTINGS.offset_y + offsets[i].y;
+                    l.z += SETTINGS.offset_z + offsets[i].z;
+                    l.x *= 1.5;
+                    l.z *= .3;
+
+
+                    /* app.landmarks[i].x = l.x;
+                    app.landmarks[i].y = l.y;
+                    app.landmarks[i].z = l.z; */
+
+                    // this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.x : l.x /* * SETTINGS.invert_x ? -1 : 1 */ ;
+                    // this.landmark_trackers[i].goal.y = l.y /* * SETTINGS.invert_y ? -1 : 1 */ ;
+                    // this.landmark_trackers[i].goal.z = l.z /* * SETTINGS.invert_z ? -1 : 1 */ ;
+                    this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.y : l.y /* * SETTINGS.invert_x ? -1 : 1 */;
+                    this.landmark_trackers[i].goal.y = l.z /* * SETTINGS.invert_y ? -1 : 1 */;
+                    this.landmark_trackers[i].goal.z = l.x - 5 /* * SETTINGS.invert_z ? -1 : 1 */;
+
+                    tally.add(new THREE.Vector3(l.x, l.y, l.z));
+
+                    this.boid_handler.app.set_goal(i,
+                        ((SETTINGS.invert_x ? 1 - l.x : l.x) + tracking_offset.x) * SETTINGS.hand_scale,
+                        (l.y + tracking_offset.y) * SETTINGS.hand_scale,
+                        (l.z + tracking_offset.z) * SETTINGS.hand_scale,
+                    )
+
+                    // if (handConfidence > 80 && handStillness < 10) {
+                    //     log(handConfidence, handStillness)
+                    //     /* this.boid_handler.app.set_boid_goal_weight(0.03); */
+                    //     /* log("set goal weight to 0.03, " + handConfidence) */
+                    // }
+
+                    /* let screen_x = this.boid_handler.app */
+                    let trackerPos = this.landmark_trackers[i].goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale);
+                    trackerPos = trackerPos.project(this.camera);
+                    trackerPos.x = (trackerPos.x + 1) * window.innerWidth / 2;
+                    /* trackerPos.x = SETTINGS.invert_x ? window.innerWidth - trackerPos.x : trackerPos.x; */
+                    trackerPos.y = -(trackerPos.y - 1) * window.innerHeight / 2;
+                    /* trackerPos.y = SETTINGS.invert_y ? window.innerHeight - trackerPos.y : trackerPos.y; */
+                    trackerPos.z = 0;
+                    /* log(trackerPos) */
+
+                    /* if (tracker_ids.includes(i)) { */
+                    /* rd.shader.uniforms.mouse.value[i].x +=
+                        (trackerPos.x - rd.shader.uniforms.mouse.value[i].x) * .1;
+                    rd.shader.uniforms.mouse.value[i].y +=
+                        (trackerPos.y - rd.shader.uniforms.mouse.value[i].y) * .1; */
+
+                    /* rd.shader.uniforms.mouse.value[i].x +=
+                        ((1 - l.x) * window.innerWidth - rd.shader.uniforms.mouse.value[i].x) * .1;
+                    rd.shader.uniforms.mouse.value[i].y +=
+                    (l.y * window.innerHeight - rd.shader.uniforms.mouse.value[i].y) * .1; */
+                    /* } */
+
+
+                    /* this.boid_handler.app.set_boid_goal_weight(0.01) */
+                    /* log(i, l.x, l.y, l.z) */
+                    this.particles.trackers[i] = new THREE.Vector3(l.x, l.y, l.z);
+
+                    i++;
+                }
+            }
+
+
+            tally.divideScalar(tracker_amount);
+            /* rd.displayShader.uniforms.hand_position.value.x = tally.x;
+            rd.displayShader.uniforms.hand_position.value.y = tally.y; */
+            hand_pos_history.push(tally);
+            while (hand_pos_history.length > 20) {
+                hand_pos_history.splice(0, 1);
+            }
+
+
+            /* log(hand_pos_history[hand_pos_history.length - 1]) */
+
+
+
+            let prevPos = new THREE.Vector3()
+            let origin = hand_pos_history[0];
+            for (let pos of hand_pos_history) {
+                prevPos.sub(pos.clone().sub(origin));
+            }
+            handStillness += ((clamp(prevPos.length() * .5, 0, 1) + .1) - handStillness) * .1;
+            /* log("hand stillness: " + handStillness, hand_pos_history) */
+
+            /* if (!this.builtLandmarks) {
+                this.builtLandmarks = true;
+                let lines = buildLines([
+                    [1, 4],
+                    [5, 8],
+                    [9, 12],
+                    [13, 16],
+                    [17, 20]
+                ], results.multiHandLandmarks[0]);
+                log(lines)
+            } */
+            this.ctx.restore();
+        })
 
     }
 }
