@@ -97,7 +97,23 @@ class App {
     this.initThreeScene();
 
     this.addListeners();
+
+    this.toggleMode();
   }
+
+  toggleMode(){
+    const toggle = document.getElementById("switch");
+    toggle.addEventListener('change', ()=>{
+      if(toggle.querySelector("input").checked){
+        this.debugMode = true;
+        document.querySelector('video').style.display = "block";
+      }else{
+        this.debugMode = false;
+        document.querySelector('video').style.display = "none";
+      }  
+    })
+  }
+
 
   initThreeScene() {
     this.container = document.createElement("div");
@@ -183,11 +199,7 @@ class App {
       }, 4000);
     }
 
-    if(!this.debugMode){
-      console.log("hide video");
-      // document.getElemen("video").style.display = "none";
-      document.querySelector('video').style.display = "none";
-    }
+    
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -380,7 +392,8 @@ class App {
   }
 
   // à refaire avec une array | dans l'idéal un classe
-  toggleHitBox(hitboxIndex) {
+  toggleHitBox(index) {
+    const hitboxIndex = index+1;
     switch (hitboxIndex) {
       case 1:
         // console.log("Hitbox 1 was hit");
@@ -415,6 +428,7 @@ class App {
     }
   }
 
+  //à changer
   tweenCamAndLights(hitboxIndex, x1, y1, z1, x2, y2, z2, lightIntensity) {
     let easing = TWEEN.Easing.Sinusoidal.InOut;
     let duration = 1000;
@@ -422,18 +436,19 @@ class App {
       .to({ intensity: lightIntensity }, duration)
       .easing(easing)
       .start();
-    var tweenCamPosition = new TWEEN.Tween(this.camPos)
-      .to({ x: x1, y: y1, z: z1 }, duration)
-      .easing(easing)
-      .start();
-    var tweenCamRot = new TWEEN.Tween(this.camRot)
-      .to({ x: x2, y: y2, z: z2 }, duration)
-      .easing(easing)
-      .start();
+    // var tweenCamPosition = new TWEEN.Tween(this.camPos)
+    //   .to({ x: x1, y: y1, z: z1 }, duration)
+    //   .easing(easing)
+    //   .start();
+    // var tweenCamRot = new TWEEN.Tween(this.camRot)
+    //   .to({ x: x2, y: y2, z: z2 }, duration)
+    //   .easing(easing)
+    //   .start();
   }
 
 
-  /// wtf is that shit ? 
+  /// wtf is that ? 
+  // À changer !!!
   bendPlants(bend) {
     let j = 0;
     let bendDirection;
@@ -524,77 +539,12 @@ class App {
     console.table(extrem);
     console.log("");
     */
+
     this.hands = {left:this.findHandsCenter(pose, "LEFT"), right: this.findHandsCenter(pose, "RIGHT")};
 
     if(this.hands != undefined){
       this.checkHitBox();
     }
-
-
-    /*//HAUT GAUCHE
-    if (
-      pose.LEFT_WRIST.y < 0.35 &&
-      pose.LEFT_WRIST.x > 0.7 &&
-      this.bodyPartsAreOn.hitBox1 == false
-    ) {
-      console.log("hitbox 1");
-      this.toggleHitBox(1);
-      this.delayBodyDetection("hitBox1", 10000, 1);
-    }
-
-
-  
-
-    
-    //HAUT DROITE
-    if (
-      pose.RIGHT_WRIST.y < 0.35 &&
-      pose.RIGHT_WRIST.x < 0.3 &&
-      this.bodyPartsAreOn.hitBox2 == false
-    ) {
-      // console.log("bended");
-      this.toggleHitBox(2);
-      this.delayBodyDetection("hitBox2", 10000, 2);
-    }
-
-    //MILIEU GAUCHE
-    if (
-      pose.LEFT_WRIST.y > 0.35 &&
-      pose.LEFT_WRIST.y < 0.5 &&
-      pose.LEFT_WRIST.x > 0.7 &&
-      this.bodyPartsAreOn.hitBox3 == false
-    ) {
-      console.log("hitbox 3");
-      this.toggleHitBox(3);
-      this.delayBodyDetection("hitBox3", 10000, 3);
-    }
-
-    //MILIEU DROITE
-    if (
-      pose.RIGHT_WRIST.y > 0.35 &&
-      pose.RIGHT_WRIST.y < 0.5 &&
-      pose.RIGHT_WRIST.x < 0.3 &&
-      this.bodyPartsAreOn.hitBox4 == false
-    ) {
-      // console.log("bended");
-      this.toggleHitBox(4);
-      this.delayBodyDetection("hitBox4", 10000, 4);
-    }
-
-    //BAS GAUCHE
-    if (pose.LEFT_ANKLE.x > 0.7 && this.bodyPartsAreOn.hitBox5 == false) {
-      // console.log("bended");
-      this.toggleHitBox(5);
-      this.delayBodyDetection("hitBox5", 10000, 5);
-    }
-
-    //BAS DROITE
-    if (pose.RIGHT_ANKLE.x < 0.3 && this.bodyPartsAreOn.hitBox6 == false) {
-      // console.log(pose.RIGHT_ANKLE.x);
-      // console.log("bended");
-      this.toggleHitBox(6);
-      this.delayBodyDetection("hitBox6", 10000, 6);
-    }*/
 
     const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL)
     this.moveCamera(pose.NOSE, distance);
@@ -618,8 +568,8 @@ class App {
   }
 
   triggerHitBox(index){
-      console.log(`toucing the box ${index + 1}`);
-      this.toggleHitBox(index+1);
+      // console.log(`touching the box ${index + 1}`);
+      this.toggleHitBox(index);
       this.delayBodyDetection(`hitBox${index+1}`, 10000, index);
   }
 
@@ -723,7 +673,6 @@ class App {
     const y = b.y - a.y;
     return Math.sqrt(x * x + y * y);
 }
-
 
   dist3D(a, b) {
   
