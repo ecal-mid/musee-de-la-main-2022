@@ -10,9 +10,15 @@ export default class OverlayHandler {
       console.log(e.data.message);
       console.log(":: project ID ::", e.data.id);
       // SEND MESSAGE BACK TO MAIN
-      setTimeout(() => {
-        parent.postMessage({ message: "overlayready" }, "*");
-      }, 3000);
+
+      const isProject = e.data.id >= 0
+      clearTimeout(this.timeout)
+
+      if (isProject) {
+        this.timeout = setTimeout(() => {
+          parent.postMessage({ message: "overlayended" }, "*");
+        }, 3000);
+      }
     });
   }
 }

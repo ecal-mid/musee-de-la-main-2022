@@ -1,0 +1,27 @@
+$color-blue: rgb(180, 250, 255);
+
+@font-face {
+  font-family: Raster;
+  src: url(../assets/fonts/raster.ttf);
+}
+
+@mixin fullAbsolute() {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+html,
+body {
+  font-family: Raster, "Courier New", Courier, monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.hidden {
+    visibility: hidden;
+}

@@ -10,6 +10,9 @@ export default class IFrame {
       iFrameMessage: this.onIFrameMessage.bind(this),
     };
     this.overlay = document.getElementById("overlay");
+    this.overlay.addEventListener('transitionend', () => {
+      if (this.overlay.classList.contains('hide')) this.overlay.src = this.overlay.src //! refresh overlay when hidden
+    })
     this.frame = document.getElementById("frame");
     this.frame.src = frame.src; // force iframe reload
     this.frame.addEventListener("load", this.handlers.load);
@@ -30,26 +33,29 @@ export default class IFrame {
   onMessage(data) {
     if ("project_id" in data) {
       const id = parseInt(data["project_id"]);
-      const url = this.studentsData.projects[id].url;
+      const isProject = id >= 0;
+      const url = isProject ? this.studentsData.projects[id].url + `?_v=${new Date().getTime()}` : '';
       // wait for transition before updating the frame
-      setTimeout(() => {
-        this.frame.src = url + `?_v=${new Date().getTime()}`;
+      clearTimeout(this.timeout)
+      this.timeout = setTimeout(() => {
+        this.frame.src = url;
       }, 1000);
       // fadein the overlay
       this.overlay.classList.remove("hide");
       // send info to iFrame
       this.overlay.contentWindow.postMessage(
-        { message: "changeporject", id: id },
+        { message: "changeproject", id },
         "*"
       );
     }
   }
   // message from overlay
   onIFrameMessage(e) {
-    if (e.data.message == "overlayready") {
+    if (e.data.message === "overlayended") {
       this.overlay.classList.add("hide");
+      // this.overlay.src = this.overlay.src
     }
   }
   // overwritten
-  onFrameLoad(event) {}
+  onFrameLoad(event) { }
 }
