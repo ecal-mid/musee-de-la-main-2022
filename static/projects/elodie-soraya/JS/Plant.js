@@ -41,7 +41,7 @@ class Plant {
         var that = this;
         this.loader.load(this.filePath, function (gltf) {
             let model = gltf.scene;
-            model.position.set(that.position.x, that.position.y, that.position.z);
+            model.position.set(that.position.x, that.position.y+2, that.position.z);
             model.scale.set(that.scale * 2, that.scale * 2, that.scale * 2);
             
             
