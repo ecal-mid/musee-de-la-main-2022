@@ -397,8 +397,8 @@ class App {
       .start();
   }
 
-  moveCameraWithHands(ratio) {
-    const distance = this.map(ratio, 5, 1, 0, 1);
+  moveCameraWithHands() {
+    const distance = this.map(this.distance, 5, 1, 0, 1);
     const hand = this.hands.left;
     // docu for animation curve
     // https://sbcode.net/threejs/tween/
@@ -451,22 +451,24 @@ class App {
       //   .start();
     }
 
+    console.log(distance);
+
     for (let d in this.cameraRange) {
       const range = this.cameraRange[d];
       // console.log(range);
       const extrem = this.cameraRangeExtreme;
+
       range.forEach((value, index) => {
         range[index] = this.map(
           distance,
-          0,
+          0.2,
           1,
           extrem.min[d][index],
           extrem.max[d][index]
         );
       });
     }
-
-    this.camPos.z = this.cameraRange.z[0];
+    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
   }
 
   limit(num, min, max) {
@@ -629,10 +631,10 @@ class App {
       this.checkHitBox();
     }
 
-    const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL);
+    this.distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL);
     // this.moveCamera(pose.NOSE, distance);
 
-    this.moveCameraWithHands(distance); // left hand
+    this.moveCameraWithHands(); // left hand
     this.checkCamPosition();
 
     this.HUD();
