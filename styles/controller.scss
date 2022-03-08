@@ -48,8 +48,13 @@ body {
     height: 100%;
     perspective: 1px;
     perspective-origin: 0 0;
+
+    > * {
+      will-change: transform;
+    }
+
     .page {
-      font-size: 1.5em;
+      font-size: 1.3em;
       transform-style: preserve-3d;
       float: left;
       width: 100%;
@@ -62,6 +67,8 @@ body {
       // align-items: center;
       // justify-content: center;
       // font-size: 10em;
+
+      $gap: 2rem;
 
       h2,
       h3 {
@@ -77,12 +84,12 @@ body {
         margin-top: 0;
       }
       h3 {
-        margin-bottom: 2em;
+        margin-bottom: $gap;
       }
 
       footer,
       p {
-        margin: 0 0 2em 0;
+        margin: 0 0 $gap 0;
         // color: #afafaf;
         white-space: pre-line;
         font-weight: 100;
@@ -156,8 +163,9 @@ body {
 }
 
 .glow {
+  will-change: text-shadow;
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
-  animation: glowText 1s ease-in-out infinite alternate;
+  // animation: glowText 1s ease-in-out infinite alternate;
 }
 
 @-webkit-keyframes glowText {
