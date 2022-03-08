@@ -7,6 +7,7 @@ body {
   overflow: hidden;
   background-color: black;
   position: fixed;
+  user-select: none;
   // color: #afafaf;
 }
 body {
@@ -84,6 +85,7 @@ body {
         margin-top: 0;
       }
       h3 {
+        color: $color-blue;
         margin-bottom: $gap;
       }
 
@@ -93,6 +95,11 @@ body {
         // color: #afafaf;
         white-space: pre-line;
         font-weight: 100;
+      }
+
+      footer,
+      p.interaction {
+        color: $color-blue;
       }
 
       $top: 33vh;
@@ -164,16 +171,16 @@ body {
 
 .glow {
   will-change: text-shadow;
-  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  //text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
   // animation: glowText 1s ease-in-out infinite alternate;
 }
 
 @-webkit-keyframes glowText {
   from {
-    text-shadow: 0 0 3px #fff, 0 0 10px #{$color-blue};
+    text-shadow: 0 0 3px currentColor, 0 0 10px #{$color-blue};
   }
   to {
-    text-shadow: 0 0 6px #fff, 0 0 20px #{$color-blue};
+    text-shadow: 0 0 6px currentColor, 0 0 20px #{$color-blue};
   }
 }
 
