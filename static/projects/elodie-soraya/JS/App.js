@@ -34,11 +34,31 @@ class App {
     this.plants = [];
     this.plantsMixer = [];
 
+    this.cameraRangeExtreme = {
+      min: {
+        x: [-5, 5],
+        y: [4, 15],
+        z: [-5, -5],
+      },
+
+      max: {
+        x: [-4, 4],
+        y: [8, 14],
+        z: [-12, -12],
+      },
+    };
+
     this.cameraRange = {
       x: [-5, 5],
       y: [4, 15],
       z: [-8, -8],
     };
+
+    // this.cameraRange = {
+    //   x: [-4, 4],
+    //   y: [8, 14],
+    //   z: [-12, -12],
+    // };
 
     // this.camPos = { x: 0, y: -1, z: -35 };
     this.camPos = {
@@ -377,35 +397,26 @@ class App {
       .start();
   }
 
-  moveCameraWithHands() {
+  moveCameraWithHands(ratio) {
+    const distance = this.map(ratio, 5, 1, 0, 1);
     const hand = this.hands.left;
     // docu for animation curve
     // https://sbcode.net/threejs/tween/
     let easing = TWEEN.Easing.Sinusoidal.InOut;
 
+    const range = this.cameraRange;
+
     if (hand.visible) {
       const togo = {
         x: this.limit(
-          this.map(
-            hand.position.x,
-            0,
-            1,
-            this.cameraRange.x[0],
-            this.cameraRange.x[1]
-          ),
-          this.cameraRange.x[0],
-          this.cameraRange.x[1]
+          this.map(hand.position.x, 0, 1, range.x[0], range.x[1]),
+          range.x[0],
+          range.x[1]
         ),
         y: this.limit(
-          this.map(
-            hand.position.y,
-            1,
-            0,
-            this.cameraRange.y[0],
-            this.cameraRange.y[1]
-          ),
-          this.cameraRange.y[0],
-          this.cameraRange.y[1]
+          this.map(hand.position.y, 1, 0, range.y[0], range.y[1]),
+          range.y[0],
+          range.y[1]
         ),
       };
 
@@ -425,12 +436,12 @@ class App {
 
       this.camPos.x = this.lerp(
         this.camPos.x,
-        this.map(h.x, 0, 1, this.cameraRange.x[0], this.cameraRange.x[1]),
+        this.map(h.x, 0, 1, range.x[0], range.x[1]),
         amount
       );
       this.camPos.y = this.lerp(
         this.camPos.y,
-        this.map(h.y, 0, 1, this.cameraRange.y[1], this.cameraRange.y[0]),
+        this.map(h.y, 0, 1, range.y[1], range.y[0]),
         amount
       );
 
@@ -439,6 +450,23 @@ class App {
       //   .easing(easing)
       //   .start();
     }
+
+    for (let d in this.cameraRange) {
+      const range = this.cameraRange[d];
+      // console.log(range);
+      const extrem = this.cameraRangeExtreme;
+      range.forEach((value, index) => {
+        range[index] = this.map(
+          distance,
+          0,
+          1,
+          extrem.min[d][index],
+          extrem.max[d][index]
+        );
+      });
+    }
+
+    this.camPos.z = this.cameraRange.z[0];
   }
 
   limit(num, min, max) {
@@ -591,14 +619,20 @@ class App {
       right: MIRRORED*this.findHandsCenter(pose, "RIGHT"),
     };
 
+    // for (let hand in this.hands) {
+    //   const h = this.hands[hand];
+    //   console.log(h.position.x);
+    //   h.position.x = 1 - h.position.x;
+    // }
+
     if (this.hands != undefined) {
       this.checkHitBox();
     }
 
-    // const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL)
+    const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL);
     // this.moveCamera(pose.NOSE, distance);
 
-    this.moveCameraWithHands(); // left hand
+    this.moveCameraWithHands(distance); // left hand
     this.checkCamPosition();
 
     this.HUD();
@@ -684,7 +718,7 @@ class App {
       total.y += point.y;
     });
 
-    return { x: total.x / points.length, y: total.y / points.length };
+    return { x: 1 - total.x / points.length, y: total.y / points.length };
   }
 
   round2(number) {
