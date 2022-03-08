@@ -34,18 +34,36 @@ class App {
     this.plantsMixer = [];
 
     this.cameraRangeExtreme = {
+      // min: {
+      //   x: [-5, 5],
+      //   y: [4, 15],
+      //   z: [-5, -5],
+      // },
+
+      // max: {
+      //   x: [-4, 4],
+      //   y: [8, 14],
+      //   z: [-12, -12],
+      // },
       min: {
-        x: [-5, 5],
-        y: [4, 15],
-        z: [-5, -5],
+        x: [-20, 20],
+        y: [0, 20],
+        z: [-3, -3],
       },
 
       max: {
+        x: [-20, 20],
+        y: [0, 20],
+        z: [-26, 26],
+      },
+      /*max: {
         x: [-4, 4],
         y: [8, 14],
-        z: [-12, -12],
-      },
+        z: [-26, -12],
+      },*/
     };
+
+    // 0.9 for shoulders
 
     this.cameraRange = {
       x: [-20, 20],
@@ -467,7 +485,7 @@ class App {
         );
       });
     }
-    // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
   }
 
   limit(num, min, max) {
