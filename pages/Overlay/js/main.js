@@ -174,7 +174,7 @@ async function init(canvas, width, height) {
         lifeSpan: 1000 * 1000,
     }))
 
-    consoles.loading.setVisibility(false)
+    consoles.loading.setVisibility(true)
 
     let titleSprite = new CSS3DSprite(consoles.splash.elem);
     titleSprite.position.set(5, 205, -50);
