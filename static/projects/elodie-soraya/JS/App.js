@@ -14,7 +14,13 @@ import {
 } from "./plantsBends.js";
 import { TWEEN } from "../src/tween.js";
 
-
+/*
+- change navigation system | lerp vecteur direction
+- améliorer les lights
+- naviguer avec les deux mains
+- ? changer le trigger d'animation des plantes
+- ? ajouter du son ? 
+*/
 
 
 class App {
@@ -31,13 +37,13 @@ class App {
 
     this.cameraRange = {
       x:[-5,5],
-      y:[4,10],
-      z:[-8,-8]
+      y:[4,15],
+      z:[-5,-5]
     }
 
     // this.camPos = { x: 0, y: -1, z: -35 };
     this.camPos = { x: this.average(this.cameraRange.x), y: this.average(this.cameraRange.y), z: this.average(this.cameraRange.z)};
-    this.camRot = { x: 3, y: 0, z: -3.14 };
+    this.camRot = { x: 3.14, y: 0, z: -3.14 };
     this.tracker = {x: this.average(this.cameraRange.x), y: this.average(this.cameraRange.y)};
 
     this.skeleton;
@@ -230,7 +236,7 @@ class App {
       }
       // const intensity = i == index ? 0.6 : 0;
       var tweenLight = new TWEEN.Tween(light)
-      .to({ intensity: intensity }, 1000)
+      .to({ intensity: intensity }, 1500)
       .easing(easing)
       .start();
     });
