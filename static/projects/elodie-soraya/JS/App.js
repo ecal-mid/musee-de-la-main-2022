@@ -424,19 +424,19 @@ class App {
 
       this.camPos.x = this.lerp(
         this.camPos.x,
-        this.map(h, 0, 1, this.cameraRange.x[0], this.cameraRange.x[1]),
+        this.map(h.x, 0, 1, this.cameraRange.x[0], this.cameraRange.x[1]),
         amount
       );
       this.camPos.y = this.lerp(
         this.camPos.y,
-        this.map(h, 0, 1, this.cameraRange.y[0], this.cameraRange.y[1]),
+        this.map(h.y, 0, 1, this.cameraRange.y[1], this.cameraRange.y[0]),
         amount
       );
 
       // var tweenCamPosition = new TWEEN.Tween(this.camPos)
-      // .to({  x:togo.x ,y: togo.y}, duration)
-      // .easing(easing)
-      // .start();
+      //   .to({ x: togo.x, y: togo.y }, duration)
+      //   .easing(easing)
+      //   .start();
     }
   }
 
