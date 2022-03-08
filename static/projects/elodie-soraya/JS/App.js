@@ -48,8 +48,8 @@ class App {
     };
 
     this.cameraRange = {
-      x: [-5, 5],
-      y: [4, 15],
+      x: [-20, 20],
+      y: [0, 20],
       z: [-5, -5],
     };
 
@@ -467,7 +467,7 @@ class App {
         );
       });
     }
-    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+    // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
   }
 
   limit(num, min, max) {
