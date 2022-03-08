@@ -21,7 +21,7 @@ import { TWEEN } from "../src/tween.js";
 - ? changer le trigger d'animation des plantes
 - ? ajouter du son ? 
 */
-let MIRRORED = 1 // or -1
+let MIRRORED = 1; // or -1
 
 class App {
   constructor({ width, height, video }) {
@@ -35,23 +35,41 @@ class App {
     this.plantsMixer = [];
 
     this.cameraRangeExtreme = {
+      // min: {
+      //   x: [-5, 5],
+      //   y: [4, 15],
+      //   z: [-5, -5],
+      // },
+
+      // max: {
+      //   x: [-4, 4],
+      //   y: [8, 14],
+      //   z: [-12, -12],
+      // },
       min: {
-        x: [-5, 5],
-        y: [4, 15],
-        z: [-5, -5],
+        x: [-20, 20],
+        y: [0, 20],
+        z: [-3, -3],
       },
 
       max: {
+        x: [-20, 20],
+        y: [0, 20],
+        z: [-26, 26],
+      },
+      /*max: {
         x: [-4, 4],
         y: [8, 14],
-        z: [-12, -12],
-      },
+        z: [-26, -12],
+      },*/
     };
 
+    // 0.9 for shoulders
+
     this.cameraRange = {
-      x: [-5, 5],
-      y: [4, 15],
-      z: [-8, -8],
+      x: [-20, 20],
+      y: [0, 20],
+      z: [-5, -5],
     };
 
     // this.cameraRange = {
@@ -618,7 +636,7 @@ class App {
 
     this.hands = {
       left: this.findHandsCenter(pose, "LEFT"),
-      right: MIRRORED*this.findHandsCenter(pose, "RIGHT"),
+      right: MIRRORED * this.findHandsCenter(pose, "RIGHT"),
     };
 
     // for (let hand in this.hands) {
@@ -741,14 +759,11 @@ class App {
     const radius = 50;
     const width = 20;
 
-
-
     for (let hand in this.hands) {
       if (this.hands[hand].visible) {
         const h = this.hands[hand].position;
         if (hand == "left") {
-
-            const x = h.x * c.width;
+          const x = h.x * c.width;
           var gradient = ctx.createRadialGradient(
             x,
             h.y * c.height,
@@ -841,7 +856,7 @@ const mediaPipe = new MediaPipeClient();
 mediaPipe.on("setup", () => {
   const { video } = mediaPipe;
 
-  MIRRORED = mediaPipe.mirrored ? -1 : 1
+  MIRRORED = mediaPipe.mirrored ? -1 : 1;
   const app = new App({
     width: video.width,
     height: video.height,
