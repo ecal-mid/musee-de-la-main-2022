@@ -1,0 +1,94 @@
+$color-light: white;
+$color-dark: black;
+$color-green: rgb(22, 227, 179);
+$transition-duration: 0.1s;
+$margin: 0.5ch;
+
+.fakeConsole {
+  // filter: invert(100%);
+  pointer-events: none;
+  font-size: 1.2vw;
+  user-select: none;
+  position: absolute;
+  // background: rgba(0, 0, 0);
+  color: rgba(255, 255, 255, 0.5);
+  // font-size: 0.66em;
+  overflow: hidden;
+  // z-index: 1000;
+  // background: white;
+  // mix-blend-mode: screen;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-shadow: 0 0 0.5em currentColor;
+  transition: opacity $transition-duration;
+
+  span {
+    margin-right: $margin;
+    background: black;
+  }
+
+  > span {
+    // color: rgba(255,255,255, 0.5);
+    margin-bottom: $margin;
+    background: none;
+  }
+
+  &[data-hidden="true"] {
+    opacity: 0 !important;
+  }
+
+  &__message {
+  }
+
+  .log {
+    opacity: 0.5;
+    color: $color-green;
+  }
+
+  span.title {
+    color: red;
+    text-align: center;
+    font-size: 4em;
+    opacity: 1;
+    color: transparent;
+    -webkit-text-stroke: 0.5px rgba(255, 255, 255, 1);
+    text-shadow: 0 0 0.4em rgba(22, 227, 196, 0.66);
+    span {
+      background: none;
+    }
+  }
+
+  .slider {
+    opacity: 0.5;
+  }
+
+  .label {
+    --bg-color: black;
+    box-shadow: 0 0 5px 0 var(--bg-color);
+    background-color: var(--bg-color);
+    opacity: 1;
+    transition: background-color $transition-duration;
+    color: $color-dark;
+
+    &--loading {
+      --bg-color: #{$color-light};
+    }
+
+    &--normal {
+      margin-right: 0;
+    }
+
+    &--warning {
+      color: rgb(255, 182, 57);
+    }
+
+    &--fail {
+      --bg-color: red;
+      color: rgb(140, 38, 1);
+    }
+    &--success {
+      --bg-color: #{$color-green};
+    }
+  }
+}

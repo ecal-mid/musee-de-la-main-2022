@@ -1,0 +1,11 @@
+/*!
+ * 
+ *   @ecal-mid/mediapipe v1.1.4
+ *   git+https://github.com/Matoseb/musee-de-la-main-2022-scripts.git
+ *
+ *   Copyright (c) Sébastien Matos (https://github.com/matoseb) and project contributors.
+ *
+ *   This source code is licensed under the MIT license found in the
+ *   LICENSE file in the root directory of this source tree.
+ *
+ */:where(:not(iframe,canvas,img,svg,video):not(svg *,symbol *)){all:unset;display:revert}*,:after,:before{box-sizing:border-box}a{cursor:revert}menu,ol,ul{list-style:none}img{max-width:100%}table{border-collapse:collapse}textarea{white-space:revert}:where([hidden]){display:none}:where([contenteditable]){-moz-user-modify:read-write;-webkit-user-modify:read-write;-webkit-line-break:after-white-space;overflow-wrap:break-word}:where([draggable=true]){-webkit-user-drag:element}.main-container{display:grid;grid-template-columns:repeat(1,1fr);height:100%;width:100%}.main-container>iframe{height:100%;pointer-events:none;width:100%}video.video-webcam{height:100%;object-fit:cover;width:100%}.--hidden{display:none}.main-canvas,.p5Canvas,canvas{height:100%;left:0;object-fit:cover;position:absolute;top:0;width:100%}.p5Canvas{height:100%!important;width:100%!important}
