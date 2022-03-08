@@ -14,6 +14,7 @@ let mic, video;
 
 
 let states = ["distance", "height", "sound", "width", "position"];
+//let state = "distance";
 let state = "distance";
 let nbState = 0;
 
@@ -253,6 +254,7 @@ function draw() {
   if (state == "sound") {
     // get the loudness
     level = mic.getLevel();
+    console.log(level)
     //console.log(level)
     //PARAM
     sensi = 500;
@@ -290,10 +292,10 @@ function draw() {
   //-----------------------------------------------------------WIDTH
   if (state == "width") {
 
-    if (PERSON.shown) level = PERSON.width;
+    if (PERSON.shown) level = map(PERSON.width, 0.6, 1, 1, 0.6);
 
     // console.log('width')
-
+    console.log(level, PERSON.width)
     //PARAM
     sensi = 100;
     limit = 100;
@@ -302,7 +304,9 @@ function draw() {
     paramLevelLine = [20, 10, 1.1];
 
     // map level
-    level = map(level, 0.6, 1.7, 0, sensi);
+    level = map(level, 0.6, 1, 0, sensi);
+
+
   }
 
   /*
@@ -412,7 +416,9 @@ function draw() {
 
 
     if (PERSON.shown) {
-      level = PERSON.x
+      let mirror = MIRRORED ? -1:1
+      level = PERSON.x * mirror * 640
+      console.log(level)
     }
     // if (poses[0] != undefined) {
     //   //POSENET VERSION
