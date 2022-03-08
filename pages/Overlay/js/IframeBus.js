@@ -29,7 +29,7 @@ export default class IframeBus extends EventEmitter {
 
         this.timeout = setTimeout(() => {
             this.message("overlayended", {});
-        }, 2000);
+        }, 2500);
 
     }
 

@@ -48,6 +48,18 @@ let jambeGauche;
 let videoCanvas = document.createElement('canvas')
 let videoCtx = videoCanvas.getContext('2d')
 
+mediaPipe.addEventListener("setup", () => {
+
+  const { width, height } = mediaPipe.video
+  videoCanvas.width = width
+  videoCanvas.height = height
+  // mediaPipe.mirrored = true
+});
+
+mediaPipe.addEventListener("pose", (event) => {
+  smoother.target(event.data.skeleton);
+});
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pixelDensity(1);
@@ -81,18 +93,7 @@ function setup() {
   //     });
   // video = createVideo();
 
-  mediaPipe.addEventListener("setup", () => {
-
-    const { width, height } = mediaPipe.video
-    videoCanvas.width = width
-    videoCanvas.height = height
-    resizeCanvas(width, height);
-    // mediaPipe.mirrored = true
-  });
-
-  mediaPipe.addEventListener("pose", (event) => {
-    smoother.target(event.data.skeleton);
-  });
+  
   //   });
 
   //   poses = results;
@@ -108,8 +109,11 @@ function setup() {
 
 function draw() {
 
-  if (mediaPipe.video.readyState === 0) return;
+  const vid = mediaPipe.video
 
+  if (vid.readyState === 0) return;
+
+  resizeCanvas(vid.width, vid.height);
   background(255);
   updatePoints();
   // console.log("up");

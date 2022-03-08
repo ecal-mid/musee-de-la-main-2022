@@ -63,16 +63,21 @@ window.setup = async () => {
   overlayFrame.src = "/pages/Overlay/index.html";
 };
 
-function insertIFrame({ player, pose, iframe }) {
-  const { mediaPipe, microphone } = iframe.contentWindow || {};
 
-  mediaPipe?.setup({
-    stream: player.stream,
-    width: player.width,
-    height: player.height,
-    pose,
-    mirrored: CONFIG.mediaPipeOptions.selfieMode,
-  });
 
-  microphone?.plugIn(p5Microphone);
+async function insertIFrame({ player, pose, iframe }) {
+
+    const { mediaPipe, microphone } = iframe.contentWindow || {};
+    
+    
+    mediaPipe?.setup({
+      stream: player.stream,
+      width: player.width,
+      height: player.height,
+      pose,
+      mirrored: CONFIG.mediaPipeOptions.selfieMode,
+    });
+  
+    microphone?.plugIn(p5Microphone);
+  
 }

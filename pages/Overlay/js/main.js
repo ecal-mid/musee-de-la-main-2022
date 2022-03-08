@@ -117,7 +117,7 @@ function moveCamera() {
 async function init(canvas, width, height) {
 
     const ratio = width / height
-    const canvasWidth = 1080
+    const canvasWidth = 1080*2
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
