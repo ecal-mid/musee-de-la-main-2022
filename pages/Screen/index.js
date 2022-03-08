@@ -30,6 +30,7 @@ const CONFIG = {
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
   await AudioAllower.allow();
+  AudioAllower.setupP5()
 
   p5Microphone = new p5.AudioIn();
   p5Microphone.start();
@@ -63,16 +64,21 @@ window.setup = async () => {
   overlayFrame.src = "/pages/Overlay/index.html";
 };
 
-function insertIFrame({ player, pose, iframe }) {
-  const { mediaPipe, microphone } = iframe.contentWindow || {};
 
-  mediaPipe?.setup({
-    stream: player.stream,
-    width: player.width,
-    height: player.height,
-    pose,
-    mirrored: CONFIG.mediaPipeOptions.selfieMode,
-  });
 
-  microphone?.plugIn(p5Microphone);
+async function insertIFrame({ player, pose, iframe }) {
+
+    const { mediaPipe, microphone } = iframe.contentWindow || {};
+    
+    
+    mediaPipe?.setup({
+      stream: player.stream,
+      width: player.width,
+      height: player.height,
+      pose,
+      mirrored: CONFIG.mediaPipeOptions.selfieMode,
+    });
+  
+    microphone?.plugIn(p5Microphone);
+  
 }

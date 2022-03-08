@@ -19,13 +19,15 @@ export class Page {
     active ? classList.add("active") : classList.remove("active")
   }
 
-  static pages = []
+  
   static select(index) {
     this.pages.forEach((page, i) => {
       page.select(index === i)
     })
   }
 }
+
+Page.pages = []
 
 
 export class StudentPage extends Page {
