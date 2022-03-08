@@ -54,6 +54,8 @@ window.setup = async () => {
   overlayFrame.addEventListener('load', () => {
     overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*");
   }, { once: true })
+
+  //setInterval(()=> console.log(p5Microphone.getLevel()), 100)
   
   overlayFrame.onload = (event) =>
   insertIFrame({ player, iframe: event.target, pose });
