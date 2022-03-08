@@ -30,10 +30,7 @@ const CONFIG = {
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
   await AudioAllower.allow();
-  AudioAllower.setupP5()
-
-  p5Microphone = new p5.AudioIn();
-  p5Microphone.start();
+  p5Microphone = await AudioAllower.getP5Microphone()
 
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
@@ -57,6 +54,8 @@ window.setup = async () => {
   overlayFrame.addEventListener('load', () => {
     overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*");
   }, { once: true })
+
+  //setInterval(()=> console.log(p5Microphone.getLevel()), 100)
   
   overlayFrame.onload = (event) =>
   insertIFrame({ player, iframe: event.target, pose });
