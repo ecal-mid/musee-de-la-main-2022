@@ -37,12 +37,15 @@ class Person {
         const normal = skeletonNormalized.smoothDamp()
         const sk = skeleton.smoothDamp()
 
-        if (!this.shown) return;
+        if (!this.shown) return
 
 
         this.distance = this.dist2D(sk.LEFT_SHOULDER, sk.RIGHT_HEEL)
-        this.height = this.dist2D(normal.RIGHT_EYE, normal.LEFT_HEEL, "xy")
-        this.width = this.dist2D(normal.LEFT_WRIST, normal.RIGHT_WRIST, "xy")
+
+        this.height = this.dist2D(this.min(normal, 'y'), this.max(normal, 'y'), "xy")
+        this.width = this.dist2D(this.min(normal, 'x'), this.max(normal, 'x'), "xy")
+        // this.height = this.dist2D(normal.RIGHT_EYE, normal.LEFT_HEEL, "xy")
+        // this.width = this.dist2D(normal.LEFT_WRIST, normal.RIGHT_WRIST, "xy")
         this.x = sk.NOSE.x
         this.y = sk.NOSE.y
 
@@ -57,4 +60,21 @@ class Person {
     dist3D(a, b) {
         return dist(a.x, a.y, a.z, b.x, b.y, b.z)
     }
+
+    min(skeleton, key) {
+        return this.compute(skeleton, (prev, curr) => curr[key] < prev[key])
+    }
+
+    max(skeleton, key) {
+        return this.compute(skeleton, (prev, curr) => curr[key] > prev[key])
+    }
+
+    compute(skeleton, condition) {
+        const [key, value] = Object.entries(skeleton).reduce((prev, curr) => {
+            if (!prev) prev = curr
+            return condition((prev)[1], curr[1]) ? curr : prev
+        }, null)
+        return value
+    }
+
 }
