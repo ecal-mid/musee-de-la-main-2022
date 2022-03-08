@@ -6,61 +6,61 @@
     <base href="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="noise.js"></script>
+    <script src="./noise.js"></script>
     <!-- <audio><source src="https://olafwempe.com/mp3/Septium.mp3" type=”audio/mp3"> </audio> -->
     
     <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script> -->
 
     <!-- ECAL -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script> -->
 
 
-    <link rel="stylesheet" href="https://www.unpkg.com/@ecal-mid/mediapipe@latest/umd/css/index.css"/>
-    <script src="https://unpkg.com/@ecal-mid/mediapipe@latest"></script>
+    <link rel="stylesheet" href="/scripts/@ecal-mid/index.css"/>
+    <script src="/scripts/@ecal-mid/mediapipe.js"></script>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script> -->
-    <script src="./node_modules/@mediapipe/camera_utils/camera_utils.js"></script>
-    <script src="./node_modules/@mediapipe/drawing_utils/drawing_utils.js"></script>
-    <script src="./node_modules/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="/scripts/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="/scripts/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <!-- <script src="node_modules/three/build/three.min.js"></script> -->
 
 
-    <script src="./node_modules/three/build/three.js"></script>
-    <script src="./node_modules/three/examples/js/loaders/BasisTextureLoader.js"></script>
-    <script src="./node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="./node_modules/three/examples/js/loaders/DRACOLoader.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/Pass.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/CopyShader.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/DepthLimitedBlurShader.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/UnpackDepthRGBAShader.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/SAOShader.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/SAOPass.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/ConvolutionShader.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/UnrealBloomPass.js"></script>
-    <script src="./node_modules/three/examples/js/shaders/BokehShader2.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/SSAARenderPass.js"></script>
-    <script src="./node_modules/three/examples/js/postprocessing/TAARenderPass.js"></script>
+    <script src="/scripts/three/build/three.js"></script>
+    <script src="/scripts/three/examples/js/loaders/BasisTextureLoader.js"></script>
+    <script src="/scripts/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="/scripts/three/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/Pass.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="/scripts/three/examples/js/shaders/CopyShader.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="/scripts/three/examples/js/shaders/DepthLimitedBlurShader.js"></script>
+    <script src="/scripts/three/examples/js/shaders/UnpackDepthRGBAShader.js"></script>
+    <script src="/scripts/three/examples/js/shaders/SAOShader.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/SAOPass.js"></script>
+    <script src="/scripts/three/examples/js/shaders/ConvolutionShader.js"></script>
+    <script src="/scripts/three/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="./shaders/BokehShader2.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/SSAARenderPass.js"></script>
+    <script src="/scripts/three/examples/js/postprocessing/TAARenderPass.js"></script>
     
     <!-- <script src="./node_modules/three/examples/js/postprocessing/BloomPass.js"></script> -->
 
     <!-- <script src="gpu.js"></script> -->
     <script src="./gpu-particles.js" defer></script>
     <!-- <script src="rd.js"></script> -->
-    <script src="./node_modules/stats.js/build/stats.min.js" defer></script>
+    <script src="/scripts/stats.min.js" defer></script>
     <script src="./boids.js" type="module" defer></script>
     <script src="./app.js" type="module" defer></script>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
     <title>Still Hands</title>
 </head>
 
 <body>
-    <div id="loading_label">Si vous fixez trop longtemps l’abîme, c'est l’abîme qui vous fixe.
-    </div>
+    <div id="loading_label"></div>
+    <!-- <div id="loading_label">Si vous fixez trop longtemps l’abîme, c'est l’abîme qui vous fixe.
+    </div> -->
     <!-- <video id="loading" loop=true muted=true autoplay=true src="./out.webm"></video> -->
     <!-- <div id="loading_label">If you gaze into the abyss, the
         abyss also gazes back into you</div> -->
