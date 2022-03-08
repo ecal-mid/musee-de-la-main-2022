@@ -55,7 +55,7 @@ class App {
       max: {
         x: [-1, 1],
         y: [10, 11],
-        z: [-26, 26],
+        z: [-26, -26],
       },
       /*max: {
         x: [-4, 4],
@@ -277,7 +277,7 @@ class App {
       }
       // const intensity = i == index ? 0.6 : 0;
       var tweenLight = new TWEEN.Tween(light)
-        .to({ intensity: intensity }, 1500)
+        .to({ intensity: intensity }, 750)
         .easing(easing)
         .start();
     });
@@ -477,24 +477,20 @@ class App {
       const extrem = this.cameraRangeExtreme;
 
       range.forEach((value, index) => {
-        range[index] = this.limit(
+        range[index] =
           this.map(
             distance,
-            0.2,
-            1,
+            0.7,
+            1.1,
             extrem.min[d][index],
             extrem.max[d][index]
-          ),
-          extrem.min[d][index],
-          extrem.max[d][index]
-        );
+          );
       });
     }
-    this.camPos.z = this.limit(
-      this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07),
-      this.cameraRangeExtreme.min.z[0],
-      this.cameraRangeExtreme.max.z[0]
-    );
+
+    console.log(this.cameraRange.z);
+    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+    // console.log(this.camPos.z);
   }
 
   limit(num, min, max) {

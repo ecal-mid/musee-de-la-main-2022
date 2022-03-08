@@ -39,6 +39,7 @@ class Person {
 
         if (!this.shown) return;
 
+
         this.distance = this.dist2D(sk.LEFT_SHOULDER, sk.RIGHT_HEEL)
         this.height = this.dist2D(normal.RIGHT_EYE, normal.LEFT_HEEL, "xy")
         this.width = this.dist2D(normal.LEFT_WRIST, normal.RIGHT_WRIST, "xy")

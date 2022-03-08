@@ -116,10 +116,10 @@ function draw() {
 }
 
 const CALIB = {
-  brushMin: 5,
-  brushMax: 50,
+  brushMin: 30,
+  brushMax: 300,
   blurMin: 0,
-  blurMax: 4,
+  blurMax: 12,
 }
 
 function updatePoints() {
@@ -139,6 +139,7 @@ function updatePoints() {
     // const weight = map(d, 240, 55, 180, 40) * eraserSize; BEFORE
     let weight = map(distPerson, 0.01, 0.4, CALIB.brushMax, CALIB.brushMin)
     // weight = 10
+    weight = max(CALIB.brushMin, weight)
     // console.log(distPerson)
     // lerpBlur = map(d, 200, 50, 3, 0) * ; BEFORE
     // lerpBlur = map(d, 200, 50, 0, 22.5) * blurSize

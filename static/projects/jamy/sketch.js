@@ -416,8 +416,8 @@ function draw() {
 
 
     if (PERSON.shown) {
-      let mirror = MIRRORED ? -1:1
-      level = PERSON.x * mirror * 640
+      let mirror = MIRRORED ? 1 - PERSON.x : PERSON.x
+      level = mirror * 640
       console.log(level)
     }
     // if (poses[0] != undefined) {
