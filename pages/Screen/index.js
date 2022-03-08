@@ -31,6 +31,7 @@ const CONFIG = {
 window.setup = async () => {
   await AudioAllower.allow();
   p5Microphone = await AudioAllower.getP5Microphone()
+  setInterval(()=> p5Microphone.getLevel(), 1000) // force listening ?
 
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
@@ -55,7 +56,6 @@ window.setup = async () => {
     overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*");
   }, { once: true })
 
-  //setInterval(()=> console.log(p5Microphone.getLevel()), 100)
   
   overlayFrame.onload = (event) =>
   insertIFrame({ player, iframe: event.target, pose });

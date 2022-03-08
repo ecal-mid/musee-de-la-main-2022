@@ -5,7 +5,7 @@ class Microphone {
     }
 
     plugIn(microphone) {
-        console.info('%c Using internal sketch microphone', 'background: rgba(0, 255, 0, 0.1); color: lime')
+        console.info('%c Using iframe microphone', 'background: rgba(0, 255, 0, 0.1); color: lime')
         this.mic = microphone
     }
 
@@ -21,7 +21,7 @@ class Microphone {
             this.mic = new p5.AudioIn();
             this.mic.start();
 
-            console.info('%c Using internal sketch microphone', 'background: rgba(255, 0, 0, 0.1); color: red')
+            console.info('%c Using local microphone', 'background: rgba(255, 0, 0, 0.1); color: red')
         }
 
         return this.mic
