@@ -1,6 +1,17 @@
 export default class AudioAllower {
 
-    constructor() { }
+    constructor() {
+      
+    }
+
+    static  setupP5() {
+        const myp5 = new window.p5(
+            (p) => {
+                p.setup = function() {
+                  p.getAudioContext().resume()
+                };
+            })
+    }
 
     static async allow({ parent = document.body, audioCtx = new AudioContext() } = {}) {
 

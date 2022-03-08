@@ -103,8 +103,9 @@ mediaPipe.addEventListener('setup', () => {
 
 function setup() {
 
-  mic = microphone.get()
-  video = createVideo()
+  mic = new p5.AudioIn();
+  
+  //video = createVideo()
 
   const canvas = createCanvas(100, 100);
   pixelDensity(1)
@@ -121,7 +122,7 @@ function setup() {
 }
 
 window.onkeydown = function (event) {
-
+  mic.start();
   if (event.code === "Space") {
     nbState++;
     if (nbState >= states.length) {
@@ -252,7 +253,7 @@ function draw() {
   if (state == "sound") {
     // get the loudness
     level = mic.getLevel();
-
+    //console.log(level)
     //PARAM
     sensi = 500;
     limit = 100;
