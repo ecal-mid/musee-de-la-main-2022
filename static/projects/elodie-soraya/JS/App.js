@@ -477,16 +477,24 @@ class App {
       const extrem = this.cameraRangeExtreme;
 
       range.forEach((value, index) => {
-        range[index] = this.map(
-          distance,
-          0.2,
-          1,
+        range[index] = this.limit(
+          this.map(
+            distance,
+            0.2,
+            1,
+            extrem.min[d][index],
+            extrem.max[d][index]
+          ),
           extrem.min[d][index],
           extrem.max[d][index]
         );
       });
     }
-    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+    this.camPos.z = this.limit(
+      this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07),
+      this.cameraRangeExtreme.min.z[0],
+      this.cameraRangeExtreme.max.z[0]
+    );
   }
 
   limit(num, min, max) {
