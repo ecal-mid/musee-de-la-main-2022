@@ -30,10 +30,7 @@ const CONFIG = {
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
   await AudioAllower.allow();
-  AudioAllower.setupP5()
-
-  p5Microphone = new p5.AudioIn();
-  p5Microphone.start();
+  p5Microphone = await AudioAllower.getP5Microphone()
 
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
