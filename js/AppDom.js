@@ -3,7 +3,7 @@ import Socket from "./Socket";
 import { HomePage, StudentPage, Page } from "./Pages";
 import Utils from "./Utils";
 
-const WAIT_DURATION = 10 * 1000 // millis
+const WAIT_DURATION = 1 * 60 * 1000 // millis
 
 export default class App {
   constructor() {
@@ -46,7 +46,7 @@ export default class App {
   onTransitionEnd(index, elem, dir) {
 
     this.initiateRestart()
-    
+
     this.debug.innerHTML = `${index},${elem},${dir}`;
     const project_id = index - 1 //! -1 due to homepage
     this.socket.connection.send(

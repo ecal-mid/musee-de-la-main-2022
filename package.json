@@ -13,10 +13,13 @@
     "minimist": "^1.2.5",
     "p5": "^1.4.1",
     "parcel": "*",
+    "pretty-bytes": "^6.0.0",
+    "promise-deferred": "^2.0.3",
     "robotjs": "^0.6.0",
     "swipejs": "^2.3.1",
     "three": "^0.138.3",
     "three-spritetext": "^1.6.5",
+    "url-join": "^4.0.1",
     "uuid": "^8.3.2"
   },
   "type": "module",

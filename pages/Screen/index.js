@@ -48,14 +48,19 @@ window.setup = async () => {
   frame.onFrameLoad = (event) =>
     insertIFrame({ player, iframe: event.target, pose });
 
-  const iframe = document.querySelector("#frame");
-  iframe.src = "/projects/melanie/index.html";
+  // const iframe = document.querySelector("#frame");
+  // iframe.src = "/projects/melanie/index.html";
 
   const overlayFrame = document.querySelector("#overlay");
+
+  overlayFrame.addEventListener('load', () => {
+    overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*");
+  }, { once: true })
+  
   overlayFrame.onload = (event) =>
-    insertIFrame({ player, iframe: event.target, pose });
-  overlayFrame.src = "/pages/ExpoOverlay/tmp_gael.html";
-  overlayFrame.classList.add("hide");
+  insertIFrame({ player, iframe: event.target, pose });
+  // overlayFrame.classList.add("hide");
+  overlayFrame.src = "/pages/Overlay/index.html";
 };
 
 function insertIFrame({ player, pose, iframe }) {

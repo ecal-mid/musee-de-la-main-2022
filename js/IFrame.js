@@ -41,7 +41,7 @@ export default class IFrame {
         this.frame.src = url;
       }, 1000);
       // fadein the overlay
-      this.overlay.classList.remove("hide");
+      setTimeout(() => this.overlay.classList.remove("hide"));
       // send info to iFrame
       this.overlay.contentWindow.postMessage(
         { message: "changeproject", id },
