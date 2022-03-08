@@ -117,7 +117,7 @@ function moveCamera() {
 async function init(canvas, width, height) {
 
     const ratio = width / height
-    const canvasWidth = 1080
+    const canvasWidth = 1080*2
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
@@ -174,7 +174,7 @@ async function init(canvas, width, height) {
         lifeSpan: 1000 * 1000,
     }))
 
-    consoles.loading.setVisibility(false)
+    consoles.loading.setVisibility(true)
 
     let titleSprite = new CSS3DSprite(consoles.splash.elem);
     titleSprite.position.set(5, 205, -50);

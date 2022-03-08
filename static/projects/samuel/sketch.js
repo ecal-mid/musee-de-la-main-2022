@@ -87,6 +87,7 @@ function draw() {
   resizeCanvas(vid.width, vid.height)
   background(255)
   updatePoints()
+
   // console.log("up");
   updateWebcamBuffer()
   drawMaskLayer()

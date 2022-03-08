@@ -1,6 +1,7 @@
 //? press SPACE to change state
 const microphone = new Microphone() // microphone.js
 const mediaPipe = new MediaPipeClient()
+
 let PERSON = new Person()
 let MIRRORED = true
 let DEBUG_MODE = false
@@ -13,6 +14,7 @@ let mic, video;
 
 
 let states = ["distance", "height", "sound", "width", "position"];
+//let state = "distance";
 let state = "distance";
 let nbState = 0;
 
@@ -77,35 +79,40 @@ let limit = 0;
 //   // detector.detect(video, gotDetections);
 // }
 
+window.mediaPipe = mediaPipe
+
+mediaPipe.addEventListener('setup', () => {
+  MIRRORED = mediaPipe.mirrored ?? MIRRORED
+  DEBUG_MODE = mediaPipe.debugMode ?? DEBUG_MODE
+
+  const videoElem = mediaPipe.video
+
+  //if (MIRRORED) canvas.elt.classList.add('--mirrored')
+  //if (DEBUG_MODE) canvas.elt.classList.add('--debugMode')
+
+  //video = new p5.MediaElement(videoElem)
+
+  mediaPipe.addEventListener('pose', (event) => {
+    const { data } = event
+    PERSON.onMediaPipePose(data)
+    //console.log(data)
+    // skeleton.update(data.skeleton)
+    // normalSkeleton.update(data.skeletonNormalized)
+  })
+
+})
+
 function setup() {
 
-  mic = microphone.get()
-  video = createVideo()
+  mic = new p5.AudioIn();
+  
+  //video = createVideo()
 
   const canvas = createCanvas(100, 100);
   pixelDensity(1)
 
-  mediaPipe.addEventListener('setup', () => {
-    MIRRORED = mediaPipe.mirrored ?? MIRRORED
-    DEBUG_MODE = mediaPipe.debugMode ?? DEBUG_MODE
 
-    const videoElem = mediaPipe.video
-
-    if (MIRRORED) canvas.elt.classList.add('--mirrored')
-    if (DEBUG_MODE) canvas.elt.classList.add('--debugMode')
-
-    video = new p5.MediaElement(videoElem)
-
-    resizeCanvas(videoElem.width, videoElem.height)
-
-    mediaPipe.addEventListener('pose', (event) => {
-      const { data } = event
-      PERSON.onMediaPipePose(data)
-      // skeleton.update(data.skeleton)
-      // normalSkeleton.update(data.skeletonNormalized)
-    })
-
-  })
+  
 
 
   topBox = document.getElementById('upBox');
@@ -116,7 +123,7 @@ function setup() {
 }
 
 window.onkeydown = function (event) {
-
+  mic.start();
   if (event.code === "Space") {
     nbState++;
     if (nbState >= states.length) {
@@ -207,7 +214,7 @@ setInterval(() => {
 function draw() {
   PERSON.updateSmoothing()
   clear();
-  image(video, 0, 0)
+  //image(video, 0, 0)
 
   // We can call both functions to draw all keypoints and the skeletons
   //drawKeypoints();
@@ -247,7 +254,8 @@ function draw() {
   if (state == "sound") {
     // get the loudness
     level = mic.getLevel();
-
+    console.log(level)
+    //console.log(level)
     //PARAM
     sensi = 500;
     limit = 100;
@@ -284,10 +292,10 @@ function draw() {
   //-----------------------------------------------------------WIDTH
   if (state == "width") {
 
-    if (PERSON.shown) level = PERSON.width;
+    if (PERSON.shown) level = map(PERSON.width, 0.6, 1, 1, 0.6);
 
     // console.log('width')
-
+    console.log(level, PERSON.width)
     //PARAM
     sensi = 100;
     limit = 100;
@@ -296,7 +304,9 @@ function draw() {
     paramLevelLine = [20, 10, 1.1];
 
     // map level
-    level = map(level, 0.6, 1.7, 0, sensi);
+    level = map(level, 0.6, 1, 0, sensi);
+
+
   }
 
   /*
@@ -406,7 +416,9 @@ function draw() {
 
 
     if (PERSON.shown) {
-      level = PERSON.x
+      let mirror = MIRRORED ? -1:1
+      level = PERSON.x * mirror * 640
+      console.log(level)
     }
     // if (poses[0] != undefined) {
     //   //POSENET VERSION
