@@ -19,6 +19,7 @@ import { TWEEN } from "../src/tween.js";
 
 class App {
   constructor({ width, height, video }) {
+    this.mode = 2 ; // 1 tracking | 2 moving camera
     this.debugMode = false;
     this.container, this.stats, this.clock, this.loader;
 
@@ -27,8 +28,17 @@ class App {
     this.plants = [];
     this.plantsMixer = [];
 
-    this.camPos = { x: 0, y: -1, z: -35 };
+
+    this.cameraRange = {
+      x:[-5,5],
+      y:[4,10],
+      z:[-8,-8]
+    }
+
+    // this.camPos = { x: 0, y: -1, z: -35 };
+    this.camPos = { x: this.average(this.cameraRange.x), y: this.average(this.cameraRange.y), z: this.average(this.cameraRange.z)};
     this.camRot = { x: 3, y: 0, z: -3.14 };
+    this.tracker = {x: this.average(this.cameraRange.x), y: this.average(this.cameraRange.y)};
 
     this.skeleton;
     this.smoother;
@@ -46,14 +56,6 @@ class App {
       { x: -8, y: -3, z: -0.5 },
     ];
 
-    this.bodyPartsAreOn = {
-      hitBox1: false,
-      hitBox2: false,
-      hitBox3: false,
-      hitBox4: false,
-      hitBox5: false,
-      hitBox6: false,
-    };
 
     this.hitboxes = [
       {x:3/4, y:1/6, active : false},
@@ -63,7 +65,6 @@ class App {
       {x:3/4, y:5/6, active : false},
       {x:1/4, y:5/6, active : false}
     ]
-
 
     this.ambiantSound;
     this.soundEffectLeft;
@@ -100,22 +101,23 @@ class App {
 
     this.addListeners();
 
+    // this.toggle = document.getElementById("switch");
+    // this.toggle.addEventListener('change', ()=>{
+    //   this.toggleMode()
+    // })
     this.toggleMode();
   }
 
   toggleMode(){
-    const toggle = document.getElementById("switch");
-    toggle.addEventListener('change', ()=>{
-      if(toggle.querySelector("input").checked){
-        this.debugMode = true;
-        document.querySelector('video').style.display = "block";
-      }else{
-        this.debugMode = false;
-        document.querySelector('video').style.display = "none";
-      }  
-    })
+    if(this.debugMode){
+      document.querySelector('video').style.display = "block";
+      document.getElementById("HUD").style.display = "block";
+    }else{
+      document.querySelector('video').style.display = "none";
+      document.getElementById("HUD").style.display = "none";
+    }
+ 
   }
-
 
   initThreeScene() {
     this.container = document.createElement("div");
@@ -165,9 +167,14 @@ class App {
         this.hitBoxLightsPositions[i].y,
         this.hitBoxLightsPositions[i].z
       );
+      // light.intensity = (0.6);
       this.hitBoxLights.push(light);
       this.scene.add(light);
     }
+
+    // this.hitBoxLights[2].intensity = 0.6;
+
+    console.log(this.hitBoxLights);
 
     //FLOOR
     const mesh = new THREE.Mesh(
@@ -201,8 +208,6 @@ class App {
       }, 4000);
     }
 
-    
-
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -210,6 +215,25 @@ class App {
     this.container.appendChild(this.renderer.domElement);
 
     this.animate();
+  }
+
+  changeLight(index){
+    // https://sbcode.net/threejs/tween/
+    
+
+    this.hitBoxLights.forEach((light, i) =>{
+      let easing = TWEEN.Easing.Linear.None;
+      let intensity = 0;
+      if(i == index){
+        intensity = 1;
+        easing = TWEEN.Easing.Exponential.In;
+      }
+      // const intensity = i == index ? 0.6 : 0;
+      var tweenLight = new TWEEN.Tween(light)
+      .to({ intensity: intensity }, 1000)
+      .easing(easing)
+      .start();
+    });
   }
 
   addListeners() {
@@ -223,11 +247,6 @@ class App {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
-
-  // onClick() {
-  //     console.log('test')
-  //     this.ambiantSound.play();
-  // }
 
   animate() {
     let dt = this.clock.getDelta();
@@ -249,14 +268,13 @@ class App {
       // let pose = event.data.skeleton;
       // // pose.LEFT_WRIST.y < 0.35 &&
      
-      const pose = this.smoother.smoothDamp();
-      this.skeleton.update(pose);
+      // const pose = this.smoother.smoothDamp();
+      // this.skeleton.update(pose);
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       if(this.debugMode){
-        // display skeleton mode
         this.skeleton.show(this.ctx, { color: "red" });
-
-
+  
         //grid and number overlay
         this.ctx.strokeStyle = "white";
         this.ctx.lineWidth = 2;
@@ -288,49 +306,19 @@ class App {
     //permet de debug les hitbox en utilisant les touches 1 à 6
     //touche 1
 
-    console.log()
+    console.log(e.key);
 
-    if (e.key == "1") {
-      this.toggleHitBox(1);
-      this.delayBodyDetection("hitBox1", 5000, 1);
-      this.soundEffectLeft.currentTime = 0;
-      this.soundEffectLeft.play();
+    const usedNumber = [1,2,3,4,5,6];
+    const number  = parseFloat(e.key)
+
+    if(usedNumber.includes(number)){
+      this.changeLight(number-1)
     }
-    //touche 2
-    else if (e.key == "2") {
-      this.toggleHitBox(2);
-      this.delayBodyDetection("hitBox2", 5000, 2);
-      this.soundEffectRight.currentTime = 0;
-      this.soundEffectRight.play();
+    else if(e.key == " "){
+      this.debugMode = !this.debugMode;
+      this.toggleMode();
     }
-    //touche 3
-    else if (e.key == "3") {
-      this.toggleHitBox(3);
-      this.delayBodyDetection("hitBox3", 5000, 3);
-      this.soundEffectLeft.currentTime = 0;
-      this.soundEffectLeft.play();
-    }
-    //touche 4
-    else if (e.key == "4") {
-      this.toggleHitBox(4);
-      this.delayBodyDetection("hitBox4", 5000, 4);
-      this.soundEffectRight.currentTime = 0;
-      this.soundEffectRight.play();
-    }
-    //touche 5
-    else if (e.key == "5") {
-      this.toggleHitBox(5);
-      this.delayBodyDetection("leftKnee", 5000, 5);
-      this.soundEffectLeft.currentTime = 0;
-      this.soundEffectLeft.play();
-    }
-    //touche 6
-   else  if (e.key == "6") {
-      this.toggleHitBox(6);
-      this.delayBodyDetection("rightKnee", 5000, 6);
-      this.soundEffectRight.currentTime = 0;
-      this.soundEffectRight.play();
-    }
+  
 
     // ArrowUp
     // ArrowRight
@@ -340,18 +328,18 @@ class App {
     const duration = 1000;
     let easing = TWEEN.Easing.Sinusoidal.Out;
 
-    if (e.key == "ArrowLeft") {
-      var tweenCamRot = new TWEEN.Tween(this.camRot)
-        .to({  y: this.camRot.y+0.1}, duration)
+    if (e.key == "ArrowUp") {
+      var tweenCamPosition = new TWEEN.Tween(this.camPos)
+        .to({   z:this.camPos.z+1}, duration)
         .easing(easing)
         .start();
     }
 
-    if (e.key == "ArrowRight") {
-      var tweenCamRot = new TWEEN.Tween(this.camRot)
-      .to({  y: this.camRot.y-0.1}, duration)
-      .easing(easing)
-      .start();
+    else  if (e.key == "ArrowDown") {
+      var tweenCamPosition = new TWEEN.Tween(this.camPos)
+        .to({   z:this.camPos.z-1}, duration)
+        .easing(easing)
+        .start();
     }
     
   }
@@ -388,9 +376,63 @@ class App {
         .start();
   }
 
+  moveCameraWithHands(){
+ const hand = this.hands.left; 
+    // docu for animation curve 
+    // https://sbcode.net/threejs/tween/
+    let easing = TWEEN.Easing.Sinusoidal.InOut;
+
+    if(hand.visible){
+        
+      const togo = {
+        x : this.limit(this.map(hand.position.x,0,1, this.cameraRange.x[0], this.cameraRange.x[1]), this.cameraRange.x[0],this.cameraRange.x[1]),
+        y : this.limit(this.map(hand.position.y,1,0, this.cameraRange.y[0], this.cameraRange.y[1]),this.cameraRange.y[0],this.cameraRange.y[1])
+      }
+
+      // const amount = 0.05;  
+      // this.tracker.x = this.lerp(this.tracker.x, togo.x,amount);
+      // this.tracker.y = this.lerp(this.tracker.y, togo.y,amount);
+
+     
+    const duration = 100 ;
+      
+    //     var tweenCamPosition = new TWEEN.Tween(this.camPos)
+    //         .to({  x:this.tracker.x ,y: this.tracker.y}, duration)
+    //         .easing(easing)
+    //         .start();
+    // }
+
+    var tweenCamPosition = new TWEEN.Tween(this.camPos)
+    .to({  x:togo.x ,y: togo.y}, duration)
+    .easing(easing)
+    .start();
+}
+  }
+
+  limit(num, min, max){
+    const MIN = min;
+    const MAX = max;
+    const parsed = parseInt(num)
+    
+    return Math.floor(Math.min(Math.max(parsed, MIN), MAX));
+  
+  }
+
+  average(array){
+    var tot = 0;
+    
+    array.forEach(elm =>{
+      tot+=elm;
+    })
+
+    return tot/array.length;
+  }
+
+
   calcAngle(opposite, adjacent) {
     return Math.atan(opposite / adjacent);
   }
+
 
   // à refaire avec une array | dans l'idéal un classe
   toggleHitBox(index) {
@@ -427,24 +469,6 @@ class App {
         // this.tweenCamAndLights(5, -10, 1, -20, 3, -0.2, -3.14, 0.8);
         break;
     }
-  }
-
-  //à changer
-  tweenCamAndLights(hitboxIndex, x1, y1, z1, x2, y2, z2, lightIntensity) {
-    let easing = TWEEN.Easing.Sinusoidal.InOut;
-    let duration = 1000;
-    var tweenLight = new TWEEN.Tween(this.hitBoxLights[hitboxIndex])
-      .to({ intensity: lightIntensity }, duration)
-      .easing(easing)
-      .start();
-    // var tweenCamPosition = new TWEEN.Tween(this.camPos)
-    //   .to({ x: x1, y: y1, z: z1 }, duration)
-    //   .easing(easing)
-    //   .start();
-    // var tweenCamRot = new TWEEN.Tween(this.camRot)
-    //   .to({ x: x2, y: y2, z: z2 }, duration)
-    //   .easing(easing)
-    //   .start();
   }
 
 
@@ -487,10 +511,9 @@ class App {
     }
   }
 
-  // onClick(e) {
-  // }
 
   onPose(event) {
+
     this.skeleton.update(event.data.skeleton);
     this.smoother.target(event.data.skeleton);
 
@@ -500,10 +523,9 @@ class App {
 
     if (!event.data.skeleton) return;
     let pose = event.data.skeleton;
-    
-    
 
-    //points maps and name
+  
+    //points map and name
     //https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
 
 
@@ -547,10 +569,47 @@ class App {
       this.checkHitBox();
     }
 
-    const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL)
-    this.moveCamera(pose.NOSE, distance);
+    // const distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL)
+    // this.moveCamera(pose.NOSE, distance);
+
+    this.moveCameraWithHands(); // left hand
+    this.checkCamPosition();
+
+    this.HUD();
+  }
+
+  checkCamPosition(){
+    if(this.hands.left.visible){
+      const grid = {x:2, y:3};
+      const pos = this.hands.left.position;
+      const zone = {x:Math.floor((1-pos.x)/(1/grid.x)), y:Math.floor((pos.y)/(1/grid.y))};
+      const index = grid.x*zone.y + zone.x;
+      // console.log("index = " + index);
+      if(index != this.lastZone){
+        this.changeLight(index);
+      }
+      this.lastZone = index;
+    }
+  }
+
+  HUD(){
+    const p = this.camPos;
+    document.getElementById("HUD").innerHTML = `x:${readyToPrint(p.x, this)} | y:${readyToPrint(p.y, this)} | z:${readyToPrint(p.z, this)}`;
+
     
-    
+
+    function readyToPrint(number, that){
+      const rounded = Math.round(number);
+      let string = rounded.toString();
+      if(rounded > 0){
+        string  = ` ${string}`
+      }
+      if(rounded < 10){
+        string  = ` ${string}`
+      }
+
+      return string
+    }
   }
 
   checkHitBox(){
@@ -608,6 +667,7 @@ class App {
 
     this.ctx.strokeStyle = "white";
     this.ctx.lineWidth = 2;
+    
 
     // this.canvas.width = width;
     // this.canvas.height = height;
@@ -616,18 +676,35 @@ class App {
 
     // console.log(this.hands);
 
+    const radius = 50;
+    const width = 20;
+
     for(let hand in this.hands){
       if(this.hands[hand].visible){
         const h = this.hands[hand].position;
-        ctx.beginPath();
-        ctx.arc(h.x*c.width, h.y*c.height, 30, 0, 2 * Math.PI, false);
-        ctx.stroke();
+        if(hand == "left"){
+          var gradient = ctx.createRadialGradient(h.x*c.width, h.y*c.height, radius-5-width, h.x*c.width, h.y*c.height,radius-5);
+          gradient.addColorStop(0, 'rgba(255,255,255,0)');
+          gradient.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+          gradient.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = gradient;
+
+          // ctx.lineWidth = 20;
+
+          ctx.beginPath();
+          ctx.arc(h.x*c.width, h.y*c.height, radius, 0, 2 * Math.PI, false);
+          ctx.fill();
+
+          // ctx.lineWidth = 5;
+          // ctx.strokeStyle = "white";
+          // // ctx.fillRect(20, 20, 160, 160);
+
+          // ctx.beginPath();
+          // ctx.arc(h.x*c.width, h.y*c.height, 60, 0, 2 * Math.PI, false);
+          // ctx.stroke();
+        }
       }
     };
-
-
-    // dessiner un cercle pour chaque main dans le canvas;
-    // console.log(this.round2(hands[1].y));
   }
 
   delayBodyDetection(bodyPart, delay,index ) {
@@ -640,10 +717,10 @@ class App {
     var that = this;
     setTimeout(() =>{
       // console.log(hitboxIndex);
-      var tweenLight = new TWEEN.Tween(that.hitBoxLights[hitboxIndex - 1])
-        .to({ intensity: 0 }, 10000)
-        .easing(easing)
-        .start();
+      // var tweenLight = new TWEEN.Tween(that.hitBoxLights[hitboxIndex - 1])
+      //   .to({ intensity: 0 }, 10000)
+      //   .easing(easing)
+      //   .start();
       // var tweenCamPosition = new TWEEN.Tween(that.camPos)
       //   .to({ x: 0, y: 1, z: -35 }, duration)
       //   .easing(easing)
@@ -682,6 +759,10 @@ class App {
     const z = b.z - a.z
     return Math.sqrt(x * x + y * y + z*z);
 }
+
+  lerp (start, end, amt){
+    return (1-amt)*start+amt*end;
+  }
 }
 
 const mediaPipe = new MediaPipeClient();
