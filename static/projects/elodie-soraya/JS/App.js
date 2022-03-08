@@ -469,7 +469,7 @@ class App {
       //   .start();
     }
 
-    console.log(distance);
+    // console.log(distance);
 
     for (let d in this.cameraRange) {
       const range = this.cameraRange[d];
