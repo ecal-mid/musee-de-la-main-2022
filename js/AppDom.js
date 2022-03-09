@@ -45,7 +45,7 @@ export default class App {
 
   onTransitionEnd(index, elem, dir) {
 
-    this.initiateRestart()
+    // this.initiateRestart()
 
     this.debug.innerHTML = `${index},${elem},${dir}`;
     const project_id = index - 1 //! -1 due to homepage
@@ -56,6 +56,11 @@ export default class App {
   }
   onMessage(data) {
     if ("client_id" in data) this.ID = data["client_id"];
+
+    if(data.type === 'nobody') {
+      window.mySwipe.slide(0)
+      return;
+    }
     //
     this.debug.innerHTML = "";
     const keys = Object.keys(data);

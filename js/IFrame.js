@@ -22,6 +22,12 @@ export default class IFrame {
     this.initData()
   }
 
+  sendMessage(msg) {
+    this.socket.connection.send(
+      JSON.stringify({ ...msg, sender: this.ID })
+    )
+  }
+
   async initData() {
     this.studentsData = await Utils.loadJSON("/json/studentProjects.json")
   }
@@ -31,9 +37,11 @@ export default class IFrame {
   }
   // message from ipad
   onMessage(data) {
-    
+
+    if ("client_id" in data) this.ID = data["client_id"]
+
     if (!("project_id" in data)) return
-      
+
     const { projects } = this.studentsData
 
     let id = parseInt(data["project_id"])

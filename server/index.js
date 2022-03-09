@@ -31,7 +31,20 @@ wss.on("connection", (client) => {
     client.send(JSON.stringify({ client_id }))
 
     client.on("message", (data) => {
-        const { sender, project_id } = JSON.parse(data)
+
+        const { sender, project_id, type } = JSON.parse(data)
+        
+        
+        if (type === 'nobody') {
+            
+            clients.forEach((otherClient, client_id) => {
+                if (client_id === sender) return
+                
+                otherClient.send(JSON.stringify({ type: 'nobody' }))
+            })
+
+            return
+        }
 
         clients.forEach((otherClient, client_id) => {
             if (client_id === sender) return

@@ -1,6 +1,6 @@
 @font-face {
   font-family: Perfect;
-  src: url(../fonts/Perfect.woff) format("woff");
+  src: url(~/assets/fonts/raster.ttf);
 }
 @mixin fullOverlay() {
   &::after {
