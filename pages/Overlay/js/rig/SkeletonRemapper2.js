@@ -28,21 +28,21 @@ const defaults = {
     // { name: "RIGHT_EAR", target: "RIGHT_EAR" },
     // { name: "LEFT_RIGHT", target: "LEFT_RIGHT" },
     // { name: "RIGHT_LEFT", target: "RIGHT_LEFT" },
-    { name: "mixamorigLeftArm", target: "LEFT_SHOULDER" },
-    { name: "mixamorigLeftForeArm", target: "LEFT_ELBOW" },
-    { name: "mixamorigLeftHand", target: "LEFT_WRIST" },
+    { name: "mixamorig_LeftArm", target: "LEFT_SHOULDER" },
+    { name: "mixamorig_LeftForeArm", target: "LEFT_ELBOW" },
+    { name: "mixamorig_LeftHand", target: "LEFT_WRIST" },
 
-    { name: "mixamorigRightArm", target: "RIGHT_SHOULDER" },
-    { name: "mixamorigRightForeArm", target: "RIGHT_ELBOW" },
-    { name: "mixamorigRightHand", target: "RIGHT_WRIST" },
+    { name: "mixamorig_RightArm", target: "RIGHT_SHOULDER" },
+    { name: "mixamorig_RightForeArm", target: "RIGHT_ELBOW" },
+    { name: "mixamorig_RightHand", target: "RIGHT_WRIST" },
 
-    { name: "mixamorigLeftUpLeg", target: "LEFT_HIP" },
-    { name: "mixamorigLeftLeg", target: "LEFT_KNEE" },
-    { name: "mixamorigLeftFoot", target: "LEFT_ANKLE" },
+    { name: "mixamorig_LeftUpLeg", target: "LEFT_HIP" },
+    { name: "mixamorig_LeftLeg", target: "LEFT_KNEE" },
+    { name: "mixamorig_LeftFoot", target: "LEFT_ANKLE" },
 
-    { name: "mixamorigRightUpLeg", target: "RIGHT_HIP" },
-    { name: "mixamorigRightLeg", target: "RIGHT_KNEE" },
-    { name: "mixamorigRightFoot", target: "RIGHT_ANKLE" },
+    { name: "mixamorig_RightUpLeg", target: "RIGHT_HIP" },
+    { name: "mixamorig_RightLeg", target: "RIGHT_KNEE" },
+    { name: "mixamorig_RightFoot", target: "RIGHT_ANKLE" },
     // { name: "RIGHT_SHOULDER", target: "RIGHT_SHOULDER" },
     // { name: "RIGHT_ELBOW", target: "RIGHT_ELBOW" },
     // { name: "RIGHT_WRIST", target: "RIGHT_WRIST" },
@@ -95,17 +95,17 @@ export default class SkeletonRemapper {
 
     this.positionElements(pose)
 
-    this.retarget(skeleton, "mixamorigLeftArm", "mixamorigLeftForeArm", amt)
-    this.retarget(skeleton, "mixamorigLeftForeArm", "mixamorigLeftHand", amt)
+    this.retarget(skeleton, "mixamorig_LeftArm", "mixamorig_LeftForeArm", amt)
+    this.retarget(skeleton, "mixamorig_LeftForeArm", "mixamorig_LeftHand", amt)
 
-    this.retarget(skeleton, "mixamorigRightArm", "mixamorigRightForeArm", amt)
-    this.retarget(skeleton, "mixamorigRightForeArm", "mixamorigRightHand", amt)
+    this.retarget(skeleton, "mixamorig_RightArm", "mixamorig_RightForeArm", amt)
+    this.retarget(skeleton, "mixamorig_RightForeArm", "mixamorig_RightHand", amt)
 
-    this.retarget(skeleton, "mixamorigLeftUpLeg", "mixamorigLeftLeg", amt)
-    this.retarget(skeleton, "mixamorigLeftLeg", "mixamorigLeftFoot", amt)
+    this.retarget(skeleton, "mixamorig_LeftUpLeg", "mixamorig_LeftLeg", amt)
+    this.retarget(skeleton, "mixamorig_LeftLeg", "mixamorig_LeftFoot", amt)
 
-    this.retarget(skeleton, "mixamorigRightUpLeg", "mixamorigRightLeg", amt)
-    this.retarget(skeleton, "mixamorigRightLeg", "mixamorigRightFoot", amt)
+    this.retarget(skeleton, "mixamorig_RightUpLeg", "mixamorig_RightLeg", amt)
+    this.retarget(skeleton, "mixamorig_RightLeg", "mixamorig_RightFoot", amt)
 
     // { name: "mixamorigLeftUpLeg", target: "LEFT_HIP" },
     // { name: "mixamorigLeftLeg", target: "LEFT_KNEE" },
@@ -175,6 +175,7 @@ export default class SkeletonRemapper {
     bone.up.set(0, 1, 0)
     bone.rotateX(Math.PI / 2)
 
+    // bone.quaternion.slerp(oldAngle, 1 - amt)
     bone.quaternion.slerp(oldAngle, 1 - amt)
 
     origin.removeFromParent()

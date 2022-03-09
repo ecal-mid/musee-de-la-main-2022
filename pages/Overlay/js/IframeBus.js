@@ -1,8 +1,8 @@
-import EventEmitter from '@onemorestudio/eventemitterjs'
+import EventBus from '~/js/event-bus.js'
 import Deferred from 'promise-deferred'
 
-export default class IframeBus extends EventEmitter {
-    constructor() {
+export default class IframeBus extends EventBus {
+    constructor({ transitionDelay }) {
         super()
         this.handlers = {
             'changeproject': this.onChangeProject.bind(this)
@@ -12,34 +12,43 @@ export default class IframeBus extends EventEmitter {
 
         window.addEventListener("message", (e) => {
             this.handlers[e.data.message]?.(e)
-        });
+        })
+
+        this.transitionDelay = transitionDelay
     }
 
     onChangeProject(e) {
 
-        super.emit('resume')
+        this.emit('resume')
 
-        console.log("just swiped, please fade in", e);
-        console.log(":: project ID ::", e.data.id);
+        console.log("just swiped, please fade in", e)
+        console.log(":: project ID ::", e.data.id)
 
         const isProject = e.data.id >= 0
+        console.log(e.data)
         clearTimeout(this.timeout)
 
-        if (!isProject) return
+        if (!isProject) {
+            this.emit('title')
+            return
+        } else {
+            
+            this.emit('project', e.data.project)
+        }
 
         this.timeout = setTimeout(() => {
-            this.message("overlayended", {});
-        }, 2500);
+            this.message("overlayended", {})
+        }, this.transitionDelay)
 
     }
 
     message(message, data = {}) {
-        this.parent.postMessage({ message, ...data }, "*");
+        this.parent.postMessage({ message, ...data }, "*")
     }
 
     waitFor(eventName) {
-        const deferred = new Deferred();
-        super.addEventListener(eventName, (event) => deferred.resolve(event))
+        const deferred = new Deferred()
+        this.addEventListener(eventName, (event) => deferred.resolve(event))
         return deferred.promise
     }
 }

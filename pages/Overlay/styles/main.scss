@@ -46,7 +46,15 @@ body {
 .fakeConsole.console {
   $margin: 1em;
 
+  transition: opacity 3s;
+
+  &--loading {
+    font-size: 1rem;
+  }
+
   &--bg {
+    transition-delay: 2s;
+
     width: 25%;
     height: 15vh;
     justify-content: flex-end;
@@ -70,6 +78,7 @@ body {
   }
 
   &--main {
+    transition-delay: 1s;
     // left: $margin;
     // bottom: $margin;
     opacity: 0.5;
