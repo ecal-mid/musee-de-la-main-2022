@@ -101,11 +101,11 @@ export default class SkeletonRemapper {
     this.retarget(skeleton, "mixamorig_RightArm", "mixamorig_RightForeArm", amt)
     this.retarget(skeleton, "mixamorig_RightForeArm", "mixamorig_RightHand", amt)
 
-    this.retarget(skeleton, "mixamorig_LeftUpLeg", "mixamorig_LeftLeg", amt)
-    this.retarget(skeleton, "mixamorig_LeftLeg", "mixamorig_LeftFoot", amt)
+   // this.retarget(skeleton, "mixamorig_LeftUpLeg", "mixamorig_LeftLeg", amt)
+    //this.retarget(skeleton, "mixamorig_LeftLeg", "mixamorig_LeftFoot", amt)
 
-    this.retarget(skeleton, "mixamorig_RightUpLeg", "mixamorig_RightLeg", amt)
-    this.retarget(skeleton, "mixamorig_RightLeg", "mixamorig_RightFoot", amt)
+//    this.retarget(skeleton, "mixamorig_RightUpLeg", "mixamorig_RightLeg", amt)
+   // this.retarget(skeleton, "mixamorig_RightLeg", "mixamorig_RightFoot", amt)
 
     // { name: "mixamorigLeftUpLeg", target: "LEFT_HIP" },
     // { name: "mixamorigLeftLeg", target: "LEFT_KNEE" },

@@ -268,10 +268,11 @@ export default class Model {
         // mixer.stopAllAction()
         action.reset()
         action.play()
-        action.setLoop(options.loop ? THREE.LoopRepeat : THREE.LoopOnce)
-
+        const repeats = 3
+        action.setLoop(THREE.LoopRepeat, options.loop ? Infinity : repeats)
+        action.setLoop(THREE.LoopRepeat)
         if (!options.loop) {
-            const timeoutMS = Math.max(0, action._clip.duration - delay) * 1000
+            const timeoutMS = Math.max(0, action._clip.duration * repeats - delay) * 1000
             this.mixerTimeout = setTimeout(() => {
                 // action.fadeOut(delay)
                 this.play('idle', { loop: true })

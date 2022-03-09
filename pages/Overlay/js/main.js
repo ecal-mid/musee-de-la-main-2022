@@ -97,7 +97,7 @@ BUS.addEventListener('project', function (project) {
 
     splash.setVisibility(false)
 
-    const clipName = random(['rumba', 'jump', 'silly', 'opening', 'pointing', 'salsa'])
+    const clipName = random(['rumba', 'rumba', 'silly', 'pointing'])
     model?.play(clipName)
     TITLE_MODE = false
 
@@ -154,7 +154,7 @@ mediaPipe.on('setup', async () => {
 function moveCamera() {
     let bone = model.getBone('mixamorig_Hips')
     const pos = bone.getWorldPosition(new THREE.Vector3())
-    camera.position.x = pos.x
+    camera.position.x = pos.x * 0.5
     camera.lookAt(orbit.target)
 }
 
@@ -163,7 +163,7 @@ async function init(canvas, width, height) {
     const ratio = width / height
     //TODO
     // const canvasWidth = 1080*2
-    const canvasWidth = 1080
+    const canvasWidth = 1080 * 2
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
