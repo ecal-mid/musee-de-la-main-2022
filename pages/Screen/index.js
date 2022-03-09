@@ -28,6 +28,12 @@ const CONFIG = {
 }
 
 let someoneTimeout = null
+
+function resetTimeout() {
+  clearTimeout(someoneTimeout)
+  someoneTimeout = null
+}
+
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
   await AudioAllower.allow()
@@ -55,8 +61,7 @@ window.setup = async () => {
     const someone = Boolean(event.data.skeleton)
 
     if (someone) {
-      clearTimeout(someoneTimeout)
-      someoneTimeout = null
+      resetTimeout()
       return
     }
 
@@ -67,8 +72,10 @@ window.setup = async () => {
     }, 10 * 1000)
   })
 
-  frame.onFrameLoad = (event) =>
+  frame.onFrameLoad = (event) => {
+    resetTimeout()
     insertIFrame({ player, iframe: event.target, pose })
+  }
 
   // const iframe = document.querySelector("#frame");
   // iframe.src = "/projects/melanie/index.html";
