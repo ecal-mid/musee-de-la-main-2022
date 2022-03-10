@@ -23,12 +23,10 @@ export default class App {
     window.mySwipe = new Swipe(document.getElementById("slider"), {
       stopPropagation: true,
       transitionEnd: this.handlers.callback,
-      callback: (pos, index, dir) => {
-        // console.log(pos, index, dir)
+      callback: (index, elem, dir) => {
+        this.updateNavigation(index)
       },
       dragStart: () => {
-        clearTimeout(this.restartTimeout)
-        // console.log('lol')
       }
     })
 
@@ -37,22 +35,13 @@ export default class App {
     this.initListeners()
   }
 
-  initiateRestart() {
-    const waitMS = WAIT_DURATION
-    clearTimeout(this.restartTimeout)
-    this.restartTimeout = setTimeout(() => window.mySwipe.slide(0), waitMS)
-  }
-
   onTransitionEnd(index, elem, dir) {
-
-    // this.initiateRestart()
 
     this.debug.innerHTML = `${index},${elem},${dir}`
     const project_id = index - 1 //! -1 due to homepage
     this.socket.connection.send(
       JSON.stringify({ project_id, sender: this.ID })
     )
-    this.updateNavigation(index)
   }
   onMessage(data) {
     if ("client_id" in data) this.ID = data["client_id"]

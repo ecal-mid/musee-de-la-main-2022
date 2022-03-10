@@ -1,8 +1,10 @@
-import "~/styles/controller.scss";
-import App from "~/js/AppDom";
+import "~/styles/controller.scss"
+import App from "~/js/AppDom"
 
 window.onload = () => {
-  new App();
+  new App()
+
+  // document.body.ontouchstart = () => alert(document.body.requestFullscreen)
   // const { origin, pathname } = window.location
 
   // const timeNow = Date.now()
@@ -13,9 +15,4 @@ window.onload = () => {
   // if (navigator.standalone && (isTooOld)) {
   //   document.location.href = `${origin + pathname}?version=${timeNow}`
   // }
-};
-
-document.addEventListener("visibilitychange", (event) => {
-  const entered = document.visibilityState === 'visible'
-  if (entered) location.reload(true);
-});
+}
