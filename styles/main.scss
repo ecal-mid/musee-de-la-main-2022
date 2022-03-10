@@ -1,8 +1,30 @@
-$color-blue: rgb(180, 250, 255);
+$color-blue: rgb(138, 233, 219);
+$color-dark: rgb(0, 0, 0);
+$color-light: rgb(255, 255, 255);
+
+$transition-duration: 0.33s;
 
 @font-face {
   font-family: Raster;
   src: url(../assets/fonts/raster.ttf);
+}
+
+@mixin textCrop($ascender: -0.25em, $descender: -0.25em) {
+  &::after,
+  &::before {
+    content: '';
+    display: block;
+    height: 0;
+    width: 0;
+  }
+  
+  &::before {
+    margin-top: $ascender;
+  }
+
+  &::after {
+    margin-bottom: $descender;
+  }
 }
 
 @mixin fullAbsolute() {

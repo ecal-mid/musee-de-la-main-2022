@@ -93,8 +93,6 @@ window.setup = async () => {
   overlayFrame.src = "/pages/Overlay/index.html"
 }
 
-
-
 async function insertIFrame({ player, pose, iframe }) {
 
   const { mediaPipe, microphone } = iframe.contentWindow || {}

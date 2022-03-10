@@ -1,23 +1,23 @@
-import Swipe from "swipejs";
-import Socket from "./Socket";
-import { HomePage, StudentPage, Page } from "./Pages";
-import Utils from "./Utils";
+import Swipe from "swipejs"
+import Socket from "./Socket"
+import { HomePage, StudentPage, Page, AboutPage } from "./Pages"
+import Utils from "./Utils"
 
 const WAIT_DURATION = 5 * 60 * 1000 // millis
 
 export default class App {
   constructor() {
-    this.isFullscreen = false;
-    this.debug = document.getElementById("debug");
+    this.isFullscreen = false
+    this.debug = document.getElementById("debug")
     this.handlers = {
       callback: this.onTransitionEnd.bind(this),
       message: this.onMessage.bind(this),
-    };
-    this.setup();
+    }
+    this.setup()
   }
   async setup() {
     const data = await Utils.loadJSON("/json/studentProjects.json")
-    this.buildPages(data);
+    this.buildPages(data)
     Page.select(0)
 
     window.mySwipe = new Swipe(document.getElementById("slider"), {
@@ -30,11 +30,11 @@ export default class App {
         clearTimeout(this.restartTimeout)
         // console.log('lol')
       }
-    });
+    })
 
-    this.socket = new Socket();
-    this.socket.addEventListener("message", this.handlers.message);
-    this.initListeners();
+    this.socket = new Socket()
+    this.socket.addEventListener("message", this.handlers.message)
+    this.initListeners()
   }
 
   initiateRestart() {
@@ -47,26 +47,26 @@ export default class App {
 
     // this.initiateRestart()
 
-    this.debug.innerHTML = `${index},${elem},${dir}`;
+    this.debug.innerHTML = `${index},${elem},${dir}`
     const project_id = index - 1 //! -1 due to homepage
     this.socket.connection.send(
       JSON.stringify({ project_id, sender: this.ID })
-    );
-    this.updateNavigation(index);
+    )
+    this.updateNavigation(index)
   }
   onMessage(data) {
-    if ("client_id" in data) this.ID = data["client_id"];
+    if ("client_id" in data) this.ID = data["client_id"]
 
-    if(data.type === 'nobody') {
+    if (data.type === 'nobody') {
       window.mySwipe.slide(0)
-      return;
+      return
     }
     //
-    this.debug.innerHTML = "";
-    const keys = Object.keys(data);
+    this.debug.innerHTML = ""
+    const keys = Object.keys(data)
     keys.forEach((key) => {
-      this.debug.innerHTML += `${key}: ${data[key]}<br/>`;
-    });
+      this.debug.innerHTML += `${key}: ${data[key]}<br/>`
+    })
   }
   initListeners() { }
 
@@ -76,13 +76,15 @@ export default class App {
   buildPages(data) {
 
 
-    const { projects, home } = data
+    const { projects, home, about } = data
 
-    new HomePage({ home });
+    new HomePage({ home })
 
     projects.forEach((project, i) => {
-      new StudentPage({ project });
-    });
+      new StudentPage({ project })
+    })
+
+    new AboutPage({ about })
 
     // refresh allImages
     // Array.from(document.getElementsByClassName("imageWrapper")).forEach(
