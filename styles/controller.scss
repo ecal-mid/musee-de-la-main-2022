@@ -1,9 +1,18 @@
 @use 'sass:math';
+@use 'sass:color';
 @import 'main';
 
 $gap: 2rem;
 $top: 33vh;
 $margin-big: 80px;
+$perspective: 8;
+
+@mixin parallax($offset) {
+  transition: all;
+  transition-duration: inherit;
+  will-change: transform;
+  transform: translateX(calc(var(--swipe-translate) * $offset * 1px));
+}
 
 html,
 body {
@@ -22,64 +31,127 @@ body {
   visibility: hidden;
   position: relative;
   height: 100%;
+  width: 100%;
 
   #navigation {
+    $height: $margin-big;
+    $dot-size: 5px;
     // background-color: red;
     position: fixed;
-    bottom: math.div($margin-big, 2);
+    height: $height;
+    bottom: 0;
     left: 0px;
     right: 0px;
     // height: 40px;
     text-align: center;
-    span {
-      $size: 0.5em;
-      display: inline-block;
-      width: $size;
-      height: $size;
-      border-radius: 0%;
-      border: solid 1px $color-light;
-      margin: 0 15px;
-      transition: background-color $transition-duration;
+    display: flex;
+    align-items: center;
 
-      &.active {
-        background-color: $color-blue;
-        animation: glow 1s ease-in-out infinite alternate;
+    .nav__buttons {
+      flex: 0 0 auto;
+      height: 100%;
+
+      > div {
+        position: relative;
+        width: math.div($height, 2);
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &::after {
+          content: '';
+          width: $dot-size;
+          height: $dot-size;
+          border: solid 1px $color-blue;
+          transition: background-color $transition-duration;
+        }
+
+        &.active {
+          &::after {
+            background-color: $color-light;
+            border-color: $color-light;
+            animation: glow 1s ease-in-out infinite alternate;
+          }
+        }
       }
     }
+
+    .nav__left,
+    .nav__right {
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+    }
+
+    // span {
+    //   $size: 0.5em;
+    //   display: inline-block;
+    //   width: $size;
+    //   height: $size;
+    //   border-radius: 0%;
+    //   border: solid 1px $color-blue;
+    //   margin: 0 15px;
+    //   transition: background-color $transition-duration;
+
+    //   &.active {
+    //     background-color: $color-light;
+    //     border-color: $color-light;
+    //     animation: glow 1s ease-in-out infinite alternate;
+    //   }
+    // }
   }
   .swipe-wrap {
-    overflow: hidden;
-    position: relative;
-    height: 100%;
-    perspective: 1px;
-    perspective-origin: 0 0;
 
-    > * {
-      will-change: transform;
-    }
+    --swipe-translate: 0;
+    --swipe-completion: 1;
+    // overflow: hidden;
+    position: absolute;
+    height: 100%;
 
     .page {
       font-size: 1.1em;
-      transform-style: preserve-3d;
       float: left;
       width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
       color: $color-light;
-      background-color: $color-dark;
       padding: $margin-big;
+      $page: &;
 
       h1 {
         @include textCrop;
+        @include parallax(0.1);
 
         color: transparent;
-        -webkit-text-stroke: 1px $color-light;
+        // -webkit-text-stroke: 1px $color-light;
         margin: 0;
+        margin-bottom: $gap;
         font-size: 3em;
         font-weight: lighter;
         text-align: center;
+
+        .svg-title {
+          top: 0;
+          left: 0;
+          overflow: visible;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          stroke: $color-light;
+  
+          text {
+            transition: stroke-dasharray 1s;
+            stroke-dasharray: 0 100;
+  
+            @at-root #{$page}.active & {
+              stroke-dasharray: 100 0;
+            }
+          }
+        }
       }
+
 
       h2,
       h3 {
@@ -90,6 +162,7 @@ body {
         padding: 0px;
       }
       h2 {
+        @include parallax(0.1);
 
         color: transparent;
         -webkit-text-stroke: 1px $color-light;
@@ -98,12 +171,16 @@ body {
         margin-bottom: $gap;
       }
       h3 {
-
+        @include parallax(-0.05);
         color: $color-blue;
         margin-bottom: $gap;
       }
 
-      footer,
+      .instruction {
+        animation: flicker 1s ease-in-out infinite alternate;
+      }
+
+      .instruction,
       p {
         @include textCrop;
 
@@ -117,8 +194,9 @@ body {
         // }
       }
 
-      footer,
+      .instruction,
       p.interaction {
+        @include parallax(-0.05);
         color: $color-blue;
       }
 
@@ -135,6 +213,7 @@ body {
         flex-direction: column;
 
         .logo {
+          @include parallax(0.05);
           height: 1em;
           width: 100%;
           background-repeat: no-repeat;
@@ -146,16 +225,17 @@ body {
         padding-top: $top;
 
         .imageWrapper {
-          z-index: -1;
-          transform-style: preserve-3d;
-          transform: translateZ(-100px);
-          opacity: 1;
+          @include parallax(-0.4);
           @include fullAbsolute;
+
+          z-index: -1;
+          opacity: var(--swipe-completion);
           height: calc(#{$top} + 6em);
 
           &::after {
             content: '';
             @include fullAbsolute;
+            height: calc(100% + 2px); // fix image overflow
             background: linear-gradient(
               0deg,
               rgba(0, 0, 0, 1) 0%,
@@ -192,9 +272,28 @@ body {
 }
 
 .glow {
-  will-change: text-shadow;
-  //text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  // will-change: text-shadow;
+  text-shadow: 0 0 0.1em color.adjust($color-blue, $alpha: -0.7);
   // animation: glowText 1s ease-in-out infinite alternate;
+}
+
+.flicker {
+  animation: flicker 1s ease-in-out infinite alternate;
+}
+
+@-webkit-keyframes flicker {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes grow {
+  to {
+    transform: translateX(-1ch);
+  }
 }
 
 @-webkit-keyframes glowText {

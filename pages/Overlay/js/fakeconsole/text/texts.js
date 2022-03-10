@@ -4,7 +4,7 @@ export class TextLoading extends _Text {
   constructor(opts) {
     super(opts)
 
-    this.label = new TextLabel({ attributes: { textContent: 'loading', classList: 'label--loading' } })
+    this.label = new TextLabel({ attributes: { textContent: 'chargement', classList: 'label--loading' } })
     this.progress = new Text({ attributes: { classList: 'slider' } })
 
     this.unshift(this.label)

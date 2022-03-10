@@ -11,16 +11,37 @@ export class Page {
     document.querySelector(".swipe-wrap").appendChild(this.div)
     this.div.classList.add('page')
 
-    this.dot = document.createElement("span")
-    document.getElementById("navigation").appendChild(this.dot)
+    this.dot = document.createElement("div")
+    document.querySelector("#navigation > .nav__buttons").appendChild(this.dot)
 
     this.constructor.pages.push(this)
   }
+
   select(active) {
-    const { classList } = this.dot
-    active ? classList.add("active") : classList.remove("active")
+
+    [this.dot, this.div].forEach(({ classList }) => {
+      active ? classList.add("active") : classList.remove("active")
+    })
+
   }
 
+  static navigation(callback) {
+    const buttons = document.querySelector("#navigation > .nav__buttons")
+    buttons.onclick = (event) => {
+      const index = [...buttons.children].indexOf(event.target)
+      if (index >= 0) callback(index)
+    }
+  }
+
+  static prev(callback) {
+    const button = document.querySelector("#navigation > .nav__left")
+    button.onclick = callback
+  }
+
+  static next(callback) {
+    const button = document.querySelector("#navigation > .nav__right")
+    button.onclick = callback
+  }
 
   static select(index) {
     this.pages.forEach((page, i) => {
@@ -38,6 +59,20 @@ function encodeHTML(strings, ...keys) {
   }).join('')
 }
 
+function joinList(arr, { repeat = ', ', last = ' & ' } = {}) {
+  let str = ''
+  arr.forEach((elem, index, arr) => {
+    if (index === 0) {
+      str += elem
+    } else if (index === arr.length - 1) {
+      str += last + elem
+    } else {
+      str += repeat + elem
+    }
+  })
+  return str
+}
+
 export class StudentPage extends Page {
   constructor({ project, options }) {
     super(options)
@@ -51,7 +86,7 @@ export class StudentPage extends Page {
     </div>
     <div class="content">
         <h2 class="title glow">${title}</h2>
-        <h3 class="students glow">${students.join(', ')}</h3>
+        <h3 class="students glow">${joinList(students)}</h3>
         <p class="description">${description}</p>
         <p class="interaction">${interaction}</p>
     </div>`
@@ -64,13 +99,14 @@ export class HomePage extends Page {
   constructor({ home, options }) {
     super(options)
 
-    const { title, footer } = home
+    const { title, instruction } = home
 
     this.div.classList.add('page--home')
     this.div.innerHTML = encodeHTML`
-      <h1 class="mainTitle glow">${title}</h1>
-      <h3 class="hidden">_</h3>
-      <footer class="glow">${footer}</footer>
+      <h1 class="mainTitle glow">${title}
+      <svg class="svg-title"><text fill="transparent" x="50%" y="100%" text-anchor="middle" stroke-width="2" vector-effect="non-scaling-stroke" font-size="100%">${title}</text></svg>
+      </h1>
+      <span class="instruction glow">${instruction}</span>
     `
   }
 }

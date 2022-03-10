@@ -1,7 +1,7 @@
 {
   "home": {
     "title": "Alter Ego",
-    "footer": "<Balayez pour naviguer>"
+    "instruction": "<Balayez pour naviguer>"
   },
   "about": {
     "title": "A propos",

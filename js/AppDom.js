@@ -1,9 +1,7 @@
-import Swipe from "swipejs"
+import Swipe from "./swipe.custom.js"
 import Socket from "./Socket"
 import { HomePage, StudentPage, Page, AboutPage } from "./Pages"
 import Utils from "./Utils"
-
-const WAIT_DURATION = 5 * 60 * 1000 // millis
 
 export default class App {
   constructor() {
@@ -24,15 +22,17 @@ export default class App {
       stopPropagation: true,
       transitionEnd: this.handlers.callback,
       callback: (index, elem, dir) => {
-        this.updateNavigation(index)
+        Page.select(index)
       },
-      dragStart: () => {
-      }
+      // dragStart: () => {},
     })
+
+    Page.navigation(window.mySwipe.slide)
+    Page.next(window.mySwipe.next)
+    Page.prev(window.mySwipe.prev)
 
     this.socket = new Socket()
     this.socket.addEventListener("message", this.handlers.message)
-    this.initListeners()
   }
 
   onTransitionEnd(index, elem, dir) {
@@ -57,11 +57,7 @@ export default class App {
       this.debug.innerHTML += `${key}: ${data[key]}<br/>`
     })
   }
-  initListeners() { }
 
-  updateNavigation(index) {
-    Page.select(index)
-  }
   buildPages(data) {
 
 
@@ -74,15 +70,5 @@ export default class App {
     })
 
     new AboutPage({ about })
-
-    // refresh allImages
-    // Array.from(document.getElementsByClassName("imageWrapper")).forEach(
-    //   (image) => {
-    //     console.log(image);
-    //     image.style.backgroundImage = `url(${image.getAttribute(
-    //       "data-image"
-    //     )})`;
-    //   }
-    // );
   }
 }
