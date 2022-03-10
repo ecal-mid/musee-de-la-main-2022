@@ -16,7 +16,7 @@ export default class App {
   async setup() {
     const data = await Utils.loadJSON("/json/studentProjects.json")
     this.buildPages(data)
-    Page.select(0)
+    setTimeout(() => Page.select(0))
 
     window.mySwipe = new Swipe(document.getElementById("slider"), {
       stopPropagation: true,

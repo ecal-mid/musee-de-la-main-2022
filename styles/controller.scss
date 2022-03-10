@@ -1,5 +1,6 @@
 @use 'sass:math';
 @use 'sass:color';
+@use 'sass:selector';
 @import 'main';
 
 $gap: 2rem;
@@ -12,6 +13,12 @@ $perspective: 8;
   transition-duration: inherit;
   will-change: transform;
   transform: translateX(calc(var(--swipe-translate) * $offset * 1px));
+}
+
+@mixin ancestorMatches($parent, $class) {
+  @at-root #{selector.replace(&, $parent, #{$parent}#{$class})} {
+    @content;
+  }
 }
 
 html,
@@ -83,26 +90,8 @@ body {
       width: 100%;
       height: 100%;
     }
-
-    // span {
-    //   $size: 0.5em;
-    //   display: inline-block;
-    //   width: $size;
-    //   height: $size;
-    //   border-radius: 0%;
-    //   border: solid 1px $color-blue;
-    //   margin: 0 15px;
-    //   transition: background-color $transition-duration;
-
-    //   &.active {
-    //     background-color: $color-light;
-    //     border-color: $color-light;
-    //     animation: glow 1s ease-in-out infinite alternate;
-    //   }
-    // }
   }
   .swipe-wrap {
-
     --swipe-translate: 0;
     --swipe-completion: 1;
     // overflow: hidden;
@@ -118,40 +107,42 @@ body {
       overflow: hidden;
       color: $color-light;
       padding: $margin-big;
-      $page: &;
 
       h1 {
         @include textCrop;
-        @include parallax(0.1);
+        @include parallax(0.15);
 
         color: transparent;
         // -webkit-text-stroke: 1px $color-light;
         margin: 0;
         margin-bottom: $gap;
+        margin-left: .2ch; //! correct monospace offset
         font-size: 3em;
         font-weight: lighter;
         text-align: center;
 
         .svg-title {
-          top: 0;
+          top: -2px;
           left: 0;
           overflow: visible;
           position: absolute;
           width: 100%;
           height: 100%;
           stroke: $color-light;
-  
+
           text {
-            transition: stroke-dasharray 1s;
             stroke-dasharray: 0 100;
-  
-            @at-root #{$page}.active & {
+            opacity: 0;
+            filter: drop-shadow(0 0 2px white);
+
+            @include ancestorMatches('.page', '.active') {
+              transition: all 1s 0s ease-out;
+              opacity: 1;
               stroke-dasharray: 100 0;
             }
           }
         }
       }
-
 
       h2,
       h3 {
@@ -162,7 +153,7 @@ body {
         padding: 0px;
       }
       h2 {
-        @include parallax(0.1);
+        @include parallax(0.15);
 
         color: transparent;
         -webkit-text-stroke: 1px $color-light;
@@ -177,7 +168,14 @@ body {
       }
 
       .instruction {
-        animation: flicker 1s ease-in-out infinite alternate;
+        opacity: 0;
+        color: $color-blue;
+
+        @include ancestorMatches('.page', '.active') {
+          opacity: 1;
+          animation: flicker 1s 2s ease-in-out infinite alternate;
+          transition: opacity 1s 1s ease;
+        }
       }
 
       .instruction,
@@ -185,16 +183,10 @@ body {
         @include textCrop;
 
         margin: 0 0 $gap 0;
-        // color: #afafaf;
         white-space: pre-line;
         font-weight: 100;
-
-        // &:last-of-type {
-        //   margin-bottom: 0;
-        // }
       }
 
-      .instruction,
       p.interaction {
         @include parallax(-0.05);
         color: $color-blue;
@@ -283,10 +275,10 @@ body {
 
 @-webkit-keyframes flicker {
   from {
-    opacity: 0.5;
+    opacity: 1;
   }
   to {
-    opacity: 1;
+    opacity: 0.33;
   }
 }
 

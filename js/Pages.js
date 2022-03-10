@@ -104,7 +104,17 @@ export class HomePage extends Page {
     this.div.classList.add('page--home')
     this.div.innerHTML = encodeHTML`
       <h1 class="mainTitle glow">${title}
-      <svg class="svg-title"><text fill="transparent" x="50%" y="100%" text-anchor="middle" stroke-width="2" vector-effect="non-scaling-stroke" font-size="100%">${title}</text></svg>
+        <svg class="svg-title">
+          <text
+            fill="transparent"
+            x="50%" y="100%"
+            text-anchor="middle"
+            stroke-width="1"
+            alignement-baseline="central"
+            vector-effect="non-scaling-stroke"
+            font-size="100%"
+          >${title}</text>
+        </svg>
       </h1>
       <span class="instruction glow">${instruction}</span>
     `

@@ -51,7 +51,7 @@
         if (window.navigator.onLine) iframe.src = `./iframe.html?version${Date.now()}`
         else {
           //! not working but aint breaking
-          iframe.srcdoc = '<p style="color: white">Offline!<br>Make sure to be connected to the wifi<br>Then relaunch</p>'
+          iframe.srcdoc = '<p style="color: white">Offline!<br>Make sure to be connected to the wifi<br>Then restart the ipad</p>'
           iframe.removeAttribute('src')
         }
       }
