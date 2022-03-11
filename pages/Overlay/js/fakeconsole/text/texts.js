@@ -14,7 +14,7 @@ export class TextLoading extends _Text {
 
     this.on('stateChange', (state) => {
 
-      if (this.is(Text.state.FADEOUT)) this.label.setAttributes({ textContent: 'success', classList: 'label--success' })
+      if (this.is(Text.state.FADEOUT)) this.label.setAttributes({ textContent: 'succès', classList: 'label--success' })
     })
   }
   update(time) {
@@ -39,10 +39,25 @@ export class TextLoading extends _Text {
 
 export class TextTitle extends _Text {
   constructor(opts) {
-    super(opts)
+    super({ ...opts, type: 'h1' })
     this.setAttributes({
       classList: 'title',
     })
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.elem.appendChild(svg)
+    svg.outerHTML = `
+    <svg class="svg-title">
+      <text
+        fill="transparent"
+        x="50%" y="100%"
+        text-anchor="middle"
+        stroke-width="0.5"
+        alignement-baseline="central"
+        vector-effect="non-scaling-stroke"
+        font-size="100%"
+      >${opts.text}</text>
+    </svg>`
   }
 }
 
@@ -60,21 +75,21 @@ export class TextLog extends _Text {
 export class TextWarn extends _Text {
   constructor(opts) {
     super(opts)
-    this.unshift(new TextLabel({ attributes: { textContent: 'warning', classList: 'label--warning' } }))
+    this.unshift(new TextLabel({ attributes: { textContent: 'alerte', classList: 'label--warning' } }))
   }
 }
 
 export class TextFail extends _Text {
   constructor(opts) {
     super(opts)
-    this.unshift(new TextLabel({ attributes: { textContent: 'fail', classList: 'label--fail' } }))
+    this.unshift(new TextLabel({ attributes: { textContent: 'échec', classList: 'label--fail' } }))
   }
 }
 
 export class TextSuccess extends _Text {
   constructor(opts) {
     super(opts)
-    this.unshift(new TextLabel({ attributes: { textContent: 'success', classList: 'label--success' } }))
+    this.unshift(new TextLabel({ attributes: { textContent: 'succès', classList: 'label--success' } }))
   }
 }
 

@@ -1,272 +1,244 @@
-import { MediaPipePose } from '@ecal-mid/mediapipe'
+import { deepCloneObject } from "../utils/object"
 import * as THREE from 'three'
 
-import DebugPoint from './DebugPoint.js'
-import Joint from './Joint.js'
-import { RED, GREEN } from '../materials/colors.js'
-import PointOffset from './PointOffset.js'
-import { MIXAMO_LANDMARKS } from './landmarks.js';
+import * as SkeletonUtils from '../SkeletonUtils.js'
 
-const LANDMARK_KEYS = Object.keys(MediaPipePose.POSE_LANDMARKS)
+const lerp = THREE.MathUtils.lerp
 
-// console.log(LANDMARK_KEYS)
+const geometry = new THREE.SphereGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
 
-export default class SkeletonRemapper {
-    constructor() {
+const correctedUp = new THREE.Vector3(0, 1, 0)
+const axis = new THREE.Vector3(1, 0, 0)
+correctedUp.applyAxisAngle(axis, -Math.PI / 2)
+correctedUp.set(0, 1, 0)
 
-        this.landmarks = {} // { THREE.Vector3, visibility }
-        this.addedPointKeys = []
-        this.updaters = []
-        this.debugPoints = []
-        this.mirror = true
+const defaults = {
+  scale: 200,
+  mirrored: false,
+  landmarks: [
+    // { name: "NOSE", target: "NOSE" },
+    // { name: "LEFT_EYE_INNER", target: "LEFT_EYE_INNER" },
+    // { name: "LEFT_EYE", target: "LEFT_EYE" },
+    // { name: "LEFT_EYE_OUTER", target: "LEFT_EYE_OUTER" },
+    // { name: "RIGHT_EYE_INNER", target: "RIGHT_EYE_INNER" },
+    // { name: "RIGHT_EYE", target: "RIGHT_EYE" },
+    // { name: "RIGHT_EYE_OUTER", target: "RIGHT_EYE_OUTER" },
+    // { name: "LEFT_EAR", target: "LEFT_EAR" },
+    // { name: "RIGHT_EAR", target: "RIGHT_EAR" },
+    // { name: "LEFT_RIGHT", target: "LEFT_RIGHT" },
+    // { name: "RIGHT_LEFT", target: "RIGHT_LEFT" },
+    { name: "mixamorig_LeftArm", target: "LEFT_SHOULDER" },
+    { name: "mixamorig_LeftForeArm", target: "LEFT_ELBOW" },
+    { name: "mixamorig_LeftHand", target: "LEFT_WRIST" },
 
-        this.group = new THREE.Group()
+    { name: "mixamorig_RightArm", target: "RIGHT_SHOULDER" },
+    { name: "mixamorig_RightForeArm", target: "RIGHT_ELBOW" },
+    { name: "mixamorig_RightHand", target: "RIGHT_WRIST" },
 
-        const red = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const geometry = new THREE.SphereGeometry(0.01, 6, 6);
+    { name: "mixamorig_LeftUpLeg", target: "LEFT_HIP" },
+    { name: "mixamorig_LeftLeg", target: "LEFT_KNEE" },
+    { name: "mixamorig_LeftFoot", target: "LEFT_ANKLE" },
 
-        LANDMARK_KEYS.forEach(name => {
-            const sphere = new THREE.Mesh(geometry, red);
+    { name: "mixamorig_RightUpLeg", target: "RIGHT_HIP" },
+    { name: "mixamorig_RightLeg", target: "RIGHT_KNEE" },
+    { name: "mixamorig_RightFoot", target: "RIGHT_ANKLE" },
+    // { name: "RIGHT_SHOULDER", target: "RIGHT_SHOULDER" },
+    // { name: "RIGHT_ELBOW", target: "RIGHT_ELBOW" },
+    // { name: "RIGHT_WRIST", target: "RIGHT_WRIST" },
+    // { name: "LEFT_PINKY", target: "LEFT_PINKY" },
+    // { name: "RIGHT_PINKY", target: "RIGHT_PINKY" },
+    // { name: "LEFT_INDEX", target: "LEFT_INDEX" },
+    // { name: "RIGHT_INDEX", target: "RIGHT_INDEX" },
+    // { name: "LEFT_THUMB", target: "LEFT_THUMB" },
+    // { name: "RIGHT_THUMB", target: "RIGHT_THUMB" },
+    // { name: "LEFT_HIP", target: "LEFT_HIP" },
+    // { name: "RIGHT_HIP", target: "RIGHT_HIP" },
+    // { name: "LEFT_KNEE", target: "LEFT_KNEE" },
+    // { name: "RIGHT_KNEE", target: "RIGHT_KNEE" },
+    // { name: "LEFT_ANKLE", target: "LEFT_ANKLE" },
+    // { name: "RIGHT_ANKLE", target: "RIGHT_ANKLE" },
+    // { name: "LEFT_HEEL", target: "LEFT_HEEL" },
+    // { name: "RIGHT_HEEL", target: "RIGHT_HEEL" },
+    // { name: "LEFT_FOOT_INDEX", target: "LEFT_FOOT_INDEX" },
+    // { name: "RIGHT_FOOT_INDEX", target: "RIGHT_FOOT_INDEX" }
 
-            this.landmarks[name] = new Landmark(sphere.position)
-            // this.group.add(sphere)
-        })
-
-        // mirroring
-        const mixamo = 'mixamorig_'
-        const mirrorSchema = [
-            { mediapipe: 'LEFT_', mixamo: `${mixamo}Left` },
-            { mediapipe: 'RIGHT_', mixamo: `${mixamo}Right` }
-        ]
-
-        mirrorSchema.forEach(({ mediapipe, mixamo }) => {
-
-            // arms
-            this.offsetPoint({ targetKey: `${mediapipe}SHOULDER`, name: `${mixamo}Arm` })
-            this.offsetPoint({ targetKey: `${mediapipe}ELBOW`, name: `${mixamo}ForeArm` })
-            this.offsetPoint({ targetKey: `${mediapipe}WRIST`, name: `${mixamo}Hand` })
-
-            // legs
-            this.offsetPoint({ targetKey: `${mediapipe}HIP`, name: `${mixamo}UpLeg` })
-            this.offsetPoint({ targetKey: `${mediapipe}KNEE`, name: `${mixamo}Leg` })
-            this.offsetPoint({ targetKey: `${mediapipe}ANKLE`, name: `${mixamo}Foot` })
-            // this.offsetPoint({ targetKey: `${mediapipe}HEEL`, name: `${mixamo}Foot` })
-            this.offsetPoint({ targetKey: `${mediapipe}FOOT_INDEX`, name: `${mixamo}ToeBase` })
-
-            this.constructJoint({
-                keyA: `${mediapipe}HEEL`,
-                keyB: `${mixamo}ToeBase`,
-                newKeys: [[`${mixamo}Toe_End`, 1.1]],
-            })
-        })
-
-        this.offsetPoint({ targetKey: `LEFT_WRIST`, name: `mixamorig_LeftHand` })
-
-        this.constructJoint({
-            keyA: "mixamorig_LeftUpLeg",
-            keyB: "mixamorig_RightUpLeg",
-            newKeys: [["CENTER_HIPS", 0.5]],
-        })
-
-        this.constructJoint({
-            keyA: "mixamorig_LeftArm",
-            keyB: "mixamorig_RightArm",
-            newKeys: [
-                ["mixamorig_LeftShoulder", 0.35],
-                ["CENTER_SHOULDERS", 0.5],
-                ["mixamorig_RightShoulder", 1 - 0.35],
-            ]
-        })
-
-        this.constructJoint({
-            keyA: "CENTER_HIPS",
-            keyB: "CENTER_SHOULDERS",
-            newKeys: [
-                ["mixamorig_Hips", 0.1],
-                ["mixamorig_Spine", 0.3],
-                ["mixamorig_Spine1", 0.6],
-                ["mixamorig_Spine2", 0.9],
-                ["mixamorig_Neck", 1.05],
-                ["mixamorig_Head", 1.15],
-                ["mixamorig_HeadTop_End", 1.35],
-            ]
-        })
-
-            ;[
-                "NOSE",
-                "LEFT_EYE_INNER",
-                "LEFT_EYE",
-                "LEFT_EYE_OUTER",
-                "RIGHT_EYE_INNER",
-                "RIGHT_EYE",
-                "RIGHT_EYE_OUTER",
-                "LEFT_EAR",
-                "RIGHT_EAR",
-                "LEFT_RIGHT",
-                "RIGHT_LEFT",
-                "LEFT_SHOULDER",
-                "RIGHT_SHOULDER",
-                "LEFT_ELBOW",
-                "RIGHT_ELBOW",
-                "LEFT_WRIST",
-                "RIGHT_WRIST",
-                "LEFT_PINKY",
-                "RIGHT_PINKY",
-                "LEFT_INDEX",
-                "RIGHT_INDEX",
-                "LEFT_THUMB",
-                "RIGHT_THUMB",
-                "LEFT_HIP",
-                "RIGHT_HIP",
-                "LEFT_KNEE",
-                "RIGHT_KNEE",
-                "LEFT_ANKLE",
-                "RIGHT_ANKLE",
-                "LEFT_HEEL",
-                "RIGHT_HEEL",
-                "LEFT_FOOT_INDEX",
-                "RIGHT_FOOT_INDEX"
-            ].forEach(name => {
-                const obj = this.landmarks[name]
-                if (!obj) return
-                // this.debugPoints.push(new DebugPoint({ point: obj.point, name, parent: this.group, material: RED }))
-            })
-
-            ;[
-                "mixamorig_Hips",
-                "mixamorig_Spine",
-                "mixamorig_Spine1",
-                "mixamorig_Spine2",
-                "mixamorig_Neck",
-                "mixamorig_Head",
-                "mixamorig_HeadTop_End",
-                "mixamorig_LeftShoulder",
-                "mixamorig_LeftArm",
-                "mixamorig_LeftForeArm",
-                "mixamorig_LeftHand",
-                "mixamorig_RightShoulder",
-                "mixamorig_RightArm",
-                "mixamorig_RightForeArm",
-                "mixamorig_RightHand",
-                "mixamorig_LeftUpLeg",
-                "mixamorig_LeftLeg",
-                "mixamorig_LeftFoot",
-                "mixamorig_LeftToeBase",
-                "mixamorig_LeftToe_End",
-                "mixamorig_RightUpLeg",
-                "mixamorig_RightLeg",
-                "mixamorig_RightFoot",
-                "mixamorig_RightToeBase",
-                "mixamorig_RightToe_End"
-            ].forEach(name => {
-                const obj = this.landmarks[name]
-                // console.log(obj)
-                if (!obj) return
-                this.debugPoints.push(new DebugPoint({ point: obj.point, name, parent: this.group, material: GREEN }))
-            })
-    }
-
-    offsetPoint({ targetKey, name, multiplier = [1, 1, 1] }) {
-
-        if (name in this.landmarks) return
-
-        multiplier = Array.isArray(multiplier) ? new THREE.Vector3(...multiplier) : multiplier;
-
-        const targetPoint = this.landmarks[targetKey].point
-        const pointOffset = new PointOffset({ targetPoint, multiplier })
-        const { point } = pointOffset
-        this.landmarks[name] = new Landmark(point)
-        this.updaters.push(pointOffset)
-        // this.debugPoints.push(new DebugPoint({ point, name, parent: this.group }))
-    }
-
-    constructJoint({ keyA, keyB, newKeys }) {
-
-        const { [keyA]: objA, [keyB]: objB } = this.landmarks
-        const mapRange = newKeys.length + 1
-
-        const newPoints = newKeys.map((entry, index) => {
-            let key, interpolation;
-
-            if (Array.isArray(entry)) {
-                [key, interpolation] = entry
-                if (isNaN(interpolation)) console.error(`Interpolation is not set for point ${key}`)
-            } else {
-                key = entry
-                interpolation = THREE.MathUtils.mapLinear(index + 1, 0, mapRange, 0, 1);
-            }
-
-            const point = new THREE.Vector3()
-            if (key in this.landmarks) console.error(`${key} already exists!`, this.landmarks)
-            this.landmarks[key] = new Landmark(point)
-            // this.debugPoints.push(new DebugPoint({ point, parent: this.group, material: RED }))
-            //! this.addedPointKeys.push(key)
-            return { point, interpolation }
-        })
-
-        const newJoint = new Joint({ pointA: objA.point, pointB: objB.point, newPoints })
-        this.updaters.push(newJoint)
-
-
-        return newJoint
-    }
-
-    getPose() {
-        // return MIXAMO_LANDMARKS.map(key => this.landmarks[key])
-        return this.landmarks
-    }
-
-    addTo(scene) {
-        scene.add(this.group)
-    }
-
-    update(pose) {
-
-        const isVisible = Boolean(pose)
-        const scaleFactor = 1.5
-        const mirrorFactor = 1
-        const translationY = 1
-
-        this.group.visible = isVisible
-
-        if (!isVisible) return
-
-        LANDMARK_KEYS.forEach((name) => {
-            const landmark = this.landmarks[name]
-            const { x, y, z, visibility } = pose[name]
-
-            landmark.setPosition(
-                x * scaleFactor * mirrorFactor,
-                -y * scaleFactor + translationY,
-                -z * scaleFactor
-            )
-            landmark.setVisibility(visibility)
-        })
-
-        this.updaters.forEach(joint => {
-            joint.update()
-        })
-
-        this.debugPoints.forEach(point => point.update())
-
-        return this.getPose()
-        // console.log(this.landmarks["BETWEEN_HIPS"])
-        // this.target.position.copy(this.landmarks["BETWEEN_HIPS"])
-
-        // this.landmarks['RIGHT_WRIST'].getWorldPosition(this.target.position)
-
-    }
+    // { name: "HIPS", target: "RIGHT_HIP", target2: "LEFT_HIP" },
+    // { name: "NECK", target: "LEFT_SHOULDER", target2: "RIGHT_SHOULDER" },
+  ],
+  //   'NOSE': {target: 'lol', }
+  // }
 }
 
-class Landmark {
-    constructor(point, visibility = null) {
-        this.point = point
-        this.visibility = visibility
-    }
-    setPosition(x, y, z) {
-        this.point.set(x, y, z)
-    }
-    setVisibility(visibility) {
-        this.visibility = visibility
-    }
+export default class SkeletonRemapper {
+  constructor(options = {}) {
+
+    this.options = { ...deepCloneObject(defaults), options }
+    this.group = new THREE.Group()
+
+    this.elements = {}
+
+    this.options.landmarks.forEach(landmark => {
+      const { name } = landmark
+      const element = new THREE.Mesh(geometry, material)
+      this.elements[name] = element
+      element.visible = false
+      this.group.add(element)
+    })
+
+    // const sc = this.options.scale
+    // this.group.scale.set(sc, sc, sc)
+  }
+
+  update(pose, skeleton, amt = 1) {
+    if (!pose) return
+
+    this.positionElements(pose)
+
+    this.retarget(skeleton, "mixamorig_LeftArm", "mixamorig_LeftForeArm", amt)
+    this.retarget(skeleton, "mixamorig_LeftForeArm", "mixamorig_LeftHand", amt)
+
+    this.retarget(skeleton, "mixamorig_RightArm", "mixamorig_RightForeArm", amt)
+    this.retarget(skeleton, "mixamorig_RightForeArm", "mixamorig_RightHand", amt)
+
+    // this.retarget(skeleton, "mixamorig_LeftUpLeg", "mixamorig_LeftLeg", amt)
+    //this.retarget(skeleton, "mixamorig_LeftLeg", "mixamorig_LeftFoot", amt)
+
+    //    this.retarget(skeleton, "mixamorig_RightUpLeg", "mixamorig_RightLeg", amt)
+    // this.retarget(skeleton, "mixamorig_RightLeg", "mixamorig_RightFoot", amt)
+
+    // { name: "mixamorigLeftUpLeg", target: "LEFT_HIP" },
+    // { name: "mixamorigLeftLeg", target: "LEFT_KNEE" },
+    // { name: "mixamorigLeftFoot", target: "LEFT_ANKLE" },
+    // this.positionElements(pose)
+    // Object.values(pose).forEach(([name, value]) => {
+
+    // })
+    // return pose
+  }
+
+  positionElements(pose) {
+    const { scale, mirrored, landmarks } = this.options
+    const mirror = mirrored ? -1 : 1
+
+    landmarks.forEach(landmark => {
+      const { name, target, target2, amt = 0.5 } = landmark
+      const element = this.elements[name]
+      let { x, y, z } = getTarget(pose, target)
+
+      if (target2) {
+        const pos = getTarget(pose, target2)
+
+        x = lerp(x, pos.x, amt)
+        y = lerp(y, pos.y, amt)
+        z = lerp(z, pos.z, amt)
+      }
+
+      this.group.attach(element)
+
+      element.position.set(
+        x * scale * mirror,
+        -y * scale,
+        -z * scale
+      )
+    })
+  }
+
+  retarget(skeleton, originName, targetName, amt) {
+
+    const origin = tempClone(this.elements[originName])
+    const target = tempClone(this.elements[targetName])
+
+    const bone = SkeletonUtils.getBoneByName(originName, skeleton)
+
+    origin.attach(target)
+    bone.attach(origin)
+    origin.position.set(0, 0, 0)
+
+    const pos = target.getWorldPosition(new THREE.Vector3())
+
+    // var vector = new THREE.Vector3(0, 0, 1)
+    // var axis = new THREE.Vector3(1, 0, 0)
+    // var angle = Math.PI / 2
+    // vector.applyAxisAngle(axis, angle)
+
+    bone.up.copy(correctedUp)
+    // const rotation = bone.
+    // var qm = new THREE.Quaternion()
+    // THREE.Quaternion.slerp(camera.quaternion, destRotation, qm, 0.07)
+    // camera.quaternion = qm
+    // camera.quaternion.normalize()
+
+    const oldAngle = bone.quaternion.clone()
+
+    bone.lookAt(pos)
+    bone.up.set(0, 1, 0)
+    bone.rotateX(Math.PI / 2)
+
+    // bone.quaternion.slerp(oldAngle, 1 - amt)
+    bone.quaternion.slerp(oldAngle, 1 - amt)
+
+    origin.removeFromParent()
+    target.removeFromParent()
+    // var axis = new THREE.Vector3(0, 0, 1)
+    // var angle = Math.PI / 2
+    // bone.up.applyAxisAngle(axis, angle)
+
+    // console.log(bone.up);
+
+    // bone.lookAt(pos)
+    // bone.up.set(0, 1, 0)
+    // bone.rotateX(Math.PI / 2)
+
+    // bone.rotation.x = 0;
+    // bone.rotation.y = 0;
+    // bone.rotation.z = 0;
+
+
+    // this.group.attach(target)
+    // this.group.attach(origin)
+
+    // origin.position.copy(oPos)
+    // target.position.copy(tPos)
+  }
+
+  addTo(parent) {
+    parent.add(this.group)
+  }
+
+  static toVector3(landmark) {
+    const { x, y, z } = landmark
+    return new THREE.Vector3(x, y, z)
+  }
+
+  static toVector2(landmark, coords = "xy") {
+    return new THREE.Vector2(landmark.x, landmark.y)
+  }
+
+  static dist(landmark1, landmark2) {
+    const v1 = this.toVector3(landmark1)
+    const v2 = this.toVector3(landmark2)
+    return v1.distanceTo(v2);
+  }
+
+  static dist2D(landmark1, landmark2, coords = "xy") {
+    const v1 = this.toVector2(landmark1, coords)
+    const v2 = this.toVector2(landmark2, coords)
+    return v1.distanceTo(v2);
+  }
+
+}
+
+function getTarget(pose, targetName) {
+  let target = pose[targetName]
+  if (target) return target
+
+  return this.elements[targetName].position
+}
+
+function tempClone(orig) {
+  const object = new THREE.Object3D()
+  orig.parent.attach(object)
+  object.position.copy(orig.position)
+  return object
 }

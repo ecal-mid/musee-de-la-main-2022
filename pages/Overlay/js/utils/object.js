@@ -45,3 +45,7 @@ export function deleteFromArray(arr, elem) {
 export function fillArray(amount, entry) {
     return new Array(amount).fill(entry)
 }
+
+export function delay(millis) {
+    return new Promise(resolve => setTimeout(resolve, millis))
+}

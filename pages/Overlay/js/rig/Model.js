@@ -31,7 +31,6 @@ export default class Model {
             texture: REQUIRED,
             allActions: [],
             mixer: null,
-            clock: new THREE.Clock(),
             debug: DEBUG_MODE,
             manualControl: true,
             ...params
@@ -78,9 +77,9 @@ export default class Model {
         this.group.parent.remove(this.group)
     }
 
-    update(pose) {
-        const { model, gltf, clock, helper, texture, skinnedMesh } = this.params
-        this.mixer.update(clock.getDelta())
+    update(pose, delta) {
+        const { model, gltf, helper, texture, skinnedMesh } = this.params
+        this.mixer.update(delta)
 
         // this.group.visible = true;
 
@@ -94,69 +93,9 @@ export default class Model {
 
         return
 
-
-        const isVisible = Boolean(pose)
-        this.group.visible = isVisible
-
-        // gltf.animations.forEach((clip, index) => {
-        //     // const action = this.params.allActions[i];
-        //     // const clip = action.getClip();
-        //     // const settings = CHOSEN_MODEL.baseActions[clip.name] || CHOSEN_MODEL.additiveActions[clip.name];
-        //     // settings.weight = action.getEffectiveWeight();
+        // POSE_LANDMARKS_NAMES.forEach(name => {
+        //     this.texts[name].update(pose[name])
         // })
-
-        const mixerUpdateDelta = clock.getDelta()
-        // mixer.update(mixerUpdateDelta)
-
-        const { manualControl, scene } = this.params
-
-        if (!manualControl || !pose) return
-
-
-        var correctedUp = new THREE.Vector3(0, 1, 0)
-        var axis = new THREE.Vector3(1, 0, 0)
-        correctedUp.applyAxisAngle(axis, -Math.PI / 2)
-
-        skinnedMesh.skeleton.bones.forEach((bone, index) => {
-            const { name, parent } = bone
-
-            // if (index >= 1) return
-            const childName = bone.children[0]?.name
-            const { point } = pose[name]
-
-            // this.texts[name].update({ position: point, visibility })
-            // console.log(bone, childName);
-
-            // up: Vector3 {x: 0, y: 1, z: 0}
-
-            if (childName) {
-
-                // if (index <= 3) {
-                scene.attach(bone) // detach from parent and add to scene
-                bone.updateMatrixWorld()
-
-                bone.position.copy(point)
-                if (name === "mixamorig_Hips") {
-                    // console.log(pose[name])
-                }
-
-                const child = pose[childName].point
-
-
-                bone.up.copy(correctedUp)
-                bone.lookAt(child)
-                bone.up.set(0, 1, 0)
-                bone.rotateX(Math.PI / 2)
-
-                parent.attach(bone)
-                bone.updateMatrix()
-            }
-            // }
-        })
-
-        POSE_LANDMARKS_NAMES.forEach(name => {
-            this.texts[name].update(pose[name])
-        })
     }
 
     setupTexts() {

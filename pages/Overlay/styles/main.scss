@@ -1,7 +1,16 @@
+@use "sass:selector";
+
+@mixin ancestorMatches($parent, $class) {
+  @at-root #{selector.replace(&, $parent, #{$parent}#{$class})} {
+    @content;
+  }
+}
+
 @font-face {
   font-family: Perfect;
   src: url(~/assets/fonts/raster.ttf);
 }
+
 @mixin fullOverlay() {
   &::after {
     content: "";
@@ -29,31 +38,29 @@ body {
 }
 
 .css-renderer {
-    pointer-events: none;
-    position: absolute;
-    
-    &.front {
-        z-index: 1000; 
-    }
-    &.back {
-        z-index: 0; 
-    }
-    // background: red;
-    // width: 100%;
-    // height: 100%;
+  pointer-events: none;
+  position: absolute;
+
+  &.front {
+    z-index: 1000;
+  }
+  &.back {
+    z-index: 0;
+  }
+  // background: red;
+  // width: 100%;
+  // height: 100%;
 }
 
 .fakeConsole.console {
   $margin: 1em;
-
-  transition: opacity 3s;
 
   &--loading {
     font-size: 1rem;
   }
 
   &--bg {
-    transition-delay: 2s;
+    transition: opacity 3s 1s;
 
     width: 25%;
     height: 15vh;
@@ -77,8 +84,40 @@ body {
     }
   }
 
+  &--splashscreen {
+    transition: opacity 1s 0.33s;
+    overflow: visible;
+
+    .title {
+      position: relative;
+      color: transparent;
+
+      .svg-title {
+        overflow: visible;
+        top: 0;
+        left: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        text {
+          transition: all 1s 0.33s ease-out;
+          stroke-dasharray: 100 0;
+          stroke: white;
+          alignment-baseline: after-edge;
+
+          @include ancestorMatches(".fakeConsole", '[data-hidden="true"]') {
+            stroke-dasharray: 0 100;
+            transition-delay: 0s;
+          }
+        }
+      }
+    }
+  }
+
   &--main {
-    transition-delay: 1s;
+    transition: opacity 3s 1s;
+    // transition-delay: 1s;
     // left: $margin;
     // bottom: $margin;
     opacity: 0.5;

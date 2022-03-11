@@ -16,13 +16,14 @@ export default class Text extends EventBus {
       lifeSpan: Infinity,
       fadeDuration: 1000,
       text: '',
+      type: 'span',
       attributes: {},
       ...options
     }
 
     this.triggerTime = this.oldTime = performance.now()
     this.setState(this.constructor.state.ALIVE)
-    this.elem = document.createElement('span')
+    this.elem = document.createElement(this.params.type)
 
     const textContent = this.params.text
     if (textContent) {

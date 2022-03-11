@@ -1,4 +1,4 @@
-export default Object.freeze({
+export default {
     density: 2,
     bloom: {
         exposure: 1,
@@ -6,6 +6,8 @@ export default Object.freeze({
         bloomThreshold: 0,
         bloomRadius: 0
     },
+    transitionDelay: 2500,
+    centerZ: 0.5,
     models: {
         demo: {
             path: '/models/gltf/Xbot.glb',
@@ -27,4 +29,4 @@ export default Object.freeze({
 
         }
     }
-})
+}

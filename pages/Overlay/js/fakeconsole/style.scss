@@ -46,8 +46,7 @@ $margin: 0.5ch;
     color: $color-green;
   }
 
-  span.title {
-    color: red;
+  .title {
     text-align: center;
     font-size: 4em;
     opacity: 1;
@@ -56,6 +55,7 @@ $margin: 0.5ch;
     text-shadow: 0 0 0.4em rgba(22, 227, 196, 0.66);
     span {
       background: none;
+      margin: 0;
     }
   }
 

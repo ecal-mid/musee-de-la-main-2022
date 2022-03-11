@@ -42,3 +42,28 @@ export function smoothDamp(current, target, /*ref*/ currentVelocity, smoothTime,
     }
     return { result: num8, velocity: currentVelocity }
 }
+export class Smoother {
+    constructor(options = {}) {
+        Object.assign(this, {
+            velocity: 0,
+            value: 0,
+            target: 0,
+            maxSpeed: Infinity,
+            smoothness: 0.1,
+        }, options)
+    }
+
+    setTarget(value) {
+        this.target = value
+    }
+
+    smoothen(deltaTime, target = null) {
+
+        if (target !== null) this.setTarget(target)
+
+        const { result, velocity } = smoothDamp(this.value, this.target, this.velocity, this.smoothness, this.maxSpeed, deltaTime)
+        this.value = result
+        this.velocity = velocity
+        return this.value
+    }
+}

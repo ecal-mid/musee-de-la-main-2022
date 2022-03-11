@@ -25,31 +25,44 @@ import { TextLoading, TextTitle, Text } from './fakeconsole/text/texts'
 
 //* scripts
 import Model from './rig/Model.js'
-import SkeletonRemapper from './rig/SkeletonRemapper2.js'
+import { CustomGridHelper } from './CustomGridHelper.js'
+import SkeletonRemapper from './rig/SkeletonRemapper.js'
 import CONFIG from '../config.js'
-import { random } from './utils/object.js'
-import { lerp } from './utils/math.js'
+import { random, delay } from './utils/object.js'
+import { map, Smoother, mapClamped } from './utils/math.js'
 
 import IframeBus from './IframeBus.js'
 
 let scene, sceneBack, renderer, camera, composer, cssRendererFront, cssRendererBack
 let control, dot, orbit
 
+const clock = new THREE.Clock()
+
 let text3DHead
 let textProject = new Text({
-    text: 'Project name',
+    // text: 'Project name',
+    text: '',
 })
-let transitionDelay = 2500
+let transitionDelay = CONFIG.transitionDelay
 
 let model, skeletonRemapper
+let PERSON = {
+    size: 0.5, velocity: 0, smoothSize: new Smoother({
+        smoothness: 1,
+    }),
+    control: new Smoother({
+        smoothness: 0.5,
+    }),
+}
 
-let controlAmount = 0
+const GRID = {}
+
 let someone = false
 
 const BUS = new IframeBus({ transitionDelay })
 const waitResume = BUS.waitFor('resume')
 
-let TITLE_MODE = false
+let TITLE_MODE = true
 
 const consoles = {
     main: new FakeConsole({
@@ -81,7 +94,7 @@ const consoles = {
     })
 }
 
-BUS.addEventListener('project', function (project) {
+BUS.addEventListener('project', (project) => {
     const { loading, splash } = consoles
 
     loading.setVisibility(true)
@@ -127,9 +140,8 @@ const clips = {
 //     dampAmount: 0.1, // range ~1-10 [0 is fastest], used by smoothDamp()
 //     dampMaxSpeed: Infinity // max speed, used by smoothDamp()
 // })
-const smoother = new MediaPipeSmoothPose({
-    dampAmount: .2,
-})
+const smoother = new MediaPipeSmoothPose({ dampAmount: 0 })
+const smootherN = new MediaPipeSmoothPose({ dampAmount: .15 })
 
 const mediaPipe = new MediaPipeClient()
 // window.mediaPipe = mediaPipe
@@ -137,25 +149,24 @@ window.mediaPipe = mediaPipe
 
 mediaPipe.on('setup', async () => {
     const { width, height } = mediaPipe.video
-    mediaPipe.on('pose', (event) => {
-        // smootherN.target(event.data.skeletonNormalized)
-
-        someone = Boolean(event.data.skeleton)
-
-        consoles.main.setVisibility(!someone)
-        consoles.bg.setVisibility(!someone)
-
-        smoother.target(event.data.skeletonNormalized)
-    })
     await init(canvas, width, height)
 })
 // window.addEventListener('load', async () => await init(canvas, 1920, 1080))
 
-function moveCamera() {
+function moveCamera(personSize) {
     let bone = model.getBone('mixamorig_Hips')
-    const pos = bone.getWorldPosition(new THREE.Vector3())
-    camera.position.x = pos.x * 0.5
-    camera.lookAt(orbit.target)
+    const hips = bone.getWorldPosition(new THREE.Vector3())
+    const centerPoint = CONFIG.centerZ
+    const target = new THREE.Vector3()
+
+    target.copy(orbit.target)
+
+    camera.position.x = hips.x * 0.5
+    camera.position.z = map(personSize, centerPoint, 1, 0, 250)
+    camera.position.y = map(personSize, centerPoint, 1, 0, 100)
+    target.y += map(personSize, centerPoint, 1, 0, 50)
+
+    camera.lookAt(target)
 }
 
 async function init(canvas, width, height) {
@@ -163,7 +174,7 @@ async function init(canvas, width, height) {
     const ratio = width / height
     //TODO
     // const canvasWidth = 1080*2
-    const canvasWidth = 1080 * 2
+    const canvasWidth = 1080 * 2 / window.devicePixelRatio
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
@@ -189,12 +200,6 @@ async function init(canvas, width, height) {
     model.setIdleAnimation('idle')
 
     model.addTo(scene)
-
-    const gridHelperFine = new THREE.GridHelper(1000, 60, new THREE.Color(0.2, 0.2, 0.2), 0x111111)
-    const gridHelper = new THREE.GridHelper(1000, 10, new THREE.Color(0, 0.5, 0.3), new THREE.Color(0.2, 0.2, 0.2))
-
-    scene.add(gridHelperFine)
-    scene.add(gridHelper)
 
     renderer = new THREE.WebGLRenderer({ antialias: true, canvas, alpha: false })
     // renderer.setSize(canvas.width, canvas.height);
@@ -233,7 +238,7 @@ async function init(canvas, width, height) {
     cssRendererFront = new CSS3DRenderer({
         element: document.querySelector('.css-renderer.front')
     })
-    resize()
+    resizeRenderer()
 
     renderer.setPixelRatio(CONFIG.density)
     renderer.outputEncoding = THREE.sRGBEncoding
@@ -287,15 +292,12 @@ async function init(canvas, width, height) {
     dot = new THREE.Points(dotGeometry, dotMaterial)
     scene.add(dot)
 
-
-    // const light = new THREE.PointLight(0xff0000, 100, 3500)
-    // light.position.set(0, 0, 0)
-    // scene.add(light)
-
-    // scene.add(new THREE.HemisphereLight(0xffffff, 0x80ffe5, 0.5))
-
-    // console.log(model.params.skinnedMesh.skeleton.bones[0])
-    // control.attach(light)
+    // grids
+    GRID.fineGrid = new CustomGridHelper(1000, 60, new THREE.Color(0.2, 0.2, 0.2), 0x111111, 3000)
+    GRID.grid = new CustomGridHelper(1000, 10, new THREE.Color(0, 0.5, 0.3), new THREE.Color(0.2, 0.2, 0.2), 200)
+    GRID.grid.position.y = 1;
+    scene.add(GRID.fineGrid)
+    scene.add(GRID.grid)
 
     const bone = model.getBone('mixamorig_Head')
     bone.attach(text3DHead)
@@ -310,50 +312,78 @@ async function init(canvas, width, height) {
         animate()
     }
 
+
     window.addEventListener('click', () => {
         // idle
         // jump
         // rumba
         // model.play('rumba')
     })
+    window.addEventListener('resize', resizeRenderer)
 
-    //! skeleton remapping
+    mediaPipe.on('pose', (event) => {
+        // smootherN.target(event.data.skeletonNormalized)
 
-    // skeletonRemapper.group.visible = false;
+        someone = Boolean(event.data.skeleton)
+
+        // GRID.grid.appear(!someone)
+        consoles.main.setVisibility(!someone)
+        consoles.bg.setVisibility(!someone)
+        // consoles.splash.setVisibility(!someone)
+
+        smootherN.target(event.data.skeletonNormalized)
+        smoother.target(event.data.skeleton)
+    })
 
 
-    window.addEventListener('resize', resize)
+    // appear
+
+    await delay(2000);
+    GRID.grid.appear(true)
+    await delay(1000);
+    GRID.fineGrid.appear(true)
 }
 
-function resize() {
-    cssRendererFront.setSize(window.innerWidth, window.innerHeight)
-    cssRendererBack.setSize(window.innerWidth, window.innerHeight)
+function resizeRenderer() {
+    const { innerHeight, innerWidth } = window
+    cssRendererFront.setSize(innerWidth, innerHeight)
+    cssRendererBack.setSize(innerWidth, innerHeight)
 }
 
 function animate() {
-
     requestAnimationFrame(animate)
     render()
-
 }
 
 function render() {
+
+    const deltaTime = clock.getDelta()
+
     Object.values(consoles).forEach(console => console.update())
 
-    moveCamera()
 
     // smoothing
+    let poseN = smootherN.smoothDamp()
     let pose = smoother.smoothDamp()
-    // // remap mediapipe to mixamo landmarks 
+
+    // personSize
+    let dist = CONFIG.centerZ
+    if (someone) dist = SkeletonRemapper.dist2D(pose.RIGHT_ELBOW, pose.LEFT_ELBOW)
+
+    const value = PERSON.smoothSize.smoothen(deltaTime, dist)
+    moveCamera(value)
+
     const { skeleton } = model.params.skinnedMesh
-    // // console.log(pose)
-    model.update(pose)
+    model.update(poseN, deltaTime)
 
     const canControl = someone && TITLE_MODE
-    controlAmount = lerp(controlAmount, canControl ? 1 : 0, 0.1)
-    // if (TITLE_MODE) {
-    // }
-    skeletonRemapper.update(pose, skeleton, controlAmount)
+    const controlAmount = PERSON.control.smoothen(deltaTime, canControl ? 1 : 0, 0.1)
+
+    if (smootherN.smoothedLandmarks) skeletonRemapper.update(smootherN.smoothedLandmarks, skeleton, controlAmount)
+
+    // animate grids
+    GRID.fineGrid.update(deltaTime)
+    GRID.grid.update(deltaTime)
 
     // rendering
     renderer.render(scene, camera)

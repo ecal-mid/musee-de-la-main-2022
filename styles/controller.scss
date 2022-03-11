@@ -133,7 +133,7 @@ body {
           text {
             stroke-dasharray: 0 100;
             opacity: 0;
-            filter: drop-shadow(0 0 2px white);
+            // filter: drop-shadow(0 0 2px white);
 
             @include ancestorMatches('.page', '.active') {
               transition: all 1s 0s ease-out;
