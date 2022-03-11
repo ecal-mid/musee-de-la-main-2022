@@ -120,6 +120,12 @@ body {
         font-size: 3em;
         font-weight: lighter;
         text-align: center;
+        opacity: 0;
+
+        @include ancestorMatches('.page', '.active') {
+          transition: opacity 1s 0s ease-out;
+          opacity: 1;
+        }
 
         .svg-title {
           top: -2px;
@@ -132,12 +138,10 @@ body {
 
           text {
             stroke-dasharray: 0 100;
-            opacity: 0;
             // filter: drop-shadow(0 0 2px white);
 
             @include ancestorMatches('.page', '.active') {
               transition: all 1s 0s ease-out;
-              opacity: 1;
               stroke-dasharray: 100 0;
             }
           }

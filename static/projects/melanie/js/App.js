@@ -155,26 +155,24 @@ class App {
     if (pose) this.poses.push(pose)
   }
 
+  getFaceBounds(pose) {
+    let { RIGHT_EAR, LEFT_EAR, NOSE } = pose
+    RIGHT_EAR = this.toScreen(RIGHT_EAR)
+    LEFT_EAR = this.toScreen(LEFT_EAR)
+    const center = this.toScreen(NOSE)
+    const w = Math.hypot(RIGHT_EAR.x - LEFT_EAR.x, RIGHT_EAR.y - LEFT_EAR.y) * 1.8
+    const x = center.x - w / 2
+    const y = center.y - w / 1.5
+
+    return { x, y, w, center }
+  }
+
   async takeAndSendFace() {
 
     const [pose] = this.poses
     if (!pose) return
 
-    let { RIGHT_EAR, LEFT_EAR, NOSE } = pose
-    RIGHT_EAR = this.toScreen(RIGHT_EAR)
-    LEFT_EAR = this.toScreen(LEFT_EAR)
-    const w = Math.hypot(RIGHT_EAR.x - LEFT_EAR.x, RIGHT_EAR.y - LEFT_EAR.y) * 1.8
-    const center = this.toScreen(NOSE)
-
-    // ctx.save()
-    // ctx.strokeStyle = 'red'
-    // ctx.translate(center.x, center.y)
-    // ctx.translate(-w / 2, -w / 1.5)
-    // ctx.strokeRect(0, 0, w, w)
-    // ctx.restore()
-
-    const x = center.x - w / 2
-    const y = center.y - w / 1.5
+    const { x, y, w } = this.getFaceBounds(pose)
 
     const picIndex = Date.now()
 
@@ -210,7 +208,33 @@ class App {
     // console.log(this.dataURLs);
   }
 
-  showFaceDetection() {
+  drawFaceDetection(completion = 0.5) {
+    const [pose] = this.poses
+    if (!pose) return
+
+    const { center, w } = this.getFaceBounds(pose)
+    const { ctx } = this
+
+    ctx.save()
+    ctx.translate(center.x, center.y)
+    ctx.rotate(-Math.PI / 2);
+
+    ctx.lineWidth = 3
+    ctx.lineCap = 'round'
+    // black circle
+    ctx.beginPath();
+    ctx.strokeStyle = 'black'
+    ctx.arc(0, 0, w / 2, 0, 2 * Math.PI, false);
+    ctx.stroke()
+
+    // completion circle
+    ctx.beginPath();
+
+    ctx.lineWidth += 1
+    ctx.strokeStyle = 'white'
+    ctx.arc(0, 0, w / 2, 0, completion * 2 * Math.PI, false);
+    ctx.stroke();
+    ctx.restore()
     // if (this.faceDetections) {
     //   if (this.faceDetections.length > 0) {
     //     for (let i = 0; i < this.faceDetections.length; i += 1) {
@@ -390,7 +414,11 @@ class App {
         this.drawBubbles()
         this.checkIfThereIsSomeone()
 
-        if (this.faceDetectionDuration >= 150) {
+        const duration = 200
+
+        this.drawFaceDetection(this.faceDetectionDuration / duration)
+
+        if (this.faceDetectionDuration >= duration) {
           this.faceDetectionDuration = 0
           this.changeState(3)
         }
