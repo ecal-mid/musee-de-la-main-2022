@@ -190,13 +190,7 @@ export default class Model {
         return model.animations.map((animation, index, animations) => { callback(animation, index, animations); return animation })
     }
 
-    setIdleAnimation(name) {
-        this.play(name, { loop: true })
-
-
-    }
-
-    play(name, options = { loop: false }) {
+    play(name) {
 
         clearTimeout(this.mixerTimeout)
 
@@ -205,18 +199,23 @@ export default class Model {
 
         const action = this.actions[name]
         // mixer.stopAllAction()
+
+        if (!action || this.currentAction === action) return
+
         action.reset()
         action.play()
-        const repeats = 3
-        action.setLoop(THREE.LoopRepeat, options.loop ? Infinity : repeats)
+
+        // console.log(action === this.currentAction);
+        // const repeats = 3
+        // action.setLoop(THREE.LoopRepeat, options.loop ? Infinity : repeats)
         action.setLoop(THREE.LoopRepeat)
-        if (!options.loop) {
-            const timeoutMS = Math.max(0, action._clip.duration * repeats - delay) * 1000
-            this.mixerTimeout = setTimeout(() => {
-                // action.fadeOut(delay)
-                this.play('idle', { loop: true })
-            }, timeoutMS)
-        }
+        // if (!options.loop) {
+        //     const timeoutMS = Math.max(0, action._clip.duration * repeats - delay) * 1000
+        //     this.mixerTimeout = setTimeout(() => {
+        //         // action.fadeOut(delay)
+        //         this.play('idle', { loop: true })
+        //     }, timeoutMS)
+        // }
 
         this.currentAction?.fadeOut(delay)
         action.fadeIn(delay)

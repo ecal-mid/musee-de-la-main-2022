@@ -489,7 +489,7 @@ class App {
       });
     }
 
-    console.log(this.cameraRange.z);
+    // console.log(this.cameraRange.z);
     this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
     // console.log(this.camPos.z);
   }

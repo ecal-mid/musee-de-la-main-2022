@@ -38,6 +38,9 @@ let control, dot, orbit
 
 const clock = new THREE.Clock()
 
+
+console.log('nani');
+
 let text3DHead
 let textProject = new Text({
     // text: 'Project name',
@@ -116,9 +119,11 @@ BUS.addEventListener('project', (project) => {
 
 })
 
+
 BUS.addEventListener('title', () => {
+    model?.play('idle', { loop: true })
     consoles.loading.setVisibility(false)
-    consoles.splash.setVisibility(true)
+    consoles.splash.setVisibility(true, 500)
     TITLE_MODE = true
 })
 
@@ -171,6 +176,7 @@ function moveCamera(personSize) {
 
 async function init(canvas, width, height) {
 
+    // console.log('NANI');
     const ratio = width / height
     //TODO
     // const canvasWidth = 1080*2
@@ -197,7 +203,7 @@ async function init(canvas, width, height) {
     const loads = Object.entries(clips).map(([filePath, clipsName]) => model.loadAdditionalAnimations(filePath, clipsName))
     await Promise.all(loads)
 
-    model.setIdleAnimation('idle')
+    model.play('idle')
 
     model.addTo(scene)
 

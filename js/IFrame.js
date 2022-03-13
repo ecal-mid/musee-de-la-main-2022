@@ -10,9 +10,12 @@ export default class IFrame {
       iFrameMessage: this.onIFrameMessage.bind(this),
     }
     this.overlay = document.getElementById("overlay")
-    this.overlay.addEventListener('transitionend', () => {
-      if (this.overlay.classList.contains('hide')) this.overlay.src = this.overlay.src //! refresh overlay when hidden
+
+    this.overlay.addEventListener('transitionend', (event) => {
+      // console.log(event);
+      // if (this.overlay.classList.contains('hide')) this.overlay.src = this.overlay.src //! refresh overlay when hidden
     })
+
     this.frame = document.getElementById("frame")
     this.frame.src = frame.src // force iframe reload
     this.frame.addEventListener("load", this.handlers.load)

@@ -1,6 +1,7 @@
 import "~/styles/iframe.scss"
 import IFrame from "~/js/IFrame"
 import AudioAllower from "~/js/AudioAllower"
+import Countdown from "~/js/Countdown"
 import { MediaPipePose } from "@ecal-mid/mediapipe"
 
 let p5Microphone
@@ -27,17 +28,24 @@ const CONFIG = {
   },
 }
 
-let someoneTimeout = null
+const nobodyCountdown = new Countdown(20 * 1000)
+//   someoneTimeout: null,
+//   duration() {
 
-function resetTimeout() {
-  clearTimeout(someoneTimeout)
-  someoneTimeout = null
-}
-
+//   },
+//   clearCountdown() {
+//     clearTimeout(this.someoneTimeout)
+//     this.someoneTimeout = null
+//   },
+//   startCountown(callback) {
+//     clearTimeout(this.someoneTimeout)
+//     this.someoneTimeout = setTimeout(callback, this.duration)
+//   }
+// }
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
   await AudioAllower.allow()
-  p5Microphone = await AudioAllower.getP5Microphone()
+  // p5Microphone = await AudioAllower.getP5Microphone()
 
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
@@ -47,10 +55,10 @@ window.setup = async () => {
 
 
 
-  setInterval(() => {
+  // setInterval(() => {
 
-    p5Microphone.getLevel()
-  }, 1000) // force listening ?
+  //   p5Microphone.getLevel()
+  // }, 1000) // force listening ?
 
   const player = pose.getVideoPlayer()
   pose.startDetection()
@@ -61,19 +69,19 @@ window.setup = async () => {
     const someone = Boolean(event.data.skeleton)
 
     if (someone) {
-      resetTimeout()
+      nobodyCountdown.clear()
       return
     }
 
-    if (someoneTimeout !== null) return
+    if (nobodyCountdown.started()) return
 
-    someoneTimeout = setTimeout(() => {
+    nobodyCountdown.start(() => {
       frame.sendMessage({ type: 'nobody' })
-    }, 10 * 1000)
+    })
   })
 
   frame.onFrameLoad = (event) => {
-    resetTimeout()
+    nobodyCountdown.clear()
     insertIFrame({ player, iframe: event.target, pose })
   }
 
@@ -83,7 +91,7 @@ window.setup = async () => {
   const overlayFrame = document.querySelector("#overlay")
 
   overlayFrame.addEventListener('load', () => {
-    overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*")
+    overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*") //! -1 is for no project selected
   }, { once: true })
 
 
@@ -106,6 +114,6 @@ async function insertIFrame({ player, pose, iframe }) {
     mirrored: CONFIG.mediaPipeOptions.selfieMode,
   })
 
-  microphone?.plugIn(p5Microphone)
+  // microphone?.plugIn(p5Microphone)
 
 }

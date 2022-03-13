@@ -41,8 +41,11 @@ export default class FakeConsole {
     }
   }
 
-  setVisibility(visible) {
-    this.setAttributes({ dataset: { hidden: !visible } })
+  setVisibility(visible, delay) {
+    clearTimeout(this.visibilityTimeout)
+    this.visibilityTimeout = setTimeout(() => {
+      this.setAttributes({ dataset: { hidden: !visible } })
+    }, delay)
   }
 
   addEntry(textInstance = generateEntry()) {
