@@ -122,6 +122,7 @@ class App {
 
     //! sound
     this.ambiantSound = new Audio("./sounds/forest_long_loop.mp3");
+    this.ambiantSound.loop = true;
     this.ambiantSound.oncanplay = this.ambiantSound.play;
 
     this.soundEffectLeft = new Audio("./sounds/forest_short_left.mp3");
