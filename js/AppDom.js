@@ -39,10 +39,11 @@ export default class App {
   onTransitionEnd(index, elem, dir) {
 
     if(index === this.oldIndex) return;
-
     this.oldIndex = index
+
     this.debug.innerHTML = `${index},${elem},${dir}`
     const project_id = index - 1 //! -1 due to homepage
+    
     this.socket.connection.send(
       JSON.stringify({ project_id, sender: this.ID })
     )
