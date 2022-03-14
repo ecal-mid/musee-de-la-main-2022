@@ -1,4 +1,8 @@
+//states
+const WAIT = 1
 const PICTURE_COUNTDOWN = 2
+const PLAY = 3
+
 const STORAGE_LIMIT = 200
 
 const TAU = 2 * Math.PI
@@ -68,7 +72,7 @@ class App {
     this.picIndex
     this.faceDetectionDuration = 0
     this.noDetectionDuration = 0
-    this.changeState(PICTURE_COUNTDOWN)
+    this.changeState(WAIT)
 
 
     // const audioCtx = new AudioContext()
@@ -396,10 +400,12 @@ class App {
     this.state = newState
 
     switch (this.state) {
+      case WAIT:
+        setTimeout(() => {
+          this.changeState(PICTURE_COUNTDOWN)
+        }, 3000)
       case PICTURE_COUNTDOWN:
         {
-          this.clearPersonPhysic()
-          this.clearCircles() //? wtf il en reste 29
           // this.floor = new Ground();
           // this.floor.groundLimit(this.MATTER, this.canvas.width, this.canvas.height);
 
@@ -408,7 +414,7 @@ class App {
         }
         break
 
-      case 3:
+      case PLAY:
         {
           // this.detectFaces.forEach((face) => {
           this.takeAndSendFace(this.person.boundaries[NOSE])
@@ -447,6 +453,10 @@ class App {
 
 
     switch (this.state) {
+      case WAIT:
+        this.rainBubbles()
+        this.drawBubbles()
+        break;
       case PICTURE_COUNTDOWN:
         this.rainBubbles()
         this.drawBubbles()
@@ -459,11 +469,11 @@ class App {
         if (this.faceDetectionDuration >= duration) {
           this.faceDetectionDuration = 0
           this.flashDuration = 0
-          this.changeState(3)
+          this.changeState(PLAY)
         }
 
         break
-      case 3:
+      case PLAY:
         // console.log("STATE3");
         this.rainBubbles()
         this.drawBubbles()

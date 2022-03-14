@@ -17,6 +17,7 @@ export default class SkeletonTexture {
 
     this.visibilityTarget = 0
     this.visibilityAmount = this.visibilityTarget
+    this.dampAmount = 4
 
     // this.ctx.filter = `sepia(100%)`;
     this.ctx.fillStyle = 'rgba(5, 50, 50)'
@@ -52,7 +53,8 @@ export default class SkeletonTexture {
     this.canvas.style.display = show ? 'block' : 'none'
   }
 
-  setVisibility(visible) {
+  setVisibility(visible, dampAmount = this.dampAmount) {
+    this.dampAmount = dampAmount
     this.visibilityTarget = visible ? 1 : 0;
   }
 
@@ -69,18 +71,20 @@ export default class SkeletonTexture {
     // // c.globalCompositeOperation = 'lighter'
     this.loopLayers(layer => layer.draw(c))
 
-    this.visibilityAmount = damp(this.visibilityAmount, this.visibilityTarget, 1.5, deltaTime)
+    this.visibilityAmount = damp(this.visibilityAmount, this.visibilityTarget, this.dampAmount, deltaTime)
 
     c.save()
 
     c.globalCompositeOperation = 'destination-in'
 
-    let radius = Math.hypot(width, height) * 0.5;
+    const centerY = height * 0.2
+    const centerX = width * 0.5
+    const radius = Math.hypot(height - centerY, centerX)
 
-    c.translate(width / 2, height / 2)
+    c.translate(centerX, centerY)
 
     const grd = c.createRadialGradient(0, 0, 0, 0, 0, radius * this.visibilityAmount);
-    grd.addColorStop(0, "white");
+    grd.addColorStop(0, `rgba(255,255,255,${Math.pow(this.visibilityAmount, .80)}`);
     grd.addColorStop(1, `rgba(255,255,255,${Math.pow(this.visibilityAmount, 20)})`);
     c.fillStyle = grd
     this.fillCircle(0, 0, radius * this.visibilityAmount)

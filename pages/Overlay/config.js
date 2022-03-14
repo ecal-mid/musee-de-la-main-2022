@@ -6,7 +6,7 @@ export default {
         bloomThreshold: 0,
         bloomRadius: 0
     },
-    transitionDelay: 2500,
+    transitionDelay: 3000,
     centerZ: 0.5,
     maxSize: 2,
     models: {

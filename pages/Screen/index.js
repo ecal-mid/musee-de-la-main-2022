@@ -28,7 +28,7 @@ const CONFIG = {
   },
 }
 
-const nobodyCountdown = new Countdown(20 * 1000)
+const nobodyCountdown = new Countdown(30 * 1000)
 //   someoneTimeout: null,
 //   duration() {
 

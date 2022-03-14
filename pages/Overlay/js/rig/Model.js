@@ -13,6 +13,7 @@ import TextLandmark from '../texts/TextLandmark.js'
 
 import { NO_OP } from '../utils/object.js'
 import SkeletonTexture from './SkeletonTexture.js'
+import { CustomSkeletonHelper } from '../CustomSkeletonHelper'
 
 const DEBUG_MODE = true
 
@@ -79,8 +80,9 @@ export default class Model {
 
     update(pose, delta) {
         const { model, gltf, helper, texture, skinnedMesh } = this.params
-        this.mixer.update(delta)
 
+        this.mixer.update(delta)
+        helper.update(delta)
         // this.group.visible = true;
 
         texture.loopLayers((layer, name) => {
@@ -100,6 +102,7 @@ export default class Model {
 
     setVisibility(visible) {
         this.params.texture.setVisibility(visible)
+        this.params.helper.appear(visible)
     }
 
     setupTexts() {
@@ -109,9 +112,13 @@ export default class Model {
     }
 
     setupHelper() {
-        const helper = new THREE.SkeletonHelper(this.params.model)
+        const helper = new CustomSkeletonHelper(this.params.model)
         helper.visible = true
         this.params.helper = helper
+        // console.log(helper)
+
+        console.log(helper)
+
     }
 
     static staticFolder(path) {
@@ -202,7 +209,9 @@ export default class Model {
         const { mixer } = this
         const delay = 0.5 //? seconds
 
+
         const action = this.actions[name]
+        
         // mixer.stopAllAction()
 
         if (!action || this.currentAction === action) return

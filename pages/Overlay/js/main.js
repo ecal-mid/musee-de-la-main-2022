@@ -312,13 +312,13 @@ async function init(canvas, width, height) {
         pause()
     })
 
-    BUS.addEventListener('hide', async () => {
+    BUS.addEventListener('hide', () => {
         consoles.loading.setVisibility(false)
         consoles.splash.setVisibility(false)
         model.setVisibility(false)
 
         GRID.grid.appear(false)
-        GRID.fineGrid.appear(false, 500)
+        GRID.fineGrid.appear(false, 100)
         showOverlay(false)
     })
 

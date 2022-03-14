@@ -34,12 +34,13 @@ body {
 }
 
 .visibilityContainer {
-  transition: opacity 1s linear;
+  transition: opacity 0.5s ease-out;
   opacity: 1;
 
   &.hidden {
     opacity: 0;
-    transition-delay: 0s;
+    transition-duration: 1s;
+    transition-delay: 0.33s;
   }
 }
 
