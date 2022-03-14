@@ -27,7 +27,7 @@ import Model from './rig/Model.js'
 import { CustomGridHelper } from './CustomGridHelper.js'
 import SkeletonRemapper from './rig/SkeletonRemapper.js'
 import CONFIG from '../config.js'
-import { random, delay } from './utils/object.js'
+import { random, delay, isWindows } from './utils/object.js'
 import { map, Smoother, mapClamped } from './utils/math.js'
 
 import IframeBus from './IframeBus.js'
@@ -49,7 +49,7 @@ let PERSON = {
         smoothness: 1,
     }),
     control: new Smoother({
-        smoothness: 0.5,
+        smoothness: 0.3,
     }),
 }
 
@@ -136,10 +136,10 @@ function moveCamera(personSize) {
 
 
     // console.log(personSize)
-
-    camera.position.z = mapClamped(personSize, centerPoint, maxSize, 0, 250)
-    camera.position.y = mapClamped(personSize, centerPoint, maxSize, 0, 100)
-    target.y += mapClamped(personSize, centerPoint, maxSize, 0, 50)
+    personSize = Math.min(personSize, maxSize)
+    camera.position.z = map(personSize, centerPoint, maxSize, 0, 250)
+    camera.position.y = map(personSize, centerPoint, maxSize, 0, 100)
+    target.y += map(personSize, centerPoint, maxSize, 0, 50)
 
     camera.lookAt(target)
 }
@@ -150,7 +150,8 @@ async function init(canvas, width, height) {
     const ratio = width / height
     //TODO
     // const canvasWidth = 1080*2
-    const canvasWidth = 1080 * 2 / window.devicePixelRatio
+    const quality = isWindows() ? 2 : 1
+    const canvasWidth = 1080 * quality
     const canvasHeight = canvasWidth * ratio
 
     canvas.width = canvasWidth
@@ -408,9 +409,10 @@ function render() {
 
     // personSize
     let dist = CONFIG.centerZ
-    if (someone) dist = SkeletonRemapper.dist2D(pose.RIGHT_ELBOW, pose.LEFT_ELBOW)
+    if (someone) dist = SkeletonRemapper.dist2D(pose.RIGHT_SHOULDER, pose.LEFT_SHOULDER)
 
     const value = PERSON.smoothSize.smoothen(deltaTime, dist)
+    // console.log(value)
     moveCamera(value)
 
     const { skeleton } = model.params.skinnedMesh

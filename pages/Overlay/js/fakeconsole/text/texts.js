@@ -52,7 +52,7 @@ export class TextTitle extends _Text {
         fill="transparent"
         x="50%" y="100%"
         text-anchor="middle"
-        stroke-width="0.5"
+        stroke-width="0.2"
         alignement-baseline="central"
         vector-effect="non-scaling-stroke"
         font-size="100%"

@@ -102,6 +102,7 @@ body {
     .title {
       position: relative;
       color: transparent;
+      -webkit-text-stroke: 0;
 
       .svg-title {
         overflow: visible;

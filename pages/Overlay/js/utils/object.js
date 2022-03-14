@@ -49,3 +49,7 @@ export function fillArray(amount, entry) {
 export function delay(millis) {
     return new Promise(resolve => setTimeout(resolve, millis))
 }
+
+export function isWindows() {
+    return navigator.userAgentData.platform.includes("Windows")
+}
