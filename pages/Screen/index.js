@@ -2,7 +2,7 @@ import "~/styles/iframe.scss"
 import IFrame from "~/js/IFrame"
 // import AudioAllower from "~/js/AudioAllower"
 import Countdown from "~/js/Countdown"
-import { MediaPipePose } from "@ecal-mid/mediapipe"
+import { MediaPipePose } from "~/local_modules/@ecal-mid/mediapipe"
 
 // let p5Microphone
 

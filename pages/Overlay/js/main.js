@@ -3,12 +3,12 @@
 // footballer https://rawcdn.githack.com/mrdoob/three.js/r105/examples/webgl_loader_sea3d_bvh_retarget.html
 
 //* styling
-import '@ecal-mid/mediapipe/umd/css/index.css'
+import '~/local_modules/@ecal-mid/mediapipe/umd/css/index.css'
 import '../styles/main.scss'
 // import "../styles/main.scss"
 
 //* node_modules
-// import { MediaPipeSmoothPose, MediaPipeClient } from '@ecal-mid/mediapipe'
+import { MediaPipeSmoothPose, MediaPipeClient } from '~/local_modules/@ecal-mid/mediapipe'
 import * as THREE from 'three'
 
 import { CSS3DRenderer, CSS3DObject, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
@@ -148,8 +148,8 @@ async function init(canvas, width, height) {
 
     // console.log('NANI');
     const ratio = width / height
-    //TODO
     // const canvasWidth = 1080*2
+    //! increase quality on big TV samsung screen zotac, pixelDensity of 2
     const quality = isWindows() ? 2 : 1
     const canvasWidth = 1080 * quality
     const canvasHeight = canvasWidth * ratio
