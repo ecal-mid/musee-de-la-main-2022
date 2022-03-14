@@ -84,7 +84,7 @@ class App {
       "./sound/bubble_2.mp3",
     ].map(path => {
       const audio = new Audio(path)
-      audio.volume = 0.05
+      audio.volume = 0.15
       return audio
     })
 

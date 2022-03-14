@@ -1,5 +1,5 @@
 //? press SPACE to change state
-const microphone = new Microphone() // microphone.js
+// const microphone = new Microphone() // microphone.js
 const mediaPipe = new MediaPipeClient()
 
 let PERSON = new Person()
@@ -105,7 +105,7 @@ mediaPipe.addEventListener('setup', () => {
 function setup() {
 
   mic = new p5.AudioIn();
-  
+  mic.start();
   //video = createVideo()
 
   const canvas = createCanvas(100, 100);

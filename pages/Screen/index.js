@@ -44,8 +44,8 @@ const nobodyCountdown = new Countdown(30 * 1000)
 // }
 //! use the self called setup function from p5 to use microphone (for jamy project)
 window.setup = async () => {
-  await AudioAllower.allow()
-  p5Microphone = await AudioAllower.getP5Microphone()
+  // await AudioAllower.allow()
+  // p5Microphone = await AudioAllower.getP5Microphone()
 
   const pose = await MediaPipePose.create({
     cameraConstraints: CONFIG.cameraConstraints,
@@ -55,12 +55,12 @@ window.setup = async () => {
 
   const debuggerElem = document.createElement('div')
   debuggerElem.className = 'debug'
-  document.body.appendChild(debuggerElem)
+  // document.body.appendChild(debuggerElem)
 
-  setInterval(() => {
-     const lvl = p5Microphone.getLevel()
-     debuggerElem.textContent = lvl
-  }, 1000) // force listening ?
+  // setInterval(() => {
+  //    const lvl = p5Microphone.getLevel()
+  //    debuggerElem.textContent = lvl
+  // }, 1000) // force listening ?
 
   const player = pose.getVideoPlayer()
   pose.startDetection()
@@ -111,6 +111,6 @@ async function insertIFrame({ player, pose, iframe }) {
     mirrored: CONFIG.mediaPipeOptions.selfieMode,
   })
 
-  microphone?.plugIn(p5Microphone)
+  // microphone?.plugIn(p5Microphone)
 
 }
