@@ -1,7 +1,7 @@
-@use 'sass:math';
-@use 'sass:color';
-@use 'sass:selector';
-@import 'main';
+@use "sass:math";
+@use "sass:color";
+@use "sass:selector";
+@import "main";
 
 $gap: 2rem;
 $top: 33vh;
@@ -67,7 +67,7 @@ body {
         justify-content: center;
 
         &::after {
-          content: '';
+          content: "";
           width: $dot-size;
           height: $dot-size;
           border: solid 1px $color-blue;
@@ -116,13 +116,13 @@ body {
         // -webkit-text-stroke: 1px $color-light;
         margin: 0;
         margin-bottom: $gap;
-        margin-left: .2ch; //! correct monospace offset
+        margin-left: 0.2ch; //! correct monospace offset
         font-size: 3em;
         font-weight: lighter;
         text-align: center;
         opacity: 0;
 
-        @include ancestorMatches('.page', '.active') {
+        @include ancestorMatches(".page", ".active") {
           transition: opacity 1s 0s ease-out;
           opacity: 1;
         }
@@ -140,7 +140,7 @@ body {
             stroke-dasharray: 0 100;
             // filter: drop-shadow(0 0 2px white);
 
-            @include ancestorMatches('.page', '.active') {
+            @include ancestorMatches(".page", ".active") {
               transition: all 1s 0s ease-out;
               stroke-dasharray: 100 0;
             }
@@ -175,7 +175,7 @@ body {
         opacity: 0;
         color: $color-blue;
 
-        @include ancestorMatches('.page', '.active') {
+        @include ancestorMatches(".page", ".active") {
           opacity: 1;
           animation: flicker 1s 2s ease-in-out infinite alternate;
           transition: opacity 1s 1s ease;
@@ -229,13 +229,29 @@ body {
           height: calc(#{$top} + 6em);
 
           &::after {
-            content: '';
+            content: "";
             @include fullAbsolute;
-            height: calc(100% + 2px); // fix image overflow
+            bottom: -2px;
+            top: unset;
+            height: 33%; // fix image overflow
             background: linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 1) 0%,
-              rgba(0, 0, 0, 0) 50%
+              to bottom,
+              hsla(0, 0%, 0%, 0) 0%,
+              hsla(0, 0%, 0%, 0.013) 8.1%,
+              hsla(0, 0%, 0%, 0.049) 15.5%,
+              hsla(0, 0%, 0%, 0.104) 22.5%,
+              hsla(0, 0%, 0%, 0.175) 29%,
+              hsla(0, 0%, 0%, 0.259) 35.3%,
+              hsla(0, 0%, 0%, 0.352) 41.2%,
+              hsla(0, 0%, 0%, 0.45) 47.1%,
+              hsla(0, 0%, 0%, 0.55) 52.9%,
+              hsla(0, 0%, 0%, 0.648) 58.8%,
+              hsla(0, 0%, 0%, 0.741) 64.7%,
+              hsla(0, 0%, 0%, 0.825) 71%,
+              hsla(0, 0%, 0%, 0.896) 77.5%,
+              hsla(0, 0%, 0%, 0.951) 84.5%,
+              hsla(0, 0%, 0%, 0.987) 91.9%,
+              hsl(0, 0%, 0%) 100%
             );
           }
 

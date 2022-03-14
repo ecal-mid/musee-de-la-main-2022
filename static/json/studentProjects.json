@@ -39,7 +39,7 @@
       "students": ["Jamy Herrmann"],
       "description": "Cette série typographique d’antonymes nous invite à découvrir intuitivement comment jouer avec les opposés de manière ludique. En incarnant tour à tour un mot ou son contraire, nous pouvons comprendre comment une analyse d’image permet de catégoriser certaines actions ou comportements.",
       "interaction": "Devenez petit en vous baissant, devenez grand en allongeant vos bras, rapprochez-vous, éloignez-vous…\nA vous de découvrir quelle position ou comportement adopter pour résoudre les différentes énigmes d'antonymes.\nTenez la position assez longtemps sur la ligne rouge et passez au niveau suivant !",
-      "images": ["/images/template.jpg"]
+      "images": ["/images/jamy.jpg"]
     },
     {
       "title": "You & You",
@@ -47,7 +47,7 @@
       "students": ["Samuel Dumez"],
       "description": "A travers un miroir ou toute autre surface réfléchissante, la perception de notre reflet est toujours et inévitablement liée à l'instant présent. En utilisant l’enregistrement et l’affichage de notre image en différé, ce projet propose une nouvelle lecture de notre reflet en y intégrant un concept de temporalité. Ce jeu de collage entre présent et passé permet aux différents reflets de ne faire qu’un.",
       "interaction": "Utilisez vos mains pour effacer votre reflet présent et révéler votre reflet passé, qui est retardé dans le temps.\nPlus vous vous éloignez de l’écran, plus votre reflet passé s’éloigne de l’instant présent.\nPlus vous vous rapprocherez de l’écran, plus votre reflet passé se rapproche de de l’instant présent.",
-      "images": ["/images/template.jpg"]
+      "images": ["/images/samuel.png"]
     },
     {
       "title": "PlayZone",
