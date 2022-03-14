@@ -1,10 +1,10 @@
 import "~/styles/iframe.scss"
 import IFrame from "~/js/IFrame"
-import AudioAllower from "~/js/AudioAllower"
+// import AudioAllower from "~/js/AudioAllower"
 import Countdown from "~/js/Countdown"
 import { MediaPipePose } from "@ecal-mid/mediapipe"
 
-let p5Microphone
+// let p5Microphone
 
 const CONFIG = {
   smoothenDetection: 0.5, //? between 0 and 1, 0 is no smoothing
@@ -29,22 +29,12 @@ const CONFIG = {
 }
 
 const nobodyCountdown = new Countdown(30 * 1000)
-//   someoneTimeout: null,
-//   duration() {
 
-//   },
-//   clearCountdown() {
-//     clearTimeout(this.someoneTimeout)
-//     this.someoneTimeout = null
-//   },
-//   startCountown(callback) {
-//     clearTimeout(this.someoneTimeout)
-//     this.someoneTimeout = setTimeout(callback, this.duration)
-//   }
-// }
-//! use the self called setup function from p5 to use microphone (for jamy project)
-window.setup = async () => {
+window.addEventListener('load', setup)
+async function setup() {
+
   // await AudioAllower.allow()
+  //! use the self called setup function from p5 to use microphone (for jamy project)
   // p5Microphone = await AudioAllower.getP5Microphone()
 
   const pose = await MediaPipePose.create({
