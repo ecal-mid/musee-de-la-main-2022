@@ -233,7 +233,7 @@ body {
             @include fullAbsolute;
             bottom: -2px;
             top: unset;
-            height: 33%; // fix image overflow
+            height: 50%; // fix image overflow
             background: linear-gradient(
               to bottom,
               hsla(0, 0%, 0%, 0) 0%,
