@@ -5,7 +5,8 @@ export default class IframeBus extends EventBus {
     constructor({ transitionDelay }) {
         super()
         this.handlers = {
-            'changeproject': this.onChangeProject.bind(this)
+            'changeproject': this.onChangeProject.bind(this),
+            'pause': this.onPause.bind(this)
         }
 
         this.parent = window.parent
@@ -19,27 +20,32 @@ export default class IframeBus extends EventBus {
 
     onChangeProject(e) {
 
+        const isProject = e.data.id >= 0
         this.emit('resume')
 
-        console.log("just swiped, please fade in", e)
+        // console.log("just swiped, please fade in", e)
         console.log(":: project ID ::", e.data.id)
-
-        const isProject = e.data.id >= 0
-        console.log(e.data)
+        // console.log(e.data)
+        
         clearTimeout(this.timeout)
 
+        // this.emit('show')
+
         if (!isProject) {
-            this.emit('title')
+            this.emit('showtitle')
             return
         } else {
-            
-            this.emit('project', e.data.project)
+            this.emit('projectchange', e.data.project)
         }
 
         this.timeout = setTimeout(() => {
+            this.emit('hide')
             this.message("overlayended", {})
         }, this.transitionDelay)
+    }
 
+    onPause() {
+        this.emit('pause')
     }
 
     message(message, data = {}) {

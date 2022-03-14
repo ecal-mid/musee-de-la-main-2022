@@ -88,7 +88,7 @@ export default class Model {
             layer.setOpacity(visibility)
         })
 
-        texture.update()
+        texture.update(delta)
         skinnedMesh.material.map.needsUpdate = true
 
         return
@@ -96,6 +96,10 @@ export default class Model {
         // POSE_LANDMARKS_NAMES.forEach(name => {
         //     this.texts[name].update(pose[name])
         // })
+    }
+
+    setVisibility(visible) {
+        this.params.texture.setVisibility(visible)
     }
 
     setupTexts() {
@@ -162,7 +166,8 @@ export default class Model {
             // emissive: 0xffffff,
             // emissiveIntensity: 1,
             wireframe: true,
-            map: new THREE.CanvasTexture(texture.canvas)
+            map: new THREE.CanvasTexture(texture.canvas),
+            transparent: true,
             // linewidth: 2
         })
 

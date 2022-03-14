@@ -33,6 +33,16 @@ body {
   background-color: black;
 }
 
+.visibilityContainer {
+  transition: opacity 1s linear;
+  opacity: 1;
+
+  &.hidden {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+}
+
 .main-canvas {
   mix-blend-mode: screen;
 }

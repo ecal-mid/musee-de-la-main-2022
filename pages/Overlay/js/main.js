@@ -22,7 +22,6 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import FakeConsole from './fakeconsole/index.js'
 import { TextLoading, TextTitle, Text } from './fakeconsole/text/texts'
 
-
 //* scripts
 import Model from './rig/Model.js'
 import { CustomGridHelper } from './CustomGridHelper.js'
@@ -33,22 +32,18 @@ import { map, Smoother, mapClamped } from './utils/math.js'
 
 import IframeBus from './IframeBus.js'
 
+const transitionDelay = CONFIG.transitionDelay
+
 let scene, sceneBack, renderer, camera, composer, cssRendererFront, cssRendererBack
 let control, dot, orbit
+let model, skeletonRemapper
 
-const clock = new THREE.Clock()
-
-
-console.log('nani');
+console.log('INIT Overlay');
 
 let text3DHead
-let textProject = new Text({
-    // text: 'Project name',
-    text: '',
-})
-let transitionDelay = CONFIG.transitionDelay
+let textProject = new Text({ text: '' })
+let animationFrame = null
 
-let model, skeletonRemapper
 let PERSON = {
     size: 0.5, velocity: 0, smoothSize: new Smoother({
         smoothness: 1,
@@ -58,14 +53,13 @@ let PERSON = {
     }),
 }
 
-const GRID = {}
-
 let someone = false
+let TITLE_MODE = true
 
+const GRID = {}
 const BUS = new IframeBus({ transitionDelay })
 const waitResume = BUS.waitFor('resume')
-
-let TITLE_MODE = true
+const clock = new THREE.Clock()
 
 const consoles = {
     main: new FakeConsole({
@@ -97,35 +91,6 @@ const consoles = {
     })
 }
 
-BUS.addEventListener('project', (project) => {
-    const { loading, splash } = consoles
-
-    loading.setVisibility(true)
-
-    console.log(project)
-
-    loading.addEntry(new TextLoading({
-        text: '',
-        lifeSpan: transitionDelay,
-    }))
-
-    textProject.setAttributes({ textContent: `${project.title}` })
-
-    splash.setVisibility(false)
-
-    const clipName = random(['rumba', 'rumba', 'silly', 'pointing'])
-    model?.play(clipName)
-    TITLE_MODE = false
-
-})
-
-
-BUS.addEventListener('title', () => {
-    model?.play('idle', { loop: true })
-    consoles.loading.setVisibility(false)
-    consoles.splash.setVisibility(true, 500)
-    TITLE_MODE = true
-})
 
 const canvas = document.querySelector('.main-canvas')
 
@@ -161,15 +126,20 @@ mediaPipe.on('setup', async () => {
 function moveCamera(personSize) {
     let bone = model.getBone('mixamorig_Hips')
     const hips = bone.getWorldPosition(new THREE.Vector3())
-    const centerPoint = CONFIG.centerZ
+    const { maxSize, centerZ } = CONFIG
+    const centerPoint = centerZ
     const target = new THREE.Vector3()
 
     target.copy(orbit.target)
 
     camera.position.x = hips.x * 0.5
-    camera.position.z = map(personSize, centerPoint, 1, 0, 250)
-    camera.position.y = map(personSize, centerPoint, 1, 0, 100)
-    target.y += map(personSize, centerPoint, 1, 0, 50)
+
+
+    // console.log(personSize)
+
+    camera.position.z = mapClamped(personSize, centerPoint, maxSize, 0, 250)
+    camera.position.y = mapClamped(personSize, centerPoint, maxSize, 0, 100)
+    target.y += mapClamped(personSize, centerPoint, maxSize, 0, 50)
 
     camera.lookAt(target)
 }
@@ -199,6 +169,8 @@ async function init(canvas, width, height) {
     model = await Model.createFromFile('basemesh-tpose-uv.fbx').catch(error => {
         console.log(error)
     })
+
+    model.setVisibility(true)
 
     const loads = Object.entries(clips).map(([filePath, clipsName]) => model.loadAdditionalAnimations(filePath, clipsName))
     await Promise.all(loads)
@@ -310,21 +282,58 @@ async function init(canvas, width, height) {
     text3DHead.position.set(0, 30, 0)
     // scene.add(control);
 
-    if (window !== window.parent) {
-        render()
-        await waitResume
-        animate()
-    } else {
-        animate()
-    }
+    BUS.addEventListener('projectchange', (project) => {
+        // console.log(project)
 
+        consoles.loading.setVisibility(true)
+        consoles.splash.setVisibility(false)
 
-    window.addEventListener('click', () => {
-        // idle
-        // jump
-        // rumba
-        // model.play('rumba')
+        consoles.loading.addEntry(new TextLoading({
+            text: '',
+            lifeSpan: transitionDelay,
+        }))
+
+        textProject.setAttributes({ textContent: `${project.title}` })
+
+        const clipName = random(['rumba', 'rumba', 'silly', 'pointing'])
+        model?.play(clipName)
+        TITLE_MODE = false
+
     })
+
+    BUS.addEventListener('showtitle', () => {
+        model?.play('idle', { loop: true })
+        consoles.loading.setVisibility(false)
+        consoles.splash.setVisibility(true, 500)
+        TITLE_MODE = true
+    })
+
+    BUS.addEventListener('pause', () => {
+        pause()
+    })
+
+    BUS.addEventListener('hide', async () => {
+        consoles.loading.setVisibility(false)
+        consoles.splash.setVisibility(false)
+        model.setVisibility(false)
+
+        GRID.grid.appear(false)
+        GRID.fineGrid.appear(false, 500)
+        showOverlay(false)
+    })
+
+    BUS.addEventListener('resume', () => {
+        // console.log('YWEAFGBSG')
+        resume()
+        GRID.grid.appear(true)
+        GRID.fineGrid.appear(true, 500)
+        model.setVisibility(true)
+        showOverlay(true)
+    })
+
+    BUS.emit('resume')
+    BUS.emit('showtitle')
+
     window.addEventListener('resize', resizeRenderer)
 
     mediaPipe.on('pose', (event) => {
@@ -356,9 +365,34 @@ function resizeRenderer() {
     cssRendererBack.setSize(innerWidth, innerHeight)
 }
 
+function resume() {
+    pause()
+    animate()
+}
+
 function animate() {
-    requestAnimationFrame(animate)
+    animationFrame = requestAnimationFrame(animate)
     render()
+}
+
+function pause() {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = null
+}
+
+function showOverlay(visible) {
+    const container = document.querySelector('.visibilityContainer')
+    const { classList } = container
+    visible ? classList.remove('hidden') : classList.add('hidden')
+
+    container.ontransitionend = (event) => {
+        if(event.target !== container) return;
+
+        const isHidden = classList.contains('hidden')
+
+        if(!isHidden) return;
+        BUS.emit('pause')
+    }
 }
 
 function render() {

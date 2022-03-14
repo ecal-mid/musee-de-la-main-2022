@@ -56,8 +56,11 @@ class CustomGridHelper extends THREE.LineSegments {
         material.needsUpdate = true
     }
 
-    appear(enable) {
-        this.userData.smoother.setTarget(enable ? 1 : 0)
+    appear(enable, delay) {
+        clearTimeout(this.appearTimeout)
+        this.appearTimeout = setTimeout(() => {
+            this.userData.smoother.setTarget(enable ? 1 : 0)
+        }, delay)
     }
 
     update(deltaTime) {

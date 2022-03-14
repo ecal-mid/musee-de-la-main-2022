@@ -35,11 +35,19 @@ export default class IFrame {
     this.studentsData = await Utils.loadJSON("/json/studentProjects.json")
   }
   onIFrameLoaded(e) {
+    // this.frame.classList.remove('hide')
     console.log("::iframe loaded::", e)
     this.onFrameLoad(e)
   }
+
+  messageOverlay(type, data = {}) {
+    this.overlay.contentWindow.postMessage({ ...data, message: type }, "*")
+  }
+
   // message from ipad
   onMessage(data) {
+
+    // console.log('yes')
 
     if ("client_id" in data) this.ID = data["client_id"]
 
@@ -60,23 +68,25 @@ export default class IFrame {
     }
 
     // wait for transition before updating the frame
+
     clearTimeout(this.timeout)
     this.timeout = setTimeout(() => {
       this.frame.src = url
     }, 1000)
     // fadein the overlay
-    setTimeout(() => this.overlay.classList.remove("hide"))
+    setTimeout(() => {
+      this.overlay.classList.remove("hide")
+      this.frame.classList.add('hide')
+    })
     // send info to iFrame
-    this.overlay.contentWindow.postMessage(
-      { message: "changeproject", id, project },
-      "*"
-    )
+    this.messageOverlay("changeproject", { id, project })
 
   }
   // message from overlay
   onIFrameMessage(e) {
     if (e.data.message === "overlayended") {
-      this.overlay.classList.add("hide")
+      // this.overlay.classList.add("hide")
+      this.frame.classList.remove('hide')
       // this.overlay.src = this.overlay.src
     }
   }

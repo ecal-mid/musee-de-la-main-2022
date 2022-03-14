@@ -8,6 +8,7 @@ export default {
     },
     transitionDelay: 2500,
     centerZ: 0.5,
+    maxSize: 2,
     models: {
         demo: {
             path: '/models/gltf/Xbot.glb',

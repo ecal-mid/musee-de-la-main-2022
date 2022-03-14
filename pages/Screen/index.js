@@ -90,11 +90,6 @@ window.setup = async () => {
 
   const overlayFrame = document.querySelector("#overlay")
 
-  overlayFrame.addEventListener('load', () => {
-    overlayFrame.contentWindow.postMessage({ message: "changeproject", id: -1 }, "*") //! -1 is for no project selected
-  }, { once: true })
-
-
   overlayFrame.onload = (event) =>
     insertIFrame({ player, iframe: event.target, pose })
   // overlayFrame.classList.add("hide");

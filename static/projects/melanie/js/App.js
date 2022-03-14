@@ -235,6 +235,12 @@ class App {
     const radius = w * 0.5
 
     ctx.save()
+
+    if (this.mirrored) {
+      ctx.scale(-1, 1)
+      ctx.translate(-this.canvas.width, 0)
+    }
+
     ctx.translate(center.x, center.y)
     ctx.rotate(-Math.PI / 2)
 
@@ -268,6 +274,12 @@ class App {
     const radius = w * 0.5
 
     ctx.save()
+
+    if (this.mirrored) {
+      ctx.scale(-1, 1)
+      ctx.translate(-this.canvas.width, 0)
+    }
+
     ctx.translate(center.x, center.y)
 
     // flash circle
@@ -347,10 +359,10 @@ class App {
         // this.circles[i].img = this.img
 
         if (!this.circles[i].img) {
-          
-          
+
+
           this.previousImage()
-          .then((img) => {
+            .then((img) => {
               randomArrayElement(this.bubbleSounds).play()
               this.circles[i].addImage(img)
             })

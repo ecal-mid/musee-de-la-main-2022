@@ -1,7 +1,7 @@
 import { mapObject, NO_OP } from "../utils/object"
 import { MathUtils } from "three"
 
-const lerp = MathUtils.lerp
+const { lerp, damp } = MathUtils
 
 export default class SkeletonTexture {
   constructor(images) {
@@ -14,6 +14,10 @@ export default class SkeletonTexture {
 
     this.canvas = cv
     this.ctx = this.canvas.getContext('2d')
+
+    this.visibilityTarget = 0
+    this.visibilityAmount = this.visibilityTarget
+
     // this.ctx.filter = `sepia(100%)`;
     this.ctx.fillStyle = 'rgba(5, 50, 50)'
     // this.ctx.fillStyle = 'red'
@@ -48,13 +52,52 @@ export default class SkeletonTexture {
     this.canvas.style.display = show ? 'block' : 'none'
   }
 
-  update() {
+  setVisibility(visible) {
+    this.visibilityTarget = visible ? 1 : 0;
+  }
+
+  update(deltaTime = 0) {
     const { width, height } = this.canvas
-    this.ctx.save()
-    this.ctx.fillRect(0, 0, width, height)
-    // this.ctx.globalCompositeOperation = 'lighter'
-    this.loopLayers(layer => layer.draw(this.ctx))
-    this.ctx.restore()
+    const c = this.ctx
+    c.save()
+
+    c.clearRect(0, 0, width, height)
+
+    // c.globalCompositeOperation = 'source-in'
+
+    c.fillRect(0, 0, width, height)
+    // // c.globalCompositeOperation = 'lighter'
+    this.loopLayers(layer => layer.draw(c))
+
+    this.visibilityAmount = damp(this.visibilityAmount, this.visibilityTarget, 1.5, deltaTime)
+
+    c.save()
+
+    c.globalCompositeOperation = 'destination-in'
+
+    let radius = Math.hypot(width, height) * 0.5;
+
+    c.translate(width / 2, height / 2)
+
+    const grd = c.createRadialGradient(0, 0, 0, 0, 0, radius * this.visibilityAmount);
+    grd.addColorStop(0, "white");
+    grd.addColorStop(1, `rgba(255,255,255,${Math.pow(this.visibilityAmount, 20)})`);
+    c.fillStyle = grd
+    this.fillCircle(0, 0, radius * this.visibilityAmount)
+
+    c.restore()
+
+
+    // console.log(deltaTime)
+
+    c.restore()
+
+  }
+
+  fillCircle(x, y, radius) {
+    this.ctx.beginPath()
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI)
+    this.ctx.fill()
   }
 
   static async preload(texFiles, texFolder) {
