@@ -23,7 +23,7 @@
       "students": ["Mélanie Fontaine"],
       "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur se confronte à un écosystème controlé par des algorithmes plus intrusifs qu'il n'y parait.",
       "interaction": "Amusez-vous en jonglant avec les balles qui apparaissent à l’écran. Si certaines rebondissent sur votre tête, vous découvrirez les visages des jongleurs et jongleuses qui vous ont précédé.",
-      "images": ["/various/template.jpg"]
+      "images": ["/images/template.jpg"]
     },
     {
       "title": "Abyssal Reflection",
@@ -31,7 +31,7 @@
       "students": ["Nathanaël Vianin", "Iris Moine"],
       "description": "“Si vous regardez longtemps au fond des abysses, les abysses voient au fond de vous.”\nCe projet nous propose d’incarner cette célèbre citation pour nous rendre attentifs et attentives à l’avertissement de Friedrich Nietzche.\nLa mise en œuvre de certains systèmes - en l'occurrence technologiques - pour lutter contre certains fléaux, peut conduire, par manque de vigilance, à devenir ces mêmes fléaux contre lesquels nous luttions.",
       "interaction": "Plongez votre corps et vos mouvements dans un univers abyssal imaginaire et techno-organique. Laissez place à la contemplation et l’évasion, le temps de cette immersion immergée.",
-      "images": ["/various/template.jpg"]
+      "images": ["/images/nathanael-iris.png"]
     },
     {
       "title": "Oui Non",
@@ -39,7 +39,7 @@
       "students": ["Jamy Herrmann"],
       "description": "Cette série typographique d’antonymes nous invite à découvrir intuitivement comment jouer avec les opposés de manière ludique. En incarnant tour à tour un mot ou son contraire, nous pouvons comprendre comment une analyse d’image permet de catégoriser certaines actions ou comportements.",
       "interaction": "Devenez petit en vous baissant, devenez grand en allongeant vos bras, rapprochez-vous, éloignez-vous…\nA vous de découvrir quelle position ou comportement adopter pour résoudre les différentes énigmes d'antonymes.\nTenez la position assez longtemps sur la ligne rouge et passez au niveau suivant !",
-      "images": ["/various/template.jpg"]
+      "images": ["/images/template.jpg"]
     },
     {
       "title": "You & You",
@@ -47,7 +47,7 @@
       "students": ["Samuel Dumez"],
       "description": "A travers un miroir ou toute autre surface réfléchissante, la perception de notre reflet est toujours et inévitablement liée à l'instant présent. En utilisant l’enregistrement et l’affichage de notre image en différé, ce projet propose une nouvelle lecture de notre reflet en y intégrant un concept de temporalité. Ce jeu de collage entre présent et passé permet aux différents reflets de ne faire qu’un.",
       "interaction": "Utilisez vos mains pour effacer votre reflet présent et révéler votre reflet passé, qui est retardé dans le temps.\nPlus vous vous éloignez de l’écran, plus votre reflet passé s’éloigne de l’instant présent.\nPlus vous vous rapprocherez de l’écran, plus votre reflet passé se rapproche de de l’instant présent.",
-      "images": ["/various/template.jpg"]
+      "images": ["/images/template.jpg"]
     },
     {
       "title": "PlayZone",
@@ -55,7 +55,7 @@
       "students": ["Elodie Anglade", "Soraya Camina"],
       "description": "Ce projet est une fenêtre qui nous ouvre la perspective d’une autre dimension, celle d’une jungle colorée est luxuriante. Le miroir n’est plus reflet, il devient portail et point d’accès vers un univers impossible qui réagit aux gestes et mouvements du spectateur.",
       "interaction": "Éloignez-vous, rapprochez-vous, déplacez-vous de gauche à droite… et plongez dans cette jungle interactive qui s’ajuste à vos mouvements. Avec vos mains, vous pouvez déplacer la lumière pour illuminer le décor.",
-      "images": ["/various/template.jpg"]
+      "images": ["/images/elodie-soraya.png"]
     }
   ]
 }
