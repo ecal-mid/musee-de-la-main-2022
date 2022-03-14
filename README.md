@@ -18,7 +18,7 @@
 #### Windows Scripts
 Make sure to install the launch-scripts
 
-- `mobile-hotspot/` Enable mobile hotspot. Paste this folder on the desktop [from](https://gist.github.com/primaryobjects/8b54f7f4219960127f1f620116315a37)
+- `mobile-hotspot/` Enable mobile hotspot. Paste this folder on the desktop. [Original script](https://gist.github.com/primaryobjects/8b54f7f4219960127f1f620116315a37).
 - `runServer.bat` Autolaunch app when boot up.
 
 1. `Windows+R`
