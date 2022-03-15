@@ -55,7 +55,7 @@ class App {
       max: {
         x: [-1, 1],
         y: [10, 11],
-        z: [-26, -26],
+        z: [-30, -30],
       },
       /*max: {
         x: [-4, 4],
@@ -417,7 +417,7 @@ class App {
   }
 
   moveCameraWithHands() {
-    const distance = this.map(this.distance, 5, 1, 0, 1);
+    // const distance = this.map(this.distance, 5, 1, 0, 1);
     const hand = this.hands.left;
     // docu for animation curve
     // https://sbcode.net/threejs/tween/
@@ -480,9 +480,9 @@ class App {
       range.forEach((value, index) => {
         range[index] =
           this.map(
-            distance,
-            0.7,
-            1.1,
+            this.distance,
+            2,
+            1,
             extrem.min[d][index],
             extrem.max[d][index]
           );
@@ -685,7 +685,7 @@ class App {
     document.getElementById("HUD").innerHTML = `x:${readyToPrint(
       p.x,
       this
-    )} | y:${readyToPrint(p.y, this)} | z:${readyToPrint(p.z, this)}`;
+    )} | dist:${this.round2(this.distance)} z:${readyToPrint(p.z, this)}`;
 
     function readyToPrint(number, that) {
       const rounded = Math.round(number);
