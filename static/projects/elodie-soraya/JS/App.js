@@ -500,13 +500,13 @@ class App {
     const limit = this.cameraRangeExtreme;
     this.camPos.z = this.lerp(
       this.camPos.z,
-      this.boundary(this.cameraRange.z[0], limit.min.z[0], limit.max.z[0]),
+      this.limit(this.cameraRange.z[0], limit.min.z[0], limit.max.z[0]),
       0.07
     );
     // console.log(this.camPos.z);
   }
 
-  boundary(value, min, max) {
+  limit(value, min, max) {
     if (value > max) {
       return max;
     } else if (value < min) {
@@ -514,14 +514,6 @@ class App {
     } else {
       return value;
     }
-  }
-
-  limit(num, min, max) {
-    const MIN = min;
-    const MAX = max;
-    const parsed = parseInt(num);
-
-    return Math.floor(Math.min(Math.max(parsed, MIN), MAX));
   }
 
   average(array) {
