@@ -220,6 +220,8 @@ class App {
       const path = await storage.upload(`images/${picIndex}.jpg`, image)
       this.dataURLs.push(path)
 
+      this.goToLastImage()
+
       while (this.dataURLs.length > STORAGE_LIMIT) {
         const firstElem = this.dataURLs.shift()
         await storage.delete(firstElem)
@@ -311,6 +313,10 @@ class App {
       )
       this.frameCount = 0
     }
+  }
+
+  goToLastImage() {
+    this.currentImageIndex = this.dataURLs.length - 1
   }
 
   async previousImage() {
