@@ -21,9 +21,9 @@
       "title": "Bubble Pool",
       "url": "/projects/melanie/",
       "students": ["Mélanie Fontaine"],
-      "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur se confronte à un écosystème controlé par des algorithmes plus intrusifs qu'il n'y parait.",
+      "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur se confronte à un écosystème contrôlé par des algorithmes plus intrusifs qu'il n'y paraît.",
       "interaction": "Amusez-vous en jonglant avec les balles qui apparaissent à l’écran. Si certaines rebondissent sur votre tête, vous découvrirez les visages des jongleurs et jongleuses qui vous ont précédé.",
-      "images": ["/images/template.jpg"]
+      "images": ["/images/melanie.jpg"]
     },
     {
       "title": "Abyssal Reflection",
@@ -34,7 +34,7 @@
       "images": ["/images/nathanael-iris.png"]
     },
     {
-      "title": "Oui Non",
+      "title": "Oui % Non",
       "url": "/projects/jamy/",
       "students": ["Jamy Herrmann"],
       "description": "Cette série typographique d’antonymes nous invite à découvrir intuitivement comment jouer avec les opposés de manière ludique. En incarnant tour à tour un mot ou son contraire, nous pouvons comprendre comment une analyse d’image permet de catégoriser certaines actions ou comportements.",
@@ -53,7 +53,7 @@
       "title": "PlayZone",
       "url": "/projects/elodie-soraya/",
       "students": ["Elodie Anglade", "Soraya Camina"],
-      "description": "Ce projet est une fenêtre qui nous ouvre la perspective d’une autre dimension, celle d’une jungle colorée est luxuriante. Le miroir n’est plus reflet, il devient portail et point d’accès vers un univers impossible qui réagit aux gestes et mouvements du spectateur.",
+      "description": "Ce projet est une fenêtre qui nous ouvre la perspective d’une autre dimension, celle d’une jungle colorée et luxuriante. Le miroir n’est plus reflet, il devient portail et point d’accès vers un univers impossible qui réagit aux gestes et mouvements du spectateur.",
       "interaction": "Éloignez-vous, rapprochez-vous, déplacez-vous de gauche à droite… et plongez dans cette jungle interactive qui s’ajuste à vos mouvements. Avec vos mains, vous pouvez déplacer la lumière pour illuminer le décor.",
       "images": ["/images/elodie-soraya.png"]
     }
