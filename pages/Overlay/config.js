@@ -7,10 +7,10 @@ export default {
         bloomRadius: 0
     },
     transitionDelay: 3000,
-    centerZ: 0.3,
+    centerZ: 0.25,
     //centerZ: 0.5,
     //maxSize: 2,
-    maxSize: 1,
+    maxSize: 0.5,
     models: {
         demo: {
             path: '/models/gltf/Xbot.glb',

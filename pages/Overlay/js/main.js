@@ -412,7 +412,7 @@ function render() {
     if (someone) dist = SkeletonRemapper.dist2D(pose.RIGHT_SHOULDER, pose.LEFT_SHOULDER)
 
     const value = PERSON.smoothSize.smoothen(deltaTime, dist)
-    // console.log(value)
+    console.log(value)
     moveCamera(value)
 
     const { skeleton } = model.params.skinnedMesh

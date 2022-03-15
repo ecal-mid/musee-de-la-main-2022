@@ -21,7 +21,11 @@ mediaPipe.on("setup", () => {
     app = new App()
     document.app = app
     // console.log()
+
+    if(mediaPipe.mirrored) document.body.style.transform = "scaleX(-1)"
 })
+
+
 
 // window.onload = () => {
 //     log("app loaded")
@@ -37,10 +41,10 @@ mediaPipe.on("setup", () => {
 
 /* let pops = ["pop1.wav", "pop2.ogg", "pop3.ogg", "ploof.mp3"] */
 let pops = ["ploof.mp3", "woosh1.wav", "woosh2.wav", "woosh3.wav", "woosh4.wav"].map(fileName => {
-    return createAudio(fileName, { volume: 0.2 })
+    return createAudio(fileName, { volume: 0.1 })
 })
 
-const background = createAudio("./background.mp3", { autoplay: true, loop: true, volume: 0.1 })
+//const background = createAudio("./background.mp3", { autoplay: true, loop: true, volume: 0.1 })
 
 const crunches = ["crunch1.wav", "crunch2.wav", "crunch3.wav", "crunch4.wav"].map(fileName => {
     return createAudio(fileName)
@@ -61,19 +65,22 @@ function createAudio(fileName, {
 
 let bg_music_init = false
 let bg_music = createAudio("background.mp3", {
-    loop: true
+    loop: true,
+    volume: 0.5
 })
 // bg_music.play()
 
 let SETTINGS = {
     hand_scale: -5,
-    invert_x: true,
+    invert_x: false,
     invert_y: false,
     invert_z: false,
     // used for calibration
-    offset_x: -.31,
+    offset_x: -.0,
     offset_y: -.06,
-    offset_z: 1.2
+    offset_y: -.09,
+   //  offset_z: 0.5,
+    offset_z: 0.63
 }
 
 let number = 1500
@@ -249,7 +256,7 @@ let circle_r = 10
 
 let display_circle = new THREE.Object3D()
 document.circle = display_circle
-display_circle.position.z = -7
+display_circle.position.z = -5.5
 display_circle.position.y = 1.6
 
 for (let source of modelSources) {
@@ -642,7 +649,7 @@ export class App {
         this.scene.add(rect4)
 
         if (!debug) {
-            this.fog = new THREE.Fog( /* 0x08070f */ 0x100e1c, 4.3, 6)
+            this.fog = new THREE.Fog( /* 0x08070f */ 0x000617, 4.3, 6)
         }
         this.scene.fog = this.fog
         let bg = new THREE.Mesh(
@@ -672,9 +679,12 @@ export class App {
         }
 
         this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, .1, 1000)
-        this.camera.position.z = 5
-        this.camera.position.y = -1.5
-        this.camera.rotation.x = .3
+        this.camera.position.z = 5.8
+        this.camera.rotation.x = 0.58
+
+        this.camera.position.y = -3
+       // this.camera.rotation.x = .3
+       // this.camera.zoom *= 2 
         /* this.camera.rotation.x  */
         /* this.camera.lookAt(rects[0]) */
         this.renderer = new THREE.WebGLRenderer({
@@ -682,6 +692,7 @@ export class App {
         })
         this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.renderer.setClearColor(0x000000, 0)
+        this.renderer.setPixelRatio(1)
         this.scene.background = null
         this.renderer.domElement.id = "three"
         document.body.appendChild(this.renderer.domElement)
@@ -807,6 +818,7 @@ export class App {
                             let bubble_cb = () => {
                                 setTimeout(() => {
                                     pop.volume = Math.random() * .5 + .2
+                                    pop.volume *= 0.1
                                     pop.play()
 
                                 }, Math.random() * 7500 + 333)
@@ -1130,6 +1142,7 @@ window.onresize = () => {
         app.camera.aspect = window.innerWidth / window.innerHeight
         app.camera.updateProjectionMatrix()
         app.renderer.setSize(window.innerWidth, window.innerHeight)
+        
         app.renderer.domElement.width = window.innerWidth
         app.renderer.domElement.height = window.innerHeight
 
