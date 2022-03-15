@@ -55,7 +55,7 @@ class App {
       max: {
         x: [-1, 1],
         y: [10, 11],
-        z: [-30, -30],
+        z: [-28, -28],
       },
       /*max: {
         x: [-4, 4],
@@ -92,6 +92,7 @@ class App {
 
     this.skeleton;
     this.smoother;
+    this.limitCounter = 0;
 
     this.lightPrimary;
     this.lightSecondary;
@@ -383,6 +384,13 @@ class App {
         .easing(easing)
         .start();
     }
+    // else if (e.key == "ArrowLeft") {
+    //   this.limitCounter++;
+    //   console.log(this.boundary(this.limitCounter, -5, 5));
+    // } else if (e.key == "ArrowRight") {
+    //   this.limitCounter--;
+    //   console.log(this.boundary(this.limitCounter, -5, 5));
+    // }
   }
 
   map(value, min1, max1, min2, max2) {
@@ -478,20 +486,34 @@ class App {
       const extrem = this.cameraRangeExtreme;
 
       range.forEach((value, index) => {
-        range[index] =
-          this.map(
-            this.distance,
-            2,
-            1,
-            extrem.min[d][index],
-            extrem.max[d][index]
-          );
+        range[index] = this.map(
+          this.distance,
+          2,
+          1,
+          extrem.min[d][index],
+          extrem.max[d][index]
+        );
       });
     }
 
     // console.log(this.cameraRange.z);
-    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+    const limit = this.cameraRangeExtreme;
+    this.camPos.z = this.lerp(
+      this.camPos.z,
+      this.boundary(this.cameraRange.z[0], limit.min.z[0], limit.max.z[0]),
+      0.07
+    );
     // console.log(this.camPos.z);
+  }
+
+  boundary(value, min, max) {
+    if (value > max) {
+      return max;
+    } else if (value < min) {
+      return min;
+    } else {
+      return value;
+    }
   }
 
   limit(num, min, max) {
