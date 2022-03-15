@@ -178,11 +178,11 @@ impl boid_world_settings {
     pub fn new(goal_count: i32) -> boid_world_settings {
         let mut b = boid_world_settings {
             number: 1000,
-            neighbour_threshold: 0.3,
+            neighbour_threshold: 0.45,
             neighbour_max: 1000,
-            boid_drag: 0.1,
-            boid_repulsion: 4.0,
-            boid_cohesion: 0.02,
+            boid_drag: 0.5,
+            boid_repulsion: 3.5,
+            boid_cohesion: 0.013,
             boid_noise: 0.3,
             boid_goal_weight: 0.0,
             boid_min_vel: 0.01,

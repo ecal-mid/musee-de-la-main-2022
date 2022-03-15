@@ -23,7 +23,7 @@
       "students": ["Mélanie Fontaine"],
       "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur se confronte à un écosystème contrôlé par des algorithmes plus intrusifs qu'il n'y paraît.",
       "interaction": "Amusez-vous en jonglant avec les balles qui apparaissent à l’écran. Si certaines rebondissent sur votre tête, vous découvrirez les visages des jongleurs et jongleuses qui vous ont précédé.",
-      "images": ["/images/melanie.jpg"]
+      "images": ["/images/melanie.png"]
     },
     {
       "title": "Abyssal Reflection",

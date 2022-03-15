@@ -129,6 +129,7 @@ void main() {
     newPos -= repulsion * .3;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.);
+
     /* gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); */
     vUv = vec4(position, 1.);
     wuv = vec4(projectionMatrix * vec4(position, 1));

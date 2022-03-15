@@ -66,8 +66,8 @@ class GPUParticles {
 
         this.points = new THREE.Points(
             new THREE.PlaneGeometry(
-                xSize * 2,
-                ySize * 2,
+                xSize * 4,
+                ySize * 4,
                 number - 1,
                 number - 1
             ),
@@ -119,8 +119,8 @@ class GPUParticles {
         }
         /* log(this.gpu_noise(this.positions, .01, this.clock.getElapsedTime())) */
 
-        this.worker = new Worker("worker.js")
-        this.newData = []
+        /* this.worker = new Worker("worker.js")
+        this.newData = [] */
         // this.worker.addEventListener("message", e => {
         //     switch (e.data.cmd) {
         //         case "update":
