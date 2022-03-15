@@ -1,5 +1,5 @@
 // let log = console.log;
-let log = () => {};
+let log = () => { }
 
 import {
     boid_handler
@@ -12,15 +12,15 @@ import {
 } from './js/utils.js'
 
 
-const mediaPipe = new MediaPipeClient();
+const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe
-let app;
+let app
 
 mediaPipe.on("setup", () => {
     // console.log(mediaPipe.mirrored)
-    app = new App();
-    document.app = app;
-    console.log()
+    app = new App()
+    document.app = app
+    // console.log()
 })
 
 // window.onload = () => {
@@ -36,54 +36,58 @@ mediaPipe.on("setup", () => {
 // }
 
 /* let pops = ["pop1.wav", "pop2.ogg", "pop3.ogg", "ploof.mp3"] */
-let pops = ["ploof.mp3", "woosh1.wav", "woosh2.wav", "woosh3.wav", "woosh4.wav"]
-pops = pops.concat(pops);
-pops = pops.map(fileName => {
-    return createAudio(fileName);
+let pops = ["ploof.mp3", "woosh1.wav", "woosh2.wav", "woosh3.wav", "woosh4.wav"].map(fileName => {
+    return createAudio(fileName, { volume: 0.2 })
 })
 
+const background = createAudio("./background.mp3", { autoplay: true, loop: true, volume: 0.1 })
+
 const crunches = ["crunch1.wav", "crunch2.wav", "crunch3.wav", "crunch4.wav"].map(fileName => {
-    return createAudio(fileName);
+    return createAudio(fileName)
 })
 
 function createAudio(fileName, {
     loop = false,
+    volume = 1,
+    autoplay = false,
     directory = './sounds/'
 } = {}) {
     const audio = new Audio(`${directory}${fileName}`)
-    audio.loop = loop;
+    audio.loop = loop
+    if (autoplay) audio.play()
+    audio.volume = volume
     return audio
 }
 
-let bg_music_init = false;
+let bg_music_init = false
 let bg_music = createAudio("background.mp3", {
     loop: true
-});
+})
 // bg_music.play()
 
 let SETTINGS = {
     hand_scale: -5,
-    invert_x: false,
+    invert_x: true,
     invert_y: false,
     invert_z: false,
     // used for calibration
     offset_x: -.31,
     offset_y: -.06,
-    offset_z: 1.7
+    offset_z: 1.2
 }
 
-let number = 1500;
-let initialized = false;
-let tracker_amount = 79;
+let number = 1500
+let initialized = false
+let tracker_amount = 79
 
 // TRACKERS DEBUG
-let debug = false;
+let debug = false
 let tracker_numbers = []
-let font;
+let font
 
 if (debug) {
     for (let i = 0; i < tracker_amount; i++) {
-        tracker_numbers.push(document.createElement("div"));
+        tracker_numbers.push(document.createElement("div"))
         tracker_numbers[i].className = "debug_tracker"
         tracker_numbers[i].textContent = i
         document.body.appendChild(tracker_numbers[i])
@@ -121,57 +125,57 @@ console.warn("WASD, . et , pour calibrer la position")
 console.warn("C pour ouvrir le mode débug")
 
 let offset = .01
-let debug_visible = false;
+let debug_visible = false
 document.addEventListener("keypress", key => {
     switch (key.key) {
         case "w":
-            SETTINGS.offset_y += offset;
-            break;
+            SETTINGS.offset_y += offset
+            break
         case "a":
-            SETTINGS.offset_x += offset;
-            break;
+            SETTINGS.offset_x += offset
+            break
         case "s":
-            SETTINGS.offset_y -= offset;
-            break;
+            SETTINGS.offset_y -= offset
+            break
         case "d":
-            SETTINGS.offset_x -= offset;
-            break;
+            SETTINGS.offset_x -= offset
+            break
 
         case ".":
-            SETTINGS.offset_z += offset;
-            break;
+            SETTINGS.offset_z += offset
+            break
         case ",":
-            SETTINGS.offset_z -= offset;
-            break;
+            SETTINGS.offset_z -= offset
+            break
 
         case "c":
             if (debug_visible) {
                 log(debug_visible)
-                document.querySelector("#webcam").style.display = "none";
-                document.querySelector("#debug_canvas").style.display = "none";
+                document.querySelector("#webcam").style.display = "none"
+                document.querySelector("#debug_canvas").style.display = "none"
             } else {
-                document.querySelector("#webcam").style.display = "block";
-                document.querySelector("#debug_canvas").style.display = "block";
+                document.querySelector("#webcam").style.display = "block"
+                document.querySelector("#debug_canvas").style.display = "block"
             };
-            debug_visible = !debug_visible;
-            break;
+            debug_visible = !debug_visible
+            break
         case "v":
-            SETTINGS.invert_x = !SETTINGS.invert_x;
+            SETTINGS.invert_x = !SETTINGS.invert_x
 
     }
     console.log("x:" + SETTINGS.offset_x, "y:" + SETTINGS.offset_y, "z:" + SETTINGS.offset_z)
 })
 
-let texload = new THREE.TextureLoader();
-let loader = new THREE.GLTFLoader();
-let draco = new THREE.DRACOLoader();
+let texload = new THREE.TextureLoader()
+let loader = new THREE.GLTFLoader()
+let draco = new THREE.DRACOLoader()
 log(loader)
 draco.setDecoderPath("./node_modules/three/examples/js/libs/draco/")
 loader.setDRACOLoader(draco)
-let envmap;
+let envmap
 let voro = texload.load("./textures/voro.jpg")
-let testmap = texload.load("./textures/uv_checker.png");
-let tracking_circle_texture = texload.load("./textures/tracking_circle_2.png");
+let testmap = texload.load("./textures/uv_checker.png")
+let tracking_circle_texture = texload.load("./textures/tracking_circle_2.png")
 let tracking_circle_mat = new THREE.SpriteMaterial({
     map: tracking_circle_texture,
     color: 0xffffff
@@ -180,15 +184,15 @@ let tracking_sprites = []
 for (let i = 0; i < 5; i++) {
     let s = new THREE.Sprite(tracking_circle_mat)
     s.scale.set(.1, .1, .1)
-    tracking_sprites.push(s);
+    tracking_sprites.push(s)
 }
-new THREE.Sprite(tracking_circle_mat);
-let stats = new Stats();
+new THREE.Sprite(tracking_circle_mat)
+let stats = new Stats()
 
 let trackerLights = []
 
-let handConfidence = 0;
-let handStillness = 100;
+let handConfidence = 0
+let handStillness = 100
 let hand_pos_history = []
 //
 let pollenMaterial = new THREE.MeshPhysicalMaterial({
@@ -205,7 +209,7 @@ let pollenMaterial = new THREE.MeshPhysicalMaterial({
 }) */
 
 
-let numberTaken = 0;
+let numberTaken = 0
 
 // LOAD 3D MODELS
 
@@ -239,73 +243,73 @@ let palette = [
     0xBD82FF,
 ]
 
-let circle_i = 0;
-let circle_max = 21;
-let circle_r = 10;
+let circle_i = 0
+let circle_max = 21
+let circle_r = 10
 
-let display_circle = new THREE.Object3D();
+let display_circle = new THREE.Object3D()
 document.circle = display_circle
 display_circle.position.z = -7
 display_circle.position.y = 1.6
 
 for (let source of modelSources) {
     loader.load(source, gltf => {
-        let scene_add_cb = false;
+        let scene_add_cb = false
         /* log(gltf) */
         for (let child of gltf.scene.children) {
             /* log(child) */
             let i = new THREE.InstancedMesh(child.geometry,
                 pollenMaterial,
-                Math.floor(number / gltf.scene.children.length));
-            numberTaken += i.count;
+                Math.floor(number / gltf.scene.children.length))
+            numberTaken += i.count
             /* i.receiveShadow = true;
             i.castShadow = true */
-            i.positions = new Array(i.count * 3);
-            i.seeds = new Array(i.count);
-            i.scales = new Array(i.count);
+            i.positions = new Array(i.count * 3)
+            i.seeds = new Array(i.count)
+            i.scales = new Array(i.count)
             i.rotations = new Array(i.count * 3)
             for (let k = 0; k < i.count; k++) {
-                let k_2 = k * 3;
+                let k_2 = k * 3
                 i.seeds[k] = Math.random() * 1000
                 i.positions[k_2] = (Math.random() * 2 - 1) * 3
                 i.positions[k_2 + 1] = (Math.random() * 2 - 1) * 3
                 i.positions[k_2 + 2] = (Math.random() * 2 - 1) * 3 - 3
 
-                let m = new THREE.Matrix4();
-                i.rotations[k_2] = Math.random() * 1000;
-                i.rotations[k_2 + 1] = Math.random() * 1000;
-                i.rotations[k_2 + 2] = Math.random() * 1000;
+                let m = new THREE.Matrix4()
+                i.rotations[k_2] = Math.random() * 1000
+                i.rotations[k_2 + 1] = Math.random() * 1000
+                i.rotations[k_2 + 2] = Math.random() * 1000
                 let e = new THREE.Euler(
                     i.rotations[k_2],
                     i.rotations[k_2 + 1],
                     i.rotations[k_2 + 2])
                 /* k == 0 ? log(e) : {}; */
-                let scale = 1;
+                let scale = 1
                 i.scales[k] =
                     scale = Math.random() < .05 ?
-                    Math.random() * .014 + .01 :
-                    (Math.random() * 1 + .1) * .011
+                        Math.random() * .014 + .01 :
+                        (Math.random() * 1 + .1) * .011
                 m.makeRotationFromEuler(e)
                 m.makeScale(scale, scale, scale)
-                m.setPosition(i.positions[k_2], i.positions[k_2 + 1], i.positions[k_2 + 2]);
+                m.setPosition(i.positions[k_2], i.positions[k_2 + 1], i.positions[k_2 + 2])
                 i.setMatrixAt(k, m)
-                let c = palette[Math.floor(Math.random() * palette.length)];
+                let c = palette[Math.floor(Math.random() * palette.length)]
                 i.setColorAt(k, new THREE.Color().setHex(c))
                 /* log(c) */
             };
             i.instanceColor.needsUpdate = true
             /* log(i.seeds) */
             /* log(app.scene) */
-            modelList.push(i);
-            let circlePart = new THREE.Mesh(child.geometry, pollenMaterial);
-            circlePart.scale.set(.02, .02, .02);
+            modelList.push(i)
+            let circlePart = new THREE.Mesh(child.geometry, pollenMaterial)
+            circlePart.scale.set(.02, .02, .02)
             circlePart.position.set(
                 Math.sin(circle_i / circle_max * Math.PI * 2) * circle_r,
                 0,
                 Math.cos(circle_i / circle_max * Math.PI * 2) * circle_r
-            );
-            display_circle.add(circlePart);
-            circle_i++;
+            )
+            display_circle.add(circlePart)
+            circle_i++
 
 
             // CREATE TRACKER MODELS
@@ -317,18 +321,18 @@ for (let source of modelSources) {
 
             if (app && !scene_add_cb) {
                 log("adding instance to scene")
-                app.scene.add(i);
+                app.scene.add(i)
                 /* log(app.scene) */
             } else {
                 log("failed to add instances to scene")
-                scene_add_cb = true;
+                scene_add_cb = true
             }
         }
         while (numberTaken < number) {
             log(modelList[0].count++)
-            numberTaken++;
+            numberTaken++
         }
-        let tally = 0;
+        let tally = 0
         for (let m of modelList) {
             tally += m.count
         }
@@ -348,13 +352,13 @@ for (let source of modelSources) {
                 if (app && app.scene) {
                     log("app ready, adding instances to scene")
                     for (let model of modelList) {
-                        app.scene.add(model);
+                        app.scene.add(model)
                         log(app.scene)
                     }
                     log("successfully added instances to scene")
                 } else {
                     log("failed to add instances to scene")
-                    setTimeout(scene_add_cb, 300);
+                    setTimeout(scene_add_cb, 300)
                 }
             }
             setTimeout(scene_add_cb, 300)
@@ -363,7 +367,7 @@ for (let source of modelSources) {
         let display_circle_cb = () => {
             log("trying to add display circle to scene")
             if (app && app.scene) {
-                app.scene.add(display_circle);
+                app.scene.add(display_circle)
                 log("display circle added to scene")
             } else {
                 setTimeout(display_circle_cb, 100)
@@ -390,15 +394,15 @@ let tracking_offset = new THREE.Vector3(-.5, -.5, -.5)
 export class App {
     constructor() {
         this.start_time = Date.now()
-        this.video = document.querySelector("#webcam");
+        this.video = document.querySelector("#webcam")
         /* this.video.width = window.innerWidth / 4;
         this.video.height = window.innerHeight / 4; */
-        this.debug_canvas = document.querySelector("#debug_canvas");
-        this.ctx = this.debug_canvas.getContext('2d');
+        this.debug_canvas = document.querySelector("#debug_canvas")
+        this.ctx = this.debug_canvas.getContext('2d')
 
-        this.landmarks = new Array(tracker_amount);
-        this.landmarks.fill((new THREE.Vector3()));
-        this.landmark_trackers = [];
+        this.landmarks = new Array(tracker_amount)
+        this.landmarks.fill((new THREE.Vector3()))
+        this.landmark_trackers = []
 
         /* this.landmark_lights = new Array(21);
         this.landmark_lights.fill(new THREE.PointLight({
@@ -475,14 +479,14 @@ export class App {
                     z: lerp(trackers[i].z, trackers[i2].z, j)
                 })
             }
-            return result;
+            return result
         }
         this.makeFakeTrackers = (trackers) => {
             for (let subdiv of this.subdivision_indices) {
-                let subdiv_amt = 3;
+                let subdiv_amt = 3
                 if (subdiv[3]) subdiv_amt = subdiv[3]
                 for (let addendum of this.subdivide(trackers, subdiv[0], subdiv[1], subdiv_amt)) {
-                    trackers.push(addendum);
+                    trackers.push(addendum)
                 }
             }
 
@@ -495,14 +499,14 @@ export class App {
             ]
             for (let sub of more_trackers) {
                 for (let addendum of this.subdivide(trackers, sub[0], sub[1], sub[2])) {
-                    trackers.push(addendum);
+                    trackers.push(addendum)
                 }
             }
 
             /* console.log(trackers.length) */
-            return trackers;
+            return trackers
         }
-        let prevVisibility = 0;
+        let prevVisibility = 0
 
         // navigator.mediaDevices.getUserMedia({
         //     video: true
@@ -585,41 +589,41 @@ export class App {
 
         // THREEJS
 
-        this.scene = new THREE.Scene();
-        let pointlight = new THREE.DirectionalLight("#AAEEFF", .3);
-        pointlight.position.y = 5;
-        pointlight.position.x = 2;
-        pointlight.rotation.x = 20;
+        this.scene = new THREE.Scene()
+        let pointlight = new THREE.DirectionalLight("#AAEEFF", .3)
+        pointlight.position.y = 5
+        pointlight.position.x = 2
+        pointlight.rotation.x = 20
         log(pointlight)
-        this.scene.add(pointlight);
+        this.scene.add(pointlight)
         /* let point = new THREE.PointLight("#AAEEFF", .3);
         point.position.z = 4.8
         this.scene.add(point) */
 
-        let rect = new THREE.RectAreaLight("#ff2600", 12000 * 5, 1, .4);
-        let rect2 = new THREE.RectAreaLight("#00ffa2", 12000 * 5, 1, .4);
-        let rect3 = new THREE.RectAreaLight("#2b00ff", 12000 * 5, 1, .4);
+        let rect = new THREE.RectAreaLight("#ff2600", 12000 * 5, 1, .4)
+        let rect2 = new THREE.RectAreaLight("#00ffa2", 12000 * 5, 1, .4)
+        let rect3 = new THREE.RectAreaLight("#2b00ff", 12000 * 5, 1, .4)
         rect.position.z = -6
         rect2.position.z = -6
-        rect3.position.z = -6;
+        rect3.position.z = -6
 
-        rect.position.x = 10;
-        rect3.position.x = -10;
+        rect.position.x = 10
+        rect3.position.x = -10
 
-        rect.position.y = 2;
-        rect3.position.y = 2;
-        rect2.position.y = -3;
+        rect.position.y = 2
+        rect3.position.y = 2
+        rect2.position.y = -3
 
-        rect.rotation.y = Math.PI / 4;
-        rect2.rotation.y = Math.PI * .5;
-        rect3.rotation.y = -Math.PI / 4;
+        rect.rotation.y = Math.PI / 4
+        rect2.rotation.y = Math.PI * .5
+        rect3.rotation.y = -Math.PI / 4
 
-        rect2.rotation.x = Math.PI / 4;
+        rect2.rotation.x = Math.PI / 4
 
 
-        this.scene.add(rect);
-        this.scene.add(rect2);
-        this.scene.add(rect3);
+        this.scene.add(rect)
+        this.scene.add(rect2)
+        this.scene.add(rect3)
         let rects = [rect, rect2, rect3]
         for (let rect of rects) {
             /* rect.rotation.y = Math.PI; */
@@ -633,7 +637,7 @@ export class App {
         }
         log(rects)
 
-        let rect4 = new THREE.RectAreaLight(0xFFEEDD, 30, 1, .4);
+        let rect4 = new THREE.RectAreaLight(0xFFEEDD, 30, 1, .4)
         rect4.position.z = 8
         this.scene.add(rect4)
 
@@ -650,14 +654,14 @@ export class App {
         bg.position.z = -100
         this.scene.add(bg)
 
-        this.particles = new GPUParticles(128);
+        this.particles = new GPUParticles(128)
 
         if (!debug) {
             this.scene.add(this.particles.points)
         }
 
         /* let ambientlight = new THREE.AmbientLight("#AAAAFF", .02); */
-        let ambientlight = new THREE.AmbientLight("#AAAAFF", .3);
+        let ambientlight = new THREE.AmbientLight("#AAAAFF", .3)
         this.scene.add(ambientlight)
 
         /* for (let landmark_light of this.landmark_lights) {
@@ -667,7 +671,7 @@ export class App {
             this.scene.add(sprite)
         }
 
-        this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, .1, 1000);
+        this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, .1, 1000)
         this.camera.position.z = 5
         this.camera.position.y = -1.5
         this.camera.rotation.x = .3
@@ -675,57 +679,57 @@ export class App {
         /* this.camera.lookAt(rects[0]) */
         this.renderer = new THREE.WebGLRenderer({
             alpha: false
-        });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        })
+        this.renderer.setSize(window.innerWidth, window.innerHeight)
         this.renderer.setClearColor(0x000000, 0)
-        this.scene.background = null;
+        this.scene.background = null
         this.renderer.domElement.id = "three"
-        document.body.appendChild(this.renderer.domElement);
+        document.body.appendChild(this.renderer.domElement)
 
         // POST PROCESSING
 
-        this.composer = new THREE.EffectComposer(this.renderer);
-        const renderPass = new THREE.RenderPass(this.scene, this.camera);
+        this.composer = new THREE.EffectComposer(this.renderer)
+        const renderPass = new THREE.RenderPass(this.scene, this.camera)
         this.composer.addPass(renderPass)
 
-        const SAOPass = new THREE.SAOPass(this.scene, this.camera, false, true);
-        SAOPass.params.saoIntensity = .1;
-        SAOPass.params.saoScale = 2;
+        const SAOPass = new THREE.SAOPass(this.scene, this.camera, false, true)
+        SAOPass.params.saoIntensity = .1
+        SAOPass.params.saoScale = 2
         /* log(SAOPass) */
-        this.composer.addPass(SAOPass);
+        this.composer.addPass(SAOPass)
 
         const bloomPass = new THREE.UnrealBloomPass(1, 25, 4, 256)
         bloomPass.strength = 4
         bloomPass.threshold = .01
-        this.composer.addPass(bloomPass);
+        this.composer.addPass(bloomPass)
         /* log(bloomPass) */
 
-        const taa = new THREE.TAARenderPass(this.scene, this.camera);
-        taa.unbiased = false;
-        taa.sampleLevel = 4;
-        this.composer.addPass(taa);
+        const taa = new THREE.TAARenderPass(this.scene, this.camera)
+        taa.unbiased = false
+        taa.sampleLevel = 4
+        this.composer.addPass(taa)
 
 
 
         /* this.PMREMGen = new THREE.PMREMGenerator(this.renderer); */
 
-        const depthShader = THREE.BokehDepthShader;
+        const depthShader = THREE.BokehDepthShader
 
         let materialDepth = new THREE.ShaderMaterial({
             uniforms: depthShader.uniforms,
             vertexShader: depthShader.vertexShader,
             fragmentShader: depthShader.fragmentShader
-        });
+        })
 
-        materialDepth.uniforms['mNear'].value = this.camera.near;
-        materialDepth.uniforms['mFar'].value = this.camera.far;
+        materialDepth.uniforms['mNear'].value = this.camera.near
+        materialDepth.uniforms['mFar'].value = this.camera.far
 
         let testObject = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 4), new THREE.MeshStandardMaterial({
             color: "#EEEEEE",
             roughness: .04,
             /* specularIntensity: .9, */
 
-        }));
+        }))
 
         /* this.scene.add(testObject); */
 
@@ -752,26 +756,26 @@ export class App {
             tracker_mat = new THREE.MeshBasicMaterial({
                 color: 0xFF00FF
             })
-            let tracker_scale = .2;
-            tracker_scale = 0;
-            let tracker_mesh = new THREE.BoxGeometry(tracker_scale, tracker_scale, tracker_scale);
-            let tracker = new THREE.Mesh(tracker_mesh, tracker_mat);
-            tracker.goal = new THREE.Vector3();
+            let tracker_scale = .2
+            tracker_scale = 0
+            let tracker_mesh = new THREE.BoxGeometry(tracker_scale, tracker_scale, tracker_scale)
+            let tracker = new THREE.Mesh(tracker_mesh, tracker_mat)
+            tracker.goal = new THREE.Vector3()
 
 
-            this.scene.add(tracker);
+            this.scene.add(tracker)
             this.landmark_trackers.push(tracker)
         }
 
         // Boid world
 
-        this.boid_handler = new boid_handler(number, this.scene, modelList, tracker_amount);
+        this.boid_handler = new boid_handler(number, this.scene, modelList, tracker_amount)
         /* this.scene.add(this.boid_handler.boid_instancedGeo); */
         log(this.boid_handler.boid_instancedGeo)
-        let goal = 0;
+        let goal = 0
         this.prevState = "no bueno"
         setInterval(() => {
-            handConfidence = Math.max(handConfidence - 6, 0);
+            handConfidence = Math.max(handConfidence - 6, 0)
             if (handConfidence < 50 /* && handStillness < 10  */ && this.boid_handler.app) {
                 log("no bueno", handConfidence)
                 if (this.prevState == "bueno") {
@@ -786,16 +790,16 @@ export class App {
                 this.prevState = "no bueno"
                 for (let i = 0; i < tracker_amount; i++) {
                     setTimeout(() => {
-                        this.boid_handler.app.set_goal(i, 0, i / tracker_amount * 2, -(i / tracker_amount) * 15 - 1);
+                        this.boid_handler.app.set_goal(i, 0, i / tracker_amount * 2, -(i / tracker_amount) * 15 - 1)
                     }, i * 20)
                 }
-                goal = lerp(goal, .1, .1);
+                goal = lerp(goal, .1, .1)
                 /* log(goal) */
                 this.boid_handler.app.set_boid_goal_weight(goal)
                 /* this.boid_handler.app.set_boid_goal_weight(0) */
                 /* log("set goal weight to 0, " + handConfidence, handStillness) */
             } else if (handConfidence >= 50 && this.boid_handler.app) {
-                goal = lerp(goal, .3, .1);
+                goal = lerp(goal, .3, .1)
                 if (this.prevState == "no bueno") {
                     log("ON")
                     for (let pop of pops) {
@@ -827,16 +831,16 @@ export class App {
         // Render loop
 
         this.colorOffset = Math.random() * 100
-        this.first_set_positions = false;
+        this.first_set_positions = false
 
         this.still_indicator = document.getElementById("still")
-        this.frame = 0;
+        this.frame = 0
         let render = () => {
-            let time = Date.now() - this.start_time;
-            this.time = time;
-            stats.begin();
-            this.frame++;
-            display_circle.rotation.y = time / 32000;
+            let time = Date.now() - this.start_time
+            this.time = time
+            stats.begin()
+            this.frame++
+            display_circle.rotation.y = time / 32000
             for (let c of display_circle.children) {
                 c.rotation.y = -time / 4000
             }
@@ -845,8 +849,8 @@ export class App {
             /* rd.shader.uniforms.stillness.value = (handStillness) * (handConfidence / 100); */
             /* this.still_indicator.style.opacity = .8 - (handConfidence / 100) */
             /* this.renderer.render(this.scene, this.camera) */
-            this.composer.render(this.renderer);
-            let col = new THREE.Color(0xffffff).setHSL(time / 100000 + this.colorOffset, .7, .4);
+            this.composer.render(this.renderer)
+            let col = new THREE.Color(0xffffff).setHSL(time / 100000 + this.colorOffset, .7, .4)
             pollenMaterial.emissive = col
             /* log(col, time / 100000) */
 
@@ -864,14 +868,14 @@ export class App {
             /* tracking_circle_mat.visible = handConfidence < 80; */
 
             for (let t of this.landmark_trackers) {
-                t.position.lerp(t.goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale), .1);
+                t.position.lerp(t.goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale), .1)
             }
-            let prevGoal = new THREE.Vector3();
+            let prevGoal = new THREE.Vector3()
             for (let s of tracking_sprites) {
                 if (s.goal) {
-                    s.position.lerp(s.goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale), .1);
+                    s.position.lerp(s.goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale), .1)
                     /* log(s.goal == prevGoal, s.goal, prevGoal) */
-                    prevGoal.copy(s.goal);
+                    prevGoal.copy(s.goal)
                 }
             }
             // let i = 0;
@@ -882,12 +886,12 @@ export class App {
             // }
             if (!this.first_set_positions && this.boid_handler.app) {
                 for (let i = 0; i < tracker_amount; i++) {
-                    this.boid_handler.app.set_goal(i, 0, i / tracker_amount * 2, -(i / tracker_amount) * 15 - 1);
+                    this.boid_handler.app.set_goal(i, 0, i / tracker_amount * 2, -(i / tracker_amount) * 15 - 1)
                 }
-                this.first_set_positions = true;
+                this.first_set_positions = true
             }
             try {
-                this.boid_handler.step();
+                this.boid_handler.step()
             } catch (e) {
                 log(e)
             };
@@ -922,25 +926,25 @@ export class App {
 
 
 
-            stats.end();
-            requestAnimationFrame(render);
+            stats.end()
+            requestAnimationFrame(render)
         }
         render()
 
         mediaPipe.on('pose', async (event) => {
-            if (!this.boid_handler.app) return;
+            if (!this.boid_handler.app) return
 
             const results = event.data.raw
 
             if (!initialized) {
-                document.querySelector("#hide").style.opacity = 0;
-                document.querySelector("#loading_label").style.opacity = 0;
+                document.querySelector("#hide").style.opacity = 0
+                document.querySelector("#loading_label").style.opacity = 0
                 initialized = true
             }
 
             if (results.poseLandmarks) {
-                results.poseLandmarks = this.makeFakeTrackers(results.poseLandmarks);
-                handConfidence = Math.min(handConfidence + 6, 100);
+                results.poseLandmarks = this.makeFakeTrackers(results.poseLandmarks)
+                handConfidence = Math.min(handConfidence + 6, 100)
             }
 
             /* this.hands.setOptions({
@@ -953,27 +957,27 @@ export class App {
             // HANDLE TRACKING DATA
             /* this.hands.onResults(results => { */
             /* log(results.image.width + "x" + results.image.height) */
-            this.ctx.save();
+            this.ctx.save()
             /* this.ctx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
             this.ctx.drawImage(results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height); */
 
-            let canvasCtx = this.ctx;
-            canvasCtx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
+            let canvasCtx = this.ctx
+            canvasCtx.clearRect(0, 0, this.debug_canvas.width, this.debug_canvas.height)
             try {
                 canvasCtx.drawImage(results.segmentationMask, 0, 0,
-                    this.debug_canvas.width, this.debug_canvas.height);
-            } catch {}
+                    this.debug_canvas.width, this.debug_canvas.height)
+            } catch { }
             // Only overwrite existing pixels.
-            canvasCtx.globalCompositeOperation = 'source-in';
-            canvasCtx.fillStyle = '#00FF00';
-            canvasCtx.fillRect(0, 0, this.debug_canvas.width, this.debug_canvas.height);
+            canvasCtx.globalCompositeOperation = 'source-in'
+            canvasCtx.fillStyle = '#00FF00'
+            canvasCtx.fillRect(0, 0, this.debug_canvas.width, this.debug_canvas.height)
 
             // Only overwrite missing pixels.
-            canvasCtx.globalCompositeOperation = 'destination-atop';
+            canvasCtx.globalCompositeOperation = 'destination-atop'
             canvasCtx.drawImage(
-                results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height);
+                results.image, 0, 0, this.debug_canvas.width, this.debug_canvas.height)
 
-            canvasCtx.globalCompositeOperation = 'source-over';
+            canvasCtx.globalCompositeOperation = 'source-over'
             /* for (let landmarks of results.multiHandLandmarks) {
                 drawConnectors(this.ctx, landmarks, HAND_CONNECTIONS, {
                     color: '#00FF00',
@@ -1002,8 +1006,8 @@ export class App {
             //     /* log(track_sprite.position) */
             //     j++;
             // }
-            let tally = new THREE.Vector3();
-            let i = 0;
+            let tally = new THREE.Vector3()
+            let i = 0
 
             if (results.poseLandmarks) {
                 /* let fac = (quickNoise.noise(this.time / 10000, this.time / 10000, this.time / 10000) + 1) / 2;
@@ -1011,11 +1015,11 @@ export class App {
                 log(fac) */
                 /* this.boid_handler.app.set_boid_goal_weight(.3) */
                 for (let l of results.poseLandmarks) {
-                    l.x += SETTINGS.offset_x + offsets[i].x;
-                    l.y += SETTINGS.offset_y + offsets[i].y;
-                    l.z += SETTINGS.offset_z + offsets[i].z;
-                    l.x *= 1;
-                    l.z *= .3;
+                    l.x += SETTINGS.offset_x + offsets[i].x
+                    l.y += SETTINGS.offset_y + offsets[i].y
+                    l.z += SETTINGS.offset_z + offsets[i].z
+                    l.x *= 1
+                    l.z *= .3
 
 
                     /* app.landmarks[i].x = l.x;
@@ -1025,18 +1029,18 @@ export class App {
                     // this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.x : l.x /* * SETTINGS.invert_x ? -1 : 1 */ ;
                     // this.landmark_trackers[i].goal.y = l.y /* * SETTINGS.invert_y ? -1 : 1 */ ;
                     // this.landmark_trackers[i].goal.z = l.z /* * SETTINGS.invert_z ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.y : l.y /* * SETTINGS.invert_x ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.y = l.z /* * SETTINGS.invert_y ? -1 : 1 */ ;
-                    this.landmark_trackers[i].goal.z = l.x - 5 /* * SETTINGS.invert_z ? -1 : 1 */ ;
+                    this.landmark_trackers[i].goal.x = SETTINGS.invert_x ? 1 - l.y : l.y /* * SETTINGS.invert_x ? -1 : 1 */
+                    this.landmark_trackers[i].goal.y = l.z /* * SETTINGS.invert_y ? -1 : 1 */
+                    this.landmark_trackers[i].goal.z = l.x - 5 /* * SETTINGS.invert_z ? -1 : 1 */
 
                     if (debug) {
                         /* for (let i = 0; i < tracker_amount; i++) { */
-                        tracker_numbers[i].style.right = (l.x + 1) * innerWidth / 4 + "px";
-                        tracker_numbers[i].style.top = (l.y + 1) * innerWidth / 4 + "px";
+                        tracker_numbers[i].style.right = (l.x + 1) * innerWidth / 4 + "px"
+                        tracker_numbers[i].style.top = (l.y + 1) * innerWidth / 4 + "px"
                         /* } */
                     }
 
-                    tally.add(new THREE.Vector3(l.x, l.y, l.z));
+                    tally.add(new THREE.Vector3(l.x, l.y, l.z))
 
                     this.boid_handler.app.set_goal(i,
                         ((SETTINGS.invert_x ? 1 - l.x : l.x) + tracking_offset.x) * SETTINGS.hand_scale,
@@ -1051,13 +1055,13 @@ export class App {
                     // }
 
                     /* let screen_x = this.boid_handler.app */
-                    let trackerPos = this.landmark_trackers[i].goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale);
-                    trackerPos = trackerPos.project(this.camera);
-                    trackerPos.x = (trackerPos.x + 1) * window.innerWidth / 2;
+                    let trackerPos = this.landmark_trackers[i].goal.clone().add(tracking_offset).multiplyScalar(SETTINGS.hand_scale)
+                    trackerPos = trackerPos.project(this.camera)
+                    trackerPos.x = (trackerPos.x + 1) * window.innerWidth / 2
                     /* trackerPos.x = SETTINGS.invert_x ? window.innerWidth - trackerPos.x : trackerPos.x; */
-                    trackerPos.y = -(trackerPos.y - 1) * window.innerHeight / 2;
+                    trackerPos.y = -(trackerPos.y - 1) * window.innerHeight / 2
                     /* trackerPos.y = SETTINGS.invert_y ? window.innerHeight - trackerPos.y : trackerPos.y; */
-                    trackerPos.z = 0;
+                    trackerPos.z = 0
                     /* log(trackerPos) */
 
                     /* if (tracker_ids.includes(i)) { */
@@ -1075,19 +1079,19 @@ export class App {
 
                     /* this.boid_handler.app.set_boid_goal_weight(0.01) */
                     /* log(i, l.x, l.y, l.z) */
-                    this.particles.trackers[i] = new THREE.Vector3(l.x, l.y, l.z);
+                    this.particles.trackers[i] = new THREE.Vector3(l.x, l.y, l.z)
 
-                    i++;
+                    i++
                 }
             }
 
 
-            tally.divideScalar(tracker_amount);
+            tally.divideScalar(tracker_amount)
             /* rd.displayShader.uniforms.hand_position.value.x = tally.x;
             rd.displayShader.uniforms.hand_position.value.y = tally.y; */
-            hand_pos_history.push(tally);
+            hand_pos_history.push(tally)
             while (hand_pos_history.length > 20) {
-                hand_pos_history.splice(0, 1);
+                hand_pos_history.splice(0, 1)
             }
 
 
@@ -1096,11 +1100,11 @@ export class App {
 
 
             let prevPos = new THREE.Vector3()
-            let origin = hand_pos_history[0];
+            let origin = hand_pos_history[0]
             for (let pos of hand_pos_history) {
-                prevPos.sub(pos.clone().sub(origin));
+                prevPos.sub(pos.clone().sub(origin))
             }
-            handStillness += ((clamp(prevPos.length() * .5, 0, 1) + .1) - handStillness) * .1;
+            handStillness += ((clamp(prevPos.length() * .5, 0, 1) + .1) - handStillness) * .1
             /* log("hand stillness: " + handStillness, hand_pos_history) */
 
             /* if (!this.builtLandmarks) {
@@ -1114,7 +1118,7 @@ export class App {
                 ], results.multiHandLandmarks[0]);
                 log(lines)
             } */
-            this.ctx.restore();
+            this.ctx.restore()
         })
 
     }
@@ -1123,11 +1127,11 @@ export class App {
 
 window.onresize = () => {
     try {
-        app.camera.aspect = window.innerWidth / window.innerHeight;
-        app.camera.updateProjectionMatrix();
-        app.renderer.setSize(window.innerWidth, window.innerHeight);
-        app.renderer.domElement.width = window.innerWidth;
-        app.renderer.domElement.height = window.innerHeight;
+        app.camera.aspect = window.innerWidth / window.innerHeight
+        app.camera.updateProjectionMatrix()
+        app.renderer.setSize(window.innerWidth, window.innerHeight)
+        app.renderer.domElement.width = window.innerWidth
+        app.renderer.domElement.height = window.innerHeight
 
     } catch {
 
@@ -1144,10 +1148,10 @@ function buildLines(points, landmarks) {
         for (let point of line) {
             /* log(point) */
             /* log(landmarks[point]) */
-            point = landmarks[point];
-            geoPoints.push(new THREE.Vector3(point.x, point.y, point.z));
+            point = landmarks[point]
+            geoPoints.push(new THREE.Vector3(point.x, point.y, point.z))
         }
         PointLines.push(geoPoints)
     }
-    return PointLines;
+    return PointLines
 }
