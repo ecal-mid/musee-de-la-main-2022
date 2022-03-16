@@ -1,50 +1,29 @@
-const MIRRORED = false
+const CALIB = {
+  brushMin: 30,
+  brushMax: 300,
+  blurMin: 0,
+  blurMax: 12,
+}
+const maxCaptures = 100
 
 const skeleton = new Skeleton()
 const smoother = new MediaPipeSmoothPose({
   lerpAmount: 0.33, // range [0-1], 0 is slowest
   dampAmount: 0, // range ~1-10 [0 is fastest]
 })
+
 const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe
-let poseNet
-let skeletons = []
-let pose
-let poses = []
 
-let lerpBlur
-let pg
-let droitX
-let droitY
-let leftX
-let leftY
-
-let x2
-let BlurLerp = 0
-let finalValueX
-let finalValueY
-
-let lerpX = 0
-let lerpY = 0
-let nose
-
-let blendmode = "source-out"
-
-let pNoseX
-let pNoseY
-
-let maskLayer
-let = 1.2 //? blur Value
-let closing = 100
-
+const blendmode = "source-out" // source-out -> stroke inside is delayed, source-in -> outside is delayed
 const captures = []
-const maxCaptures = closing
+const videoCanvas = document.createElement('canvas')
+const videoCtx = videoCanvas.getContext('2d')
 
+let BlurLerp = 0
+let nose
+let maskLayer
 let leftWrist, rightWrist
-
-let jambeGauche
-let videoCanvas = document.createElement('canvas')
-let videoCtx = videoCanvas.getContext('2d')
 
 mediaPipe.addEventListener("setup", () => {
 
@@ -75,20 +54,25 @@ function setup() {
   leftWrist = new BrushStroke({ x, y, p5Graphics: maskLayer })
   rightWrist = new BrushStroke({ x, y, p5Graphics: maskLayer })
 
-  // jambeGauche = new BrushStroke({ p5Graphics: maskLayer })
+}
+
+function transformMirror(ctx = drawingContext) {
+  if (mediaPipe.mirrored) {
+    ctx.scale(-1, 1)
+    ctx.translate(-width, 0)
+  }
 }
 
 function draw() {
 
-  const vid = mediaPipe.video
+  const { video } = mediaPipe
 
-  if (vid.readyState === 0) return
+  if (video.readyState === 0) return
 
-  resizeCanvas(vid.width, vid.height)
+  resizeCanvas(video.width, video.height)
   background(255)
   updatePoints()
 
-  // console.log("up");
   updateWebcamBuffer()
   drawMaskLayer()
 
@@ -96,30 +80,18 @@ function draw() {
   push()
 
   if (captures.length > 0) {
-
-    if (mediaPipe.mirrored) {
-      translate(width, 0)
-      scale(-1, 1)
-    }
-
+    transformMirror()
     drawingContext.putImageData(captures[0], 0, 0)
   }
 
   pop()
 
-  drawingContext.filter = "blur(" + BlurLerp + "px)"
+  drawingContext.filter = `blur(${BlurLerp}px)`
   image(maskLayer, 0, 0)
   drawingContext.filter = "none"
 
-  leftWrist.showDebug()
-  rightWrist.showDebug()
-}
-
-const CALIB = {
-  brushMin: 30,
-  brushMax: 300,
-  blurMin: 0,
-  blurMax: 12,
+  leftWrist.showDebug(false)
+  rightWrist.showDebug(false)
 }
 
 function updatePoints() {
@@ -136,35 +108,13 @@ function updatePoints() {
 
     const distPerson = dist(left.x, left.y, right.x, right.y)
 
-    // const weight = map(d, 240, 55, 180, 40) * eraserSize; BEFORE
     let weight = map(distPerson, 0.01, 0.4, CALIB.brushMax, CALIB.brushMin)
-    // weight = 10
     weight = max(CALIB.brushMin, weight)
-    // console.log(distPerson)
-    // lerpBlur = map(d, 200, 50, 3, 0) * ; BEFORE
-    // lerpBlur = map(d, 200, 50, 0, 22.5) * blurSize
     BlurLerp = map(distPerson, 0.01, 0.4, CALIB.blurMax, CALIB.blurMin)
 
-
-    // console.log(d, closing);
-
-    // if (d < 85) {
-    //   const nul = 0
-
-    //   leftWrist.setWeight(nul)
-    //   rightWrist.setWeight(nul)
-
-    //   // jambeGauche.setWeight(nul)
-
-    //   // console.log("trig", nul);
-
-    //   // console.log(weight);
-    // } else {
     leftWrist.setWeight(weight)
     rightWrist.setWeight(weight)
 
-    // jambeGauche.setWeight(weight)
-    // }
   } else {
     leftWrist.setWeight(0)
     rightWrist.setWeight(0)
@@ -191,7 +141,7 @@ function drawMaskLayer() {
   maskLayer.push()
   // draw line
 
-  ctx.filter = `blur(${Math.max(BlurLerp, 0)}px)`
+  // ctx.filter = `blur(${Math.max(BlurLerp, 0)}px)`
   leftWrist.draw()
   rightWrist.draw()
 
@@ -201,38 +151,13 @@ function drawMaskLayer() {
 
   ctx.globalCompositeOperation = blendmode
 
-  if (mediaPipe.mirrored) {
-    maskLayer.scale(-1, 1)
-    maskLayer.translate(-width, 0)
-  }
+  transformMirror(ctx)
 
-  maskLayer.drawingContext.drawImage(mediaPipe.video, 0, 0, width, height)
+  ctx.drawImage(mediaPipe.video, 0, 0, width, height)
 
   ctx.globalCompositeOperation = "source-over"
 
   maskLayer.pop()
-}
-
-function remapCamPosToCanvas(camX, camY) {
-  let w1 = 0
-  let w2 = width
-
-
-  const { video } = mediaPipe
-
-  const x = map(camX, 0, video.width, w1, w2)
-  const y = map(camY, 0, video.height, 0, height)
-  return { x, y }
-}
-
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    blendmode = "source-out"
-    console.log("source-out")
-  } else if (keyCode === RIGHT_ARROW) {
-    blendmode = "source-in"
-    console.log("source-in")
-  }
 }
 
 function windowResized() {
