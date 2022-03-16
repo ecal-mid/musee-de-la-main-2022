@@ -1,14 +1,43 @@
-class BrushStroke {
+import { SmoothValue, SmoothPoint, SmoothDampValue } from './Smoother.js'
+import './debugger.js';
+
+console.graph(console)
+
+const MAX_VOLUME = 1
+const MAX_VELOCITY = 1
+
+const limiter = new Tone.Limiter(-10).toDestination();
+
+export class BrushStroke {
   constructor({ p5Graphics, x = 0, y = 0 }) {
     this.p5Graphics = p5Graphics
     this.points = [] //? p5 Vectors array
     this.maxPoints = 65
     this.diameter = new SmoothValue({ smooth: 0.1 })
     this.cursorPoint = new SmoothPoint({ x, y, smooth: 0.3 })
+    this.gain = new SmoothPoint({ x, y, smooth: 0.3 })
 
+    this.gainNode = new Tone.Gain(0).connect(limiter);
+    this.player = new Tone.Player("./sounds/crystal-wine.wav").connect(this.gainNode)
+    this.player.autostart = true;
+    this.player.loop = true
+    this.player.loopEnd = 30;
+    // this.player.volume.value = -120;
+  }
+
+  updateSound(normalizedPoint) {
+    // if (amt > MAX_VELOCITY) return
+    // amt = map(amt, 0.01, MAX_VELOCITY, 0, 1, true)
+    this.gain.follow(normalizedPoint)
+    // const gain = map(this.gain.velocity, 0.0, 0.001, 0, MAX_VOLUME, true)
+    // console.log(this.gain.velocity)
+    // this.gainNode.gain.rampTo(0, 0)
   }
 
   draw() {
+
+    // this.updateSound(this.cursorPoint.velocity)
+
     const ctx = this.p5Graphics.drawingContext
 
     ctx.save()

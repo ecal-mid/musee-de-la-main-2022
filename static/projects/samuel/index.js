@@ -1,3 +1,5 @@
+import { BrushStroke } from './js/BrushStroke.js'
+
 const CALIB = {
   brushMin: 30,
   brushMax: 300,
@@ -5,6 +7,7 @@ const CALIB = {
   blurMax: 12,
 }
 const maxCaptures = 100
+
 
 const skeleton = new Skeleton()
 const smoother = new MediaPipeSmoothPose({
@@ -34,9 +37,13 @@ mediaPipe.addEventListener("setup", () => {
 
 mediaPipe.addEventListener("pose", (event) => {
   smoother.target(event.data.skeleton)
+
+  const nPose = event.data.skeletonNormalized
+  rightWrist.updateSound(nPose.RIGHT_WRIST)
+  leftWrist.updateSound(nPose.LEFT_WRIST)
 })
 
-function setup() {
+window.setup = function() {
   createCanvas(windowWidth, windowHeight)
   pixelDensity(1)
 
@@ -63,7 +70,7 @@ function transformMirror(ctx = drawingContext) {
   }
 }
 
-function draw() {
+window.draw = function() {
 
   const { video } = mediaPipe
 
@@ -160,7 +167,7 @@ function drawMaskLayer() {
   maskLayer.pop()
 }
 
-function windowResized() {
+window.windowResized = function() {
   resizeCanvas(windowWidth, windowHeight)
   maskLayer.resizeCanvas(width, height)
 }
