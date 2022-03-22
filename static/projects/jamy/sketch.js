@@ -79,13 +79,21 @@ let limit = 0;
 //   // detector.detect(video, gotDetections);
 // }
 const mic = new Microphone()
-const typoSound = new AudioLoop({
-  file: './sounds/stretch_typo.mp3',
-  loopStart: 0.10000,
-  loopEnd: 0.39989
-})
+AudioPlayer.setBaseURL('./sounds/')
 
-console.log(typoSound.player)
+const SOUNDS = {
+  typo: new AudioLoop({
+    file: 'stretch_typo.mp3',
+    loopStart: 0.10000,
+    loopEnd: 0.39989
+  }),
+  click1: new AudioTrigger({
+    file: 'switch_click01.mp3',
+  }),
+  click2: new AudioTrigger({
+    file: 'switch_click02.mp3',
+  })
+}
 
 window.mediaPipe = mediaPipe
 
@@ -93,7 +101,7 @@ mediaPipe.addEventListener('setup', () => {
   MIRRORED = mediaPipe.mirrored ?? MIRRORED
   DEBUG_MODE = mediaPipe.debugMode ?? DEBUG_MODE
 
-  const videoElem = mediaPipe.video
+  // const videoElem = mediaPipe.video
 
   //if (MIRRORED) canvas.elt.classList.add('--mirrored')
   //if (DEBUG_MODE) canvas.elt.classList.add('--debugMode')
@@ -182,6 +190,8 @@ function changeState(param) {
   //
   prevLevel = level;
 
+  SOUNDS.click1.trigger()
+
   // Après le temps
   setTimeout(() => {
     state = param;
@@ -190,6 +200,7 @@ function changeState(param) {
     oldDownBox?.remove();
 
     document.body.style.filter = "none";
+    SOUNDS.click2.trigger()
   }, transitionTime);
 }
 
@@ -516,7 +527,7 @@ function draw() {
   topBox.style.height = "calc(" + map(y, limit, 0, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)"; //calc(y + marge)
   bottomBox.style.height = "calc(" + map(y, 0, limit, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)";
 
-  typoSound.woosh(y, { min: 0, max: 100 })
+  SOUNDS.typo.woosh(y, { min: 0, max: 100 })
   //levelLine.style.bottom = map(paramLevelLine[0], 0, 100, marge, 100 - marge*2) - map(paramLevelLine[1],0,100,marge, 100 - marge*2)/2 + marge + "vh";
   //levelLine.style.height = map(paramLevelLine[1],0,100,marge, 100 - marge*2) - marge/2 + "vh";
 

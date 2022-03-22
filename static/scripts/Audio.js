@@ -40,7 +40,7 @@ class AudioGain {
         this.gainNode.gain.rampTo(clamp(amount), duration)
     }
 
-    setPitch(amount) {
+    setRate(amount) {
         this.player.playbackRate = clamp(amount, 0.5, 2)
         // // if (Math.sign(oldPitch) !== Math.sign(newPitch) && oldPitch !== 0) amount = 0
         // // console.log(this.pitchNode)
@@ -60,20 +60,23 @@ class AudioPlayer extends AudioGain {
 
         const { autostart, volume, file, loop } = this.params
 
-        console.log(file)
-
-        this.player = new Tone.Player(file)
+        this.player = new Tone.Player(this.constructor.baseUrl + file)
         this.player.autostart = autostart;
         this.player.loop = loop;
         this.player.volume.value = volume;
         this.connectToMain(this.player)
     }
+    
+    static setBaseURL(url) {
+        this.baseUrl = url
+    }
 
     getDuration() {
         return this.player.buffer.duration
     }
-
 }
+//! static
+AudioPlayer.baseUrl = ''
 
 class AudioLoop extends AudioPlayer {
     constructor(options) {
@@ -96,7 +99,7 @@ class AudioLoop extends AudioPlayer {
         value = lerpInv(min, max, value)
         const velocity = value - this.oldValue
         this.oldValue = value
-        this.setPitch((Math.abs(velocity) - 0) * amplitude * 0.5)
+        this.setRate((Math.abs(velocity) - 0) * amplitude * 0.5)
         this.setGain(Math.abs(velocity) * amplitude)
         // this.setGain(1)
         // console.log(this.velocity)
