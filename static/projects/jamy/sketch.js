@@ -92,6 +92,12 @@ const SOUNDS = {
   }),
   click2: new AudioTrigger({
     file: 'switch_click02.mp3',
+  }),
+  progress: new AudioLoop({
+    file: 'progress.wav',
+    // gain: 1,
+    // loopStart: 0.01,
+    // loopEnd: 0.1
   })
 }
 
@@ -195,6 +201,10 @@ function changeState(param) {
   // Après le temps
   setTimeout(() => {
     state = param;
+
+    const mute = state === 'sound'
+    SOUNDS.typo.enable(mute)
+    SOUNDS.progress.enable(mute)
 
     oldUpBox?.remove();
     oldDownBox?.remove();
@@ -528,6 +538,13 @@ function draw() {
   bottomBox.style.height = "calc(" + map(y, 0, limit, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)";
 
   SOUNDS.typo.wooshRange(y, { min: 0, max: 100 })
+  const amount = clamp(lerpInv(1, 800, timerFactor), 0, 1)
+  SOUNDS.progress.setGain(amount)
+
+  if (amount > 0) {
+    SOUNDS.progress.setRate(lerp(0.2, 1.7, Math.pow(amount, 0.5)))
+    SOUNDS.progress.setReverb(amount)
+  }
   //levelLine.style.bottom = map(paramLevelLine[0], 0, 100, marge, 100 - marge*2) - map(paramLevelLine[1],0,100,marge, 100 - marge*2)/2 + marge + "vh";
   //levelLine.style.height = map(paramLevelLine[1],0,100,marge, 100 - marge*2) - marge/2 + "vh";
 

@@ -22,22 +22,44 @@ class AudioGain {
         this.params = {
             gain: 1,
             pitch: 0,
+            decay: 1,
+            preDelay: 0.1,
+            reverb: 0,
             ...options
         }
 
-        const { gain, pitch } = this.params
+        const { gain, pitch, decay, preDelay, reverb } = this.params
 
-        this.gainNode = new Tone.Gain(gain).toDestination();
+        this.nodes = []
+
+        this.reverbNode = new Tone.Reverb(decay)
+
+        this.setReverb(reverb)
+        this.reverbNode.preDelay = preDelay
+
+        this.gainNode = new Tone.Gain(gain).connect(this.reverbNode);
         this.pitchNode = new Tone.PitchShift().connect(this.gainNode);
         this.pitchNode.pitch = pitch
+
+        this.connect(this.reverbNode, this.gainNode, this.pitchNode)
     }
 
-    connectToMain(node) {
-        node.connect(this.pitchNode)
+    connect(...newNodes) {
+        while (newNodes.length > 0) {
+            const node = newNodes.shift()
+            const last = this.nodes[this.nodes.length - 1]
+            if (last) node.connect(last)
+            else node.toDestination()
+            this.nodes.push(node)
+        }
     }
 
     setGain(amount, duration = 1 / 60) {
         this.gainNode.gain.rampTo(clamp(amount), duration)
+    }
+
+    setReverb(amount, duration = 1 / 60) {
+        this.reverbNode.wet.rampTo(amount, duration)
     }
 
     setRate(amount) {
@@ -45,6 +67,9 @@ class AudioGain {
         // // if (Math.sign(oldPitch) !== Math.sign(newPitch) && oldPitch !== 0) amount = 0
         // // console.log(this.pitchNode)
         // this.pitchNode.pitch = clamp(amount, -7, 7);
+    }
+    setPitch(amount) {
+        this.pitchNode.pitch = amount;
     }
 }
 
@@ -64,8 +89,14 @@ class AudioPlayer extends AudioGain {
         this.player.autostart = autostart;
         this.player.loop = loop;
         this.setVolume(volume);
-        this.connectToMain(this.player)
+        this.connect(this.player)
     }
+
+
+    enable(boolean) {
+        this.player.mute = boolean
+    }
+
 
     setVolume() {
         this.player.volume.rampTo(...arguments)

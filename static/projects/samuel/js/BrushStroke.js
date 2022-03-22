@@ -16,14 +16,14 @@ export class BrushStroke {
     this.audio = new AudioLoop({
       file: 'crystal-wine.wav',
       loopEnd: 30,
-      pitch: -17,
+      pitch: -32,
       volume: -100,
     })
 
     // console.log(this.audio.player.volume.rampTo())
 
     //! prevent huge velocity spike when detection starts
-    this.audio.setVolume(0, 1, Tone.now() + 5)
+    this.audio.setVolume(-5, 1, Tone.now() + 5)
 
 
     // this.audio.setGain(1)
@@ -39,7 +39,7 @@ export class BrushStroke {
 
     // this.updateSound(this.cursorPoint.velocity)
     // this.audio()
-    this.audio.woosh(Math.pow(this.cursorPoint.velocity * 10, 1))
+    this.audio.setGain(this.cursorPoint.velocity * 10)
 
     const ctx = this.p5Graphics.drawingContext
 
