@@ -527,7 +527,7 @@ function draw() {
   topBox.style.height = "calc(" + map(y, limit, 0, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)"; //calc(y + marge)
   bottomBox.style.height = "calc(" + map(y, 0, limit, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)";
 
-  SOUNDS.typo.woosh(y, { min: 0, max: 100 })
+  SOUNDS.typo.wooshRange(y, { min: 0, max: 100 })
   //levelLine.style.bottom = map(paramLevelLine[0], 0, 100, marge, 100 - marge*2) - map(paramLevelLine[1],0,100,marge, 100 - marge*2)/2 + marge + "vh";
   //levelLine.style.height = map(paramLevelLine[1],0,100,marge, 100 - marge*2) - marge/2 + "vh";
 

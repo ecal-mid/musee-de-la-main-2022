@@ -53,7 +53,7 @@ class AudioPlayer extends AudioGain {
         super({
             file: REQUIRED,
             loop: false,
-            volume: 0,
+            volume: 0, //DB
             autostart: false,
             ...options
         })
@@ -63,10 +63,14 @@ class AudioPlayer extends AudioGain {
         this.player = new Tone.Player(this.constructor.baseUrl + file)
         this.player.autostart = autostart;
         this.player.loop = loop;
-        this.player.volume.value = volume;
+        this.setVolume(volume);
         this.connectToMain(this.player)
     }
-    
+
+    setVolume() {
+        this.player.volume.rampTo(...arguments)
+    }
+
     static setBaseURL(url) {
         this.baseUrl = url
     }
@@ -95,14 +99,18 @@ class AudioLoop extends AudioPlayer {
 
         this.oldValue = 0
     }
-    woosh(value, { min = 0, max = 1, amplitude = 100 } = {}) {
+
+    wooshRange(value, { min = 0, max = 1, amplitude = 100 } = {}) {
         value = lerpInv(min, max, value)
         const velocity = value - this.oldValue
         this.oldValue = value
-        this.setRate((Math.abs(velocity) - 0) * amplitude * 0.5)
-        this.setGain(Math.abs(velocity) * amplitude)
-        // this.setGain(1)
-        // console.log(this.velocity)
+        this.woosh(velocity * amplitude)
+    }
+
+    woosh(velocity) {
+        velocity = Math.abs(velocity)
+        this.setRate((velocity - 0) * 0.5)
+        this.setGain(velocity)
     }
 }
 
@@ -139,6 +147,7 @@ class Microphone {
         });
     }
     getLevel() {
+        //! can be above 1
         return Tone.dbToGain(this.meter.getValue())
     }
 }

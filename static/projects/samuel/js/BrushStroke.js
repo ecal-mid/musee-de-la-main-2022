@@ -1,9 +1,8 @@
 import { SmoothValue, SmoothPoint, SmoothDampValue } from './Smoother.js'
 
-const MAX_VOLUME = 1
-const MAX_VELOCITY = 1
+let MAX_VELOCITY = 0
 
-const limiter = new Tone.Limiter(-10).toDestination();
+AudioLoop.setBaseURL('./sounds/')
 
 export class BrushStroke {
   constructor({ p5Graphics, x = 0, y = 0 }) {
@@ -14,26 +13,33 @@ export class BrushStroke {
     this.cursorPoint = new SmoothPoint({ x, y, smooth: 0.3 })
     this.gain = new SmoothPoint({ x, y, smooth: 0.3 })
 
-    this.gainNode = new Tone.Gain(0).connect(limiter);
-    this.player = new Tone.Player("./sounds/crystal-wine.wav").connect(this.gainNode)
-    this.player.autostart = true;
-    this.player.loop = true
-    this.player.loopEnd = 30;
-    // this.player.volume.value = -120;
-  }
+    this.audio = new AudioLoop({
+      file: 'crystal-wine.wav',
+      loopEnd: 30,
+      pitch: -17,
+      volume: -100,
+    })
 
-  updateSound(normalizedPoint) {
-    // if (amt > MAX_VELOCITY) return
-    // amt = map(amt, 0.01, MAX_VELOCITY, 0, 1, true)
-    this.gain.follow(normalizedPoint)
-    // const gain = map(this.gain.velocity, 0.0, 0.001, 0, MAX_VOLUME, true)
-    // console.log(this.gain.velocity)
-    // this.gainNode.gain.rampTo(0, 0)
+    // console.log(this.audio.player.volume.rampTo())
+
+    //! prevent huge velocity spike when detection starts
+    this.audio.setVolume(0, 1, Tone.now() + 5)
+
+
+    // this.audio.setGain(1)
+    // this.gainNode = new Tone.Gain(0).connect(limiter);
+    // this.player = new Tone.Player("./sounds/crystal-wine.wav").connect(this.gainNode)
+    // this.player.autostart = true;
+    // this.player.loop = true
+    // this.player.loopEnd = 30;
+    // this.player.volume.value = -120;
   }
 
   draw() {
 
     // this.updateSound(this.cursorPoint.velocity)
+    // this.audio()
+    this.audio.woosh(Math.pow(this.cursorPoint.velocity * 10, 1))
 
     const ctx = this.p5Graphics.drawingContext
 

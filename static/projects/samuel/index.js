@@ -39,8 +39,6 @@ mediaPipe.addEventListener("pose", (event) => {
   smoother.target(event.data.skeleton)
 
   const nPose = event.data.skeletonNormalized
-  rightWrist.updateSound(nPose.RIGHT_WRIST)
-  leftWrist.updateSound(nPose.LEFT_WRIST)
 })
 
 window.setup = function() {
