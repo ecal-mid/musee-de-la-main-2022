@@ -10,7 +10,7 @@ let DEBUG_MODE = false
 // make sure serve over https is enabled in the sketch settings window!!
 // make noise to grow the circle
 
-let mic, video;
+let video;
 
 
 let states = ["distance", "height", "sound", "width", "position"];
@@ -78,6 +78,14 @@ let limit = 0;
 //   detections = results;
 //   // detector.detect(video, gotDetections);
 // }
+const mic = new Microphone()
+const typoSound = new AudioLoop({
+  file: './sounds/stretch_typo.mp3',
+  loopStart: 0.10000,
+  loopEnd: 0.39989
+})
+
+console.log(typoSound.player)
 
 window.mediaPipe = mediaPipe
 
@@ -104,16 +112,10 @@ mediaPipe.addEventListener('setup', () => {
 
 function setup() {
 
-  mic = new p5.AudioIn();
-  mic.start();
   //video = createVideo()
 
   const canvas = createCanvas(100, 100);
   pixelDensity(1)
-
-
-  
-
 
   topBox = document.getElementById('upBox');
   bottomBox = document.getElementById('downBox');
@@ -254,7 +256,6 @@ function draw() {
   if (state == "sound") {
     // get the loudness
     level = mic.getLevel();
-    console.log(level)
     //console.log(level)
     //PARAM
     sensi = 500;
@@ -295,7 +296,7 @@ function draw() {
     if (PERSON.shown) level = map(PERSON.width, 0.6, 1, 1, 0.6);
 
     // console.log('width')
-    console.log(level, PERSON.width)
+    // console.log(level, PERSON.width)
     //PARAM
     sensi = 100;
     limit = 100;
@@ -418,7 +419,7 @@ function draw() {
     if (PERSON.shown) {
       let mirror = MIRRORED ? 1 - PERSON.x : PERSON.x
       level = mirror * 640
-      console.log(level)
+      // console.log(level)
     }
     // if (poses[0] != undefined) {
     //   //POSENET VERSION
@@ -515,6 +516,7 @@ function draw() {
   topBox.style.height = "calc(" + map(y, limit, 0, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)"; //calc(y + marge)
   bottomBox.style.height = "calc(" + map(y, 0, limit, 0 + minHeight, 100 - minHeight) + "% - " + marge / 2 + "vw)";
 
+  typoSound.woosh(y, { min: 0, max: 100 })
   //levelLine.style.bottom = map(paramLevelLine[0], 0, 100, marge, 100 - marge*2) - map(paramLevelLine[1],0,100,marge, 100 - marge*2)/2 + marge + "vh";
   //levelLine.style.height = map(paramLevelLine[1],0,100,marge, 100 - marge*2) - marge/2 + "vh";
 

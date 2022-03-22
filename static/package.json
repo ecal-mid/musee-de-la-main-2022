@@ -1,0 +1,18 @@
+{
+  "name": "static",
+  "version": "1.0.0",
+  "description": "Static resources injected to dist/ when `parcel build`",
+  "main": "config.js",
+  "scripts": {
+    "serve": "live-server",
+    "chrome:mac:enableaudio": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required --app=http://127.0.0.1:8080",
+    "dev": "concurrently \"npm run serve\" \"npm run --silent chrome:mac:enableaudio\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "live-server": "^1.2.1"
+  }
+}

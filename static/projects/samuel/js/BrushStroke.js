@@ -1,7 +1,4 @@
 import { SmoothValue, SmoothPoint, SmoothDampValue } from './Smoother.js'
-import './debugger.js';
-
-console.graph(console)
 
 const MAX_VOLUME = 1
 const MAX_VELOCITY = 1
