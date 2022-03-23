@@ -105,7 +105,8 @@ class GPUParticles {
                 value: 0
             }
         }
-        this.points.position.y = .2;
+        this.points.position.y = 4;
+        this.points.position.z = 1;
         this.points.scale.set(2, 2, 2)
 
 

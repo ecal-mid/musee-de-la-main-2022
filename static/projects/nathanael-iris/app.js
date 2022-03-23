@@ -91,15 +91,15 @@ new AudioLoop({
 })
 
 const [WOOSHES, VELOCITY] = buildWooshes({
-    'LEFT_WRIST': 'loop.wav',
+    'LEFT_WRIST': 'loop-2.wav',
     'RIGHT_WRIST': 'loop.wav',
     'RIGHT_HEEL': 'loop.wav',
-    'LEFT_HEEL': 'loop.wav',
+    'LEFT_HEEL': 'loop-3.wav',
 }, {
     gain: 0,
-    reverb: 0.6,
-    decay: 2,
-    pitch: -2,
+    reverb: 0.8,
+    decay: 0.3,
+    pitch: 0,
 })
 
 const NOISES = [
@@ -120,7 +120,7 @@ const NOISES = [
 ].map(file => {
     return new AudioTrigger({
         file,
-        gain: 0.4,
+        gain: 0.1,
         reverb: 0.5,
         decay: 0.2,
         pitch: -4,
@@ -738,6 +738,8 @@ export class App {
 
         this.particles = new GPUParticles(128)
 
+            console.log(this.particles)
+
         if (!debug) {
             this.scene.add(this.particles.points)
         }
@@ -870,7 +872,7 @@ export class App {
                     let i = 4
                     while (i--) {
                         // setTimeout(() => {
-                        randomElement(NOISES).playVariation(randomRange(0.1, 1))
+                        randomElement(NOISES).playVariation(randomRange(2, 6))
                         // }, Math.random() * 600 + 100)
                     }
                 }
@@ -892,7 +894,7 @@ export class App {
                     let i = 20
                     while (i--) {
                         // for (let i = 0; i < 120 * Math.random(); i++) {
-                        randomElement(NOISES).playVariation(randomRange(0.3, 5))
+                        randomElement(NOISES).playVariation(randomRange(2, 10))
                         // }
                     }
                     // if (!bg_music_init) {
@@ -1032,7 +1034,7 @@ export class App {
             }
 
             Object.keys(WOOSHES).forEach((key) => {
-                const pos = event.data.skeletonNormalized[key]
+                const pos = event.data.skeletonNormalized?.[key]
                 const velocity = VELOCITY[key].update(pos)
                 WOOSHES[key].woosh(velocity * 2)
             })
