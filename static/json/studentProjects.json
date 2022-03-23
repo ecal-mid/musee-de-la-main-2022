@@ -8,7 +8,7 @@
     "sections": [
       {
         "title": "",
-        "text": "En revisitant la forme du miroir, ce projet interroge la notion du reflet numérique, et plus précisément la manière dont une image captée peut être analysée et interprétée par une machine.\nLorsque nous nous regardons dans une matière réfléchissante – un miroir – nous pouvons comprendre ce que nous voyons et essayer de contrôler l’image que nous renvoyons de nous-même.\nLorsque nous sommes regardés par une «caméra réfléchissante» – analyse d’image avec intelligence artificielle – nous devenons sujet, nous ne contrôlons plus notre image.\nNous pouvons donc nous demander ce que saisit cette intelligence artificielle et finalement à quoi ressemble notre reflet à ses yeux ? Captation d’informations visuelles, analyse d’image, reconnaissance de formes, de visage, de position, interprétation du volume et de l’espace, stockage et comparaison des données… autant de paramètres que les étudiant·e·s du Bachelor Media & Interaction Design de l’ECAL ont utilisés pour créer une série d’expériences contemplatives proposant aux visiteurs de jouer avec leur reflets numériques afin de mieux de les comprendre et de se les réapproprier."
+        "text": "En revisitant la forme du miroir, ce projet interroge la notion du reflet numérique, et plus précisément la manière dont une image captée peut être analysée et interprétée par une machine.\nLorsque nous nous regardons dans une matière réfléchissante – un miroir – nous pouvons comprendre ce que nous voyons et essayer de contrôler l’image que nous renvoyons de nous-même.\nLorsque nous sommes regardé·e·s par une « caméra réfléchissante » – analyse d’image avec intelligence artificielle – nous devenons sujet, nous ne contrôlons plus notre image.\nNous pouvons donc nous demander ce que saisit cette intelligence artificielle et finalement à quoi ressemble notre reflet à ses yeux ? Captation d’informations visuelles, analyse d’image, reconnaissance de formes, de visage, de position, interprétation du volume et de l’espace, stockage et comparaison des données… autant de paramètres que les étudiant·e·s du Bachelor Media & Interaction Design de l’ECAL ont utilisés pour créer une série d’expériences contemplatives, proposant aux visiteur·se·s de jouer avec leur reflets numériques afin de mieux les comprendre et se les réapproprier."
       },
       {
         "title": "Crédits",
@@ -21,15 +21,15 @@
       "title": "Bubble Pool",
       "url": "/projects/melanie/",
       "students": ["Mélanie Fontaine"],
-      "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur se confronte à un écosystème contrôlé par des algorithmes plus intrusifs qu'il n'y paraît.",
-      "interaction": "Amusez-vous en jonglant avec les balles qui apparaissent à l’écran. Si certaines rebondissent sur votre tête, vous découvrirez les visages des jongleurs et jongleuses qui vous ont précédé.",
+      "description": "Ce projet, qui nous invite à jouer avec notre reflet, nous plonge dans le monde de l’enfance et de ses piscines à balles. Au sein d'un dispositif à l'apparence ludique et innocente, l'utilisateur·rice se confronte à un écosystème contrôlé par des algorithmes plus intrusifs qu'il n'y paraît.",
+      "interaction": "Amusez-vous en jonglant avec les balles qui apparaissent à l’écran. Si certaines rebondissent sur votre tête, vous découvrirez les visages des jongleur·se·s qui vous ont précédé.",
       "images": ["/images/melanie.png"]
     },
     {
       "title": "Abyssal Reflection",
       "url": "/projects/nathanael-iris/",
       "students": ["Nathanaël Vianin", "Iris Moine"],
-      "description": "“Si vous regardez longtemps au fond des abysses, les abysses voient au fond de vous.”\nCe projet nous propose d’incarner cette célèbre citation pour nous rendre attentifs et attentives à l’avertissement de Friedrich Nietzche.\nLa mise en œuvre de certains systèmes - en l'occurrence technologiques - pour lutter contre certains fléaux, peut conduire, par manque de vigilance, à devenir ces mêmes fléaux contre lesquels nous luttions.",
+      "description": "« Si vous regardez longtemps au fond des abysses, les abysses voient au fond de vous. »\nCe projet nous propose d’incarner cette célèbre citation pour nous rendre attentif·ve·s à l’avertissement de Friedrich Nietzsche.\nLa mise en œuvre de certains systèmes – en l'occurrence technologiques, pour lutter contre certains fléaux – peut conduire, par manque de vigilance, à devenir ces mêmes fléaux contre lesquels nous luttons.",
       "interaction": "Plongez votre corps et vos mouvements dans un univers abyssal imaginaire et techno-organique. Laissez place à la contemplation et l’évasion, le temps de cette immersion immergée.",
       "images": ["/images/nathanael-iris.png"]
     },
@@ -37,7 +37,7 @@
       "title": "Oui % Non",
       "url": "/projects/jamy/",
       "students": ["Jamy Herrmann"],
-      "description": "Cette série typographique d’antonymes nous invite à découvrir intuitivement comment jouer avec les opposés de manière ludique. En incarnant tour à tour un mot ou son contraire, nous pouvons comprendre comment une analyse d’image permet de catégoriser certaines actions ou comportements.",
+      "description": "Cette série typographique d’antonymes nous invite à découvrir intuitivement comment jouer avec des opposés de manière ludique. En incarnant tour à tour un mot ou son contraire, nous pouvons comprendre comment une analyse d’image permet de catégoriser certaines actions ou comportements.",
       "interaction": "Devenez petit en vous baissant, devenez grand en allongeant vos bras, rapprochez-vous, éloignez-vous…\nA vous de découvrir quelle position ou comportement adopter pour résoudre les différentes énigmes d'antonymes.\nTenez la position assez longtemps sur la ligne rouge et passez au niveau suivant !",
       "images": ["/images/jamy.jpg"]
     },
@@ -46,15 +46,15 @@
       "url": "/projects/samuel/",
       "students": ["Samuel Dumez"],
       "description": "A travers un miroir ou toute autre surface réfléchissante, la perception de notre reflet est toujours et inévitablement liée à l'instant présent. En utilisant l’enregistrement et l’affichage de notre image en différé, ce projet propose une nouvelle lecture de notre reflet en y intégrant un concept de temporalité. Ce jeu de collage entre présent et passé permet aux différents reflets de ne faire qu’un.",
-      "interaction": "Utilisez vos mains pour effacer votre reflet présent et révéler votre reflet passé, qui est retardé dans le temps.\nPlus vous vous éloignez de l’écran, plus votre reflet passé s’éloigne de l’instant présent.\nPlus vous vous rapprocherez de l’écran, plus votre reflet passé se rapproche de de l’instant présent.",
+      "interaction": "Utilisez vos mains pour effacer votre reflet présent et révéler votre reflet passé, qui est retardé dans le temps.\nPlus vous vous éloignez de l’écran, plus votre reflet passé s’éloigne de l’instant présent.\nPlus vous vous rapprocherez de l’écran, plus votre reflet passé se rapproche de l’instant présent.",
       "images": ["/images/samuel.png"]
     },
     {
       "title": "PlayZone",
       "url": "/projects/elodie-soraya/",
       "students": ["Elodie Anglade", "Soraya Camina"],
-      "description": "Ce projet est une fenêtre qui nous ouvre la perspective d’une autre dimension, celle d’une jungle colorée et luxuriante. Le miroir n’est plus reflet, il devient portail et point d’accès vers un univers impossible qui réagit aux gestes et mouvements du spectateur.",
-      "interaction": "Éloignez-vous, rapprochez-vous, déplacez-vous de gauche à droite… et plongez dans cette jungle interactive qui s’ajuste à vos mouvements. Avec vos mains, vous pouvez déplacer la lumière pour illuminer le décor.",
+      "description": "Ce projet est une fenêtre qui nous ouvre la perspective d’une autre dimension, celle d’une jungle colorée et luxuriante. Le miroir n’est plus reflet, il devient portail et point d’accès vers un univers impossible qui réagit aux gestes et mouvements du spectateur·rice.",
+      "interaction": "Eloignez-vous, rapprochez-vous, déplacez-vous de gauche à droite… et plongez dans cette jungle interactive qui s’ajuste à vos mouvements. Avec vos mains, vous pouvez déplacer la lumière pour illuminer le décor.",
       "images": ["/images/elodie-soraya.png"]
     }
   ]
