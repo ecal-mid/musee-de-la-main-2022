@@ -42,6 +42,8 @@ export default class FakeConsole {
   }
 
   setVisibility(visible, delay) {
+    if (this.pendingVisibility === visible) return;
+    this.pendingVisibility = visible
     clearTimeout(this.visibilityTimeout)
     this.visibilityTimeout = setTimeout(() => {
       this.setAttributes({ dataset: { hidden: !visible } })

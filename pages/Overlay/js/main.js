@@ -20,7 +20,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import FakeConsole from './fakeconsole/index.js'
-import { TextLoading, TextTitle, Text } from './fakeconsole/text/texts'
+import { TextLoading, TextTitle, TextInstruction, Text } from './fakeconsole/text/texts'
 
 //* scripts
 import Model from './rig/Model.js'
@@ -34,14 +34,24 @@ import IframeBus from './IframeBus.js'
 
 const transitionDelay = CONFIG.transitionDelay
 
-let scene, sceneBack, renderer, camera, composer, cssRendererFront, cssRendererBack
+const RENDERER = {}
+let scene, sceneBack, camera, composer
 let control, dot, orbit
 let model, skeletonRemapper
 
 console.log('INIT Overlay');
 
-let text3DHead
-let textProject = new Text({ text: '' })
+// let TEXT_CONSOLE.project = new Text({ text: '' })
+
+const CONSOLES_3D = {
+    head: null
+}
+
+const TEXT_CONSOLE = {
+    project: new Text({ text: '' })
+}
+
+
 let animationFrame = null
 
 let PERSON = {
@@ -58,8 +68,14 @@ let TITLE_MODE = true
 
 const GRID = {}
 const BUS = new IframeBus({ transitionDelay })
-const waitResume = BUS.waitFor('resume')
+// const waitResume = BUS.waitFor('resume')
 const clock = new THREE.Clock()
+
+const TEXTS = {
+    title: 'Alter Ego',
+    instruction: '<Utilisez la tablette pour naviguer>'
+}
+
 
 const consoles = {
     main: new FakeConsole({
@@ -87,6 +103,12 @@ const consoles = {
         parent: document.body,
         attributes: {
             classList: 'console--splashscreen'
+        }
+    }),
+    instruction: new FakeConsole({
+        parent: document.body,
+        attributes: {
+            classList: 'console--instructions'
         }
     })
 }
@@ -180,50 +202,69 @@ async function init(canvas, width, height) {
 
     model.addTo(scene)
 
-    renderer = new THREE.WebGLRenderer({ antialias: true, canvas, alpha: false })
+    RENDERER.webgl = new THREE.WebGLRenderer({ antialias: true, canvas, alpha: false })
     // renderer.setSize(canvas.width, canvas.height);
 
     //! 3D consoles
-    let object = new CSS3DObject(consoles.bg.elem)
-    object.position.set(0, 100, -300)
-    sceneBack.add(object)
 
-    let object2 = new CSS3DObject(consoles.main.elem)
-    object2.position.set(-0, 50, 100)
-    let sc = 0.2
-    object2.scale.set(sc, sc, sc)
-    scene.add(object2)
+    function addToCSS3D(elem, { position = [0, 0, 0], scale = 1, type = CSS3DObject, parent = scene } = {}) {
+        const elem3D = new type(elem)
+        elem3D.position.set(...position)
+        elem3D.scale.set(scale, scale, scale)
+        parent.add(elem3D)
+        return elem3D
+    }
 
-    text3DHead = new CSS3DSprite(consoles.loading.elem)
-    sc = 0.3
-    text3DHead.position.set(0, 200, 0)
-    text3DHead.scale.set(sc, sc, sc)
+    addToCSS3D(consoles.bg.elem, { position: [0, 100, -300], parent: sceneBack })
 
-    consoles.loading.addEntry(textProject)
+    addToCSS3D(consoles.main.elem, { position: [-0, 50, 100], scale: 0.2 })
 
-    let titleSprite = new CSS3DSprite(consoles.splash.elem)
-    titleSprite.position.set(5, 205, -50)
-    sc = 0.3
-    titleSprite.scale.set(sc, sc, sc)
-    consoles.splash.addEntry(new TextTitle({
-        text: 'Alter Ego',
-    }))
+    CONSOLES_3D.head = addToCSS3D(consoles.loading.elem, { position: [0, 200, 0], scale: 0.3, type: CSS3DSprite })
 
-    scene.add(titleSprite)
+    addToCSS3D(consoles.splash.elem, { position: [5, 205, -50], scale: 0.3, type: CSS3DSprite })
 
-    cssRendererBack = new CSS3DRenderer({
+    addToCSS3D(consoles.instruction.elem, { position: [5, 183, -200], scale: 0.2, type: CSS3DSprite, parent: sceneBack })
+    // let object = new CSS3DObject(consoles.bg.elem)
+    // object.position.set(0, 100, -300)
+    // sceneBack.add(object)
+
+
+
+    // let object2 = new CSS3DObject(consoles.main.elem)
+    // object2.position.set(-0, 50, 100)
+    // let sc = 0.2
+    // object2.scale.set(sc, sc, sc)
+    // scene.add(object2)
+
+    // sc = 0.3
+    // text3DHead.position.set(0, 200, 0)
+    // text3DHead.scale.set(sc, sc, sc)
+
+    // let titleSprite = new CSS3DSprite(consoles.splash.elem)
+    // titleSprite.position.set(5, 205, -50)
+    // sc = 0.3
+    // titleSprite.scale.set(sc, sc, sc)
+
+    consoles.loading.addEntry(TEXT_CONSOLE.project)
+    consoles.splash.addEntry(new TextTitle({ text: TEXTS.title }))
+    consoles.instruction.addEntry(new TextInstruction({ text: TEXTS.instruction }))
+    consoles.instruction.setVisibility(false)
+
+    // // scene.add(titleSprite)
+
+    RENDERER.cssBack = new CSS3DRenderer({
         element: document.querySelector('.css-renderer.back')
     })
-    cssRendererFront = new CSS3DRenderer({
+    RENDERER.cssFront = new CSS3DRenderer({
         element: document.querySelector('.css-renderer.front')
     })
     resizeRenderer()
 
-    renderer.setPixelRatio(CONFIG.density)
-    renderer.outputEncoding = THREE.sRGBEncoding
-    renderer.shadowMap.enabled = true
-    renderer.setClearColor(0x000000, 0)
-    renderer.toneMappingExposure = Math.pow(CONFIG.bloom.exposure, 4.0)
+    RENDERER.webgl.setPixelRatio(CONFIG.density)
+    RENDERER.webgl.outputEncoding = THREE.sRGBEncoding
+    RENDERER.webgl.shadowMap.enabled = true
+    RENDERER.webgl.setClearColor(0x000000, 0)
+    RENDERER.webgl.toneMappingExposure = Math.pow(CONFIG.bloom.exposure, 4.0)
 
     // camera
     camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 20000)
@@ -243,7 +284,7 @@ async function init(canvas, width, height) {
     bloomPass.strength = CONFIG.bloom.bloomStrength
     bloomPass.radius = CONFIG.bloom.bloomRadius
 
-    composer = new EffectComposer(renderer)
+    composer = new EffectComposer(RENDERER.webgl)
     composer.addPass(renderScene)
     composer.addPass(bloomPass)
 
@@ -254,13 +295,13 @@ async function init(canvas, width, height) {
     orbit.update()
 
     const container = document.body
-    container.appendChild(renderer.domElement)
+    container.appendChild(RENDERER.webgl.domElement)
 
     // console.log(orbit)
 
 
     //! debug
-    control = new TransformControls(camera, renderer.domElement)
+    control = new TransformControls(camera, RENDERER.webgl.domElement)
     control.addEventListener('dragging-changed', (event) => {
         orbit.enabled = !event.value
     })
@@ -279,8 +320,8 @@ async function init(canvas, width, height) {
     scene.add(GRID.grid)
 
     const bone = model.getBone('mixamorig_Head')
-    bone.attach(text3DHead)
-    text3DHead.position.set(0, 30, 0)
+    bone.attach(CONSOLES_3D.head)
+    CONSOLES_3D.head.position.set(0, 30, 0)
     // scene.add(control);
 
     BUS.addEventListener('projectchange', (project) => {
@@ -288,13 +329,14 @@ async function init(canvas, width, height) {
 
         consoles.loading.setVisibility(true)
         consoles.splash.setVisibility(false)
+        consoles.instruction.setVisibility(false)
 
         consoles.loading.addEntry(new TextLoading({
             text: '',
             lifeSpan: transitionDelay,
         }))
 
-        textProject.setAttributes({ textContent: `${project.title}` })
+        TEXT_CONSOLE.project.setAttributes({ textContent: `${project.title}` })
 
         const clipName = random(['rumba', 'rumba', 'silly', 'pointing'])
         model?.play(clipName)
@@ -342,7 +384,9 @@ async function init(canvas, width, height) {
 
         someone = Boolean(event.data.skeleton)
 
+
         // GRID.grid.appear(!someone)
+        consoles.instruction.setVisibility(someone && TITLE_MODE)
         consoles.main.setVisibility(!someone)
         consoles.bg.setVisibility(!someone)
         // consoles.splash.setVisibility(!someone)
@@ -362,8 +406,8 @@ async function init(canvas, width, height) {
 
 function resizeRenderer() {
     const { innerHeight, innerWidth } = window
-    cssRendererFront.setSize(innerWidth, innerHeight)
-    cssRendererBack.setSize(innerWidth, innerHeight)
+    RENDERER.cssFront.setSize(innerWidth, innerHeight)
+    RENDERER.cssBack.setSize(innerWidth, innerHeight)
 }
 
 function resume() {
@@ -387,11 +431,11 @@ function showOverlay(visible) {
     visible ? classList.remove('hidden') : classList.add('hidden')
 
     container.ontransitionend = (event) => {
-        if(event.target !== container) return;
+        if (event.target !== container) return;
 
         const isHidden = classList.contains('hidden')
 
-        if(!isHidden) return;
+        if (!isHidden) return;
         BUS.emit('pause')
     }
 }
@@ -412,7 +456,7 @@ function render() {
     if (someone) dist = SkeletonRemapper.dist2D(pose.RIGHT_SHOULDER, pose.LEFT_SHOULDER)
 
     const value = PERSON.smoothSize.smoothen(deltaTime, dist)
-    console.log(value)
+    // console.log(value)
     moveCamera(value)
 
     const { skeleton } = model.params.skinnedMesh
@@ -428,8 +472,8 @@ function render() {
     GRID.grid.update(deltaTime)
 
     // rendering
-    renderer.render(scene, camera)
+    RENDERER.webgl.render(scene, camera)
     composer.render()
-    cssRendererFront.render(scene, camera)
-    cssRendererBack.render(sceneBack, camera)
+    RENDERER.cssFront.render(scene, camera)
+    RENDERER.cssBack.render(sceneBack, camera)
 }

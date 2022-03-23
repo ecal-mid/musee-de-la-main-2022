@@ -61,6 +61,16 @@ export class TextTitle extends _Text {
   }
 }
 
+export class TextInstruction extends _Text {
+  constructor(opts) {
+    super(opts)
+    this.setAttributes({
+      classList: 'instruction',
+    })
+
+  }
+}
+
 export class TextLog extends _Text {
   constructor(opts) {
     super(opts)

@@ -113,7 +113,7 @@ body {
         height: 100%;
 
         text {
-          transition: all 1s 0.33s ease-out;
+          transition: stroke-dasharray 1s 0.33s ease-out;
           stroke-dasharray: 100 0;
           stroke: white;
           alignment-baseline: after-edge;
@@ -125,6 +125,16 @@ body {
         }
       }
     }
+  }
+
+  &--instructions {
+    transition: opacity 0.5s;
+
+    &[data-hidden="false"] {
+      transition-delay: 3s;
+    }
+
+
   }
 
   &--main {

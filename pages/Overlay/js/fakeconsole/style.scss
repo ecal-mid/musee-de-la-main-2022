@@ -59,6 +59,18 @@ $margin: 0.5ch;
     }
   }
 
+  .instruction {
+    text-align: center;
+    font-size: 2em;
+    color: $color-green;
+
+    span {
+      animation: flicker 1s 2s ease-in-out infinite alternate;
+      background: none;
+      margin: 0;
+    }
+  }
+
   .slider {
     opacity: 0.5;
   }
@@ -90,5 +102,14 @@ $margin: 0.5ch;
     &--success {
       --bg-color: #{$color-green};
     }
+  }
+}
+
+@keyframes flicker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.33;
   }
 }
