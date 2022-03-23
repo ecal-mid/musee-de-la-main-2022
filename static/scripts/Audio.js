@@ -17,6 +17,10 @@ function clamp(value, min = 0, max = 1) {
     return Math.min(max, Math.max(min, value))
 }
 
+function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 class AudioGain {
     constructor(options) {
         this.params = {
@@ -25,6 +29,7 @@ class AudioGain {
             decay: 1,
             preDelay: 0.1,
             reverb: 0,
+            cooldown: OPTIONAL,
             ...options
         }
 
@@ -41,21 +46,26 @@ class AudioGain {
         this.pitchNode = new Tone.PitchShift().connect(this.gainNode);
         this.pitchNode.pitch = pitch
 
-        this.connect(this.reverbNode, this.gainNode, this.pitchNode)
+        this.connect([this.reverbNode, this.gainNode, this.pitchNode])
     }
 
-    connect(...newNodes) {
+    connect(newNodes, toArray = true) {
         while (newNodes.length > 0) {
             const node = newNodes.shift()
             const last = this.nodes[this.nodes.length - 1]
             if (last) node.connect(last)
             else node.toDestination()
-            this.nodes.push(node)
+            if (toArray) this.nodes.push(node)
         }
     }
 
+    dispose() {
+        const [firstNode] = this.nodes
+        if (firstNode) firstNode.dispose()
+    }
+
     setGain(amount, duration = 1 / 60) {
-        this.gainNode.gain.rampTo(clamp(amount), duration)
+        this.gainNode.gain.rampTo(clamp(amount, 0, 1), duration)
     }
 
     setReverb(amount, duration = 1 / 60) {
@@ -80,30 +90,45 @@ class AudioPlayer extends AudioGain {
             loop: false,
             volume: 0, //DB
             autostart: false,
+            onload: OPTIONAL,
+            cooldown: OPTIONAL,
             ...options
         })
 
-        const { autostart, volume, file, loop } = this.params
+        const { autostart, volume, loop, onload, cooldown } = this.params
+        let { file } = this.params
 
-        this.player = new Tone.Player(this.constructor.baseUrl + file)
+        if (typeof file === 'string') file = this.constructor.baseUrl + file
+
+        this.player = new Tone.Player(file, onload)
         this.player.autostart = autostart;
         this.player.loop = loop;
-        this.setVolume(volume);
-        this.connect(this.player)
-    }
 
+
+        if (cooldown !== OPTIONAL) {
+            this.setVolume(-50)
+            this.setVolume(volume, 1, Tone.now() + cooldown)
+        } else {
+            this.setVolume(volume);
+        }
+
+        this.connect([this.player], false)
+    }
 
     enable(boolean) {
         this.player.mute = boolean
     }
-
 
     setVolume() {
         this.player.volume.rampTo(...arguments)
     }
 
     static setBaseURL(url) {
-        this.baseUrl = url
+        AudioPlayer.baseUrl = url
+    }
+
+    clone(options) {
+        return new this.constructor({ ...this.params, ...options, file: this.player.buffer })
     }
 
     getDuration() {
@@ -116,7 +141,7 @@ AudioPlayer.baseUrl = ''
 class AudioLoop extends AudioPlayer {
     constructor(options) {
         super({
-            gain: 0,
+            gain: 1,
             loop: true,
             autostart: true,
             loopEnd: OPTIONAL,
@@ -152,9 +177,28 @@ class AudioTrigger extends AudioPlayer {
         })
     }
 
-    trigger() {
-        this.player.start(...arguments);
+    play({ volume = 1, speed = 1 } = {}, ...args) {
+        const { player } = this
+        const source = new Tone.ToneBufferSource(player.buffer)
+        const vol = new Tone.Volume(player.volume.value + volume)
+        source.playbackRate.value = player.playbackRate * speed
+        source.connect(vol)
+        this.connect([vol], false)
+        source.onended = () => {
+            source.dispose()
+            vol.dispose()
+        }
+        source.start(...args)
     }
+    playVariation(...args) {
+        this.play({
+            volume: randomRange(-2, 2),
+            speed: randomRange(0.8, 1.2),
+        }, ...args)
+    }
+    // playVariant(, startOptions) {
+    //     this.player.start(startOptions)
+    // }
 
 }
 

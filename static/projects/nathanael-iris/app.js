@@ -12,6 +12,22 @@ import {
 } from './js/utils.js'
 
 
+//---
+class Velocity {
+    constructor() {
+        this.velocity = 0
+        this.pose = new THREE.Vector3()
+    }
+
+    update({ x, y, z } = this.pose) {
+        const newPosition = new THREE.Vector3(x, y, z)
+        const v = newPosition.clone().sub(this.pose)
+        this.pose.copy(newPosition)
+        this.velocity = Math.min(v.length(), 1)
+        return this.velocity
+    }
+}
+
 const mediaPipe = new MediaPipeClient()
 window.mediaPipe = mediaPipe
 let app
@@ -22,7 +38,7 @@ mediaPipe.on("setup", () => {
     document.app = app
     // console.log()
 
-    if(mediaPipe.mirrored) document.body.style.transform = "scaleX(-1)"
+    if (mediaPipe.mirrored) document.body.style.transform = "scaleX(-1)"
 })
 
 
@@ -40,15 +56,19 @@ mediaPipe.on("setup", () => {
 // }
 
 /* let pops = ["pop1.wav", "pop2.ogg", "pop3.ogg", "ploof.mp3"] */
-let pops = ["ploof.mp3", "woosh1.wav", "woosh2.wav", "woosh3.wav", "woosh4.wav"].map(fileName => {
-    return createAudio(fileName, { volume: 0.1 })
-})
+let pops = [
+    // "ploof/ploof.mp3",
+    // "woosh/woosh1.wav",
+    // "woosh/woosh2.wav",
+    // "woosh/woosh3.wav",
+    // "woosh/woosh4.wav"
+].map(fileName => createAudio(fileName, { volume: 0.1 }))
 
 //const background = createAudio("./background.mp3", { autoplay: true, loop: true, volume: 0.1 })
 
-const crunches = ["crunch1.wav", "crunch2.wav", "crunch3.wav", "crunch4.wav"].map(fileName => {
-    return createAudio(fileName)
-})
+// const crunches = ["crunch1.wav", "crunch2.wav", "crunch3.wav", "crunch4.wav"].map(fileName => {
+//     return createAudio(fileName)
+// })
 
 function createAudio(fileName, {
     loop = false,
@@ -62,12 +82,67 @@ function createAudio(fileName, {
     audio.volume = volume
     return audio
 }
-
-let bg_music_init = false
-let bg_music = createAudio("background.mp3", {
-    loop: true,
-    volume: 0.5
+AudioLoop.setBaseURL('./sounds/')
+new AudioLoop({
+    file: 'background/ambient-underwater.wav',
+    gain: 1,
+    reverb: 1,
+    decay: 2,
 })
+
+const [WOOSHES, VELOCITY] = buildWooshes({
+    'LEFT_WRIST': 'loop.wav',
+    'RIGHT_WRIST': 'loop.wav',
+    'RIGHT_HEEL': 'loop.wav',
+    'LEFT_HEEL': 'loop.wav',
+}, {
+    gain: 0,
+    reverb: 0.6,
+    decay: 2,
+    pitch: -2,
+})
+
+const NOISES = [
+    "underwater/small-2.wav",
+    "underwater/small-1.wav",
+    "underwater/deep-4.wav",
+    "underwater/medium-1.wav",
+    "underwater/medium-2.wav",
+    "underwater/medium-3.wav",
+    "underwater/medium-4.wav",
+    "underwater/medium-5.wav",
+    "underwater/medium-6.wav",
+    "underwater/medium-7.wav",
+    "underwater/medium-8.wav",
+    "underwater/deep-1.wav",
+    "underwater/deep-2.wav",
+    "underwater/deep-3.wav",
+].map(file => {
+    return new AudioTrigger({
+        file,
+        gain: 0.4,
+        reverb: 0.5,
+        decay: 0.2,
+        pitch: -4,
+    })
+})
+
+
+
+
+function randomElement(arr) {
+    const index = Math.floor(Math.random() * arr.length)
+    return arr[index]
+}
+
+// window.onclick = () => {
+//     // randomElement(NOISES).playVariation()
+// }
+// let bg_music_init = false
+// let bg_music = createAudio("background/background.mp3", {
+//     loop: true,
+//     volume: 0.5
+// })
 // bg_music.play()
 
 let SETTINGS = {
@@ -79,7 +154,7 @@ let SETTINGS = {
     offset_x: -.0,
     offset_y: -.06,
     offset_y: -.09,
-   //  offset_z: 0.5,
+    //  offset_z: 0.5,
     offset_z: 0.63
 }
 
@@ -683,8 +758,8 @@ export class App {
         this.camera.rotation.x = 0.58
 
         this.camera.position.y = -3
-       // this.camera.rotation.x = .3
-       // this.camera.zoom *= 2 
+        // this.camera.rotation.x = .3
+        // this.camera.zoom *= 2 
         /* this.camera.rotation.x  */
         /* this.camera.lookAt(rects[0]) */
         this.renderer = new THREE.WebGLRenderer({
@@ -791,11 +866,12 @@ export class App {
                 log("no bueno", handConfidence)
                 if (this.prevState == "bueno") {
                     log("OFF")
-                    for (let pop of pops) {
-                        setTimeout(() => {
-                            pop.play()
 
-                        }, Math.random() * 600 + 100)
+                    let i = 4
+                    while (i--) {
+                        // setTimeout(() => {
+                        randomElement(NOISES).playVariation(randomRange(0.1, 1))
+                        // }, Math.random() * 600 + 100)
                     }
                 }
                 this.prevState = "no bueno"
@@ -813,23 +889,16 @@ export class App {
                 goal = lerp(goal, .3, .1)
                 if (this.prevState == "no bueno") {
                     log("ON")
-                    for (let pop of pops) {
-                        for (let i = 0; i < 120 * Math.random(); i++) {
-                            let bubble_cb = () => {
-                                setTimeout(() => {
-                                    pop.volume = Math.random() * .5 + .2
-                                    pop.volume *= 0.1
-                                    pop.play()
-
-                                }, Math.random() * 7500 + 333)
-                            }
-                            bubble_cb()
-                        }
+                    let i = 20
+                    while (i--) {
+                        // for (let i = 0; i < 120 * Math.random(); i++) {
+                        randomElement(NOISES).playVariation(randomRange(0.3, 5))
+                        // }
                     }
-                    if (!bg_music_init) {
-                        bg_music.play()
-                        bg_music_init = true
-                    }
+                    // if (!bg_music_init) {
+                    //     bg_music.play()
+                    //     bg_music_init = true
+                    // }
                 }
                 this.prevState = "bueno"
                 this.boid_handler.app.set_boid_goal_weight(goal)
@@ -943,6 +1012,9 @@ export class App {
         }
         render()
 
+        console.log(WOOSHES, VELOCITY)
+        // const VELOCITY = Object.keys(WOOSHES)
+
         mediaPipe.on('pose', async (event) => {
             if (!this.boid_handler.app) return
 
@@ -958,6 +1030,13 @@ export class App {
                 results.poseLandmarks = this.makeFakeTrackers(results.poseLandmarks)
                 handConfidence = Math.min(handConfidence + 6, 100)
             }
+
+            Object.keys(WOOSHES).forEach((key) => {
+                const pos = event.data.skeletonNormalized[key]
+                const velocity = VELOCITY[key].update(pos)
+                WOOSHES[key].woosh(velocity * 2)
+            })
+
 
             /* this.hands.setOptions({
                 maxNumHands: 1,
@@ -1142,7 +1221,7 @@ window.onresize = () => {
         app.camera.aspect = window.innerWidth / window.innerHeight
         app.camera.updateProjectionMatrix()
         app.renderer.setSize(window.innerWidth, window.innerHeight)
-        
+
         app.renderer.domElement.width = window.innerWidth
         app.renderer.domElement.height = window.innerHeight
 
@@ -1167,4 +1246,19 @@ function buildLines(points, landmarks) {
         PointLines.push(geoPoints)
     }
     return PointLines
+}
+
+function buildWooshes(sounds, options) {
+    const wooshes = {}
+    const velocity = {}
+    Object.entries(sounds).forEach(([key, file]) => {
+        velocity[key] = new Velocity()
+        const woosh = new AudioLoop({
+            file,
+            cooldown: 8,
+            ...options
+        })
+        wooshes[key] = woosh
+    })
+    return [wooshes, velocity]
 }

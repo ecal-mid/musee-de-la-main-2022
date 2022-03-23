@@ -84,6 +84,7 @@ AudioPlayer.setBaseURL('./sounds/')
 const SOUNDS = {
   typo: new AudioLoop({
     file: 'stretch_typo.mp3',
+    gain: 0,
     loopStart: 0.10000,
     loopEnd: 0.39989
   }),
@@ -94,6 +95,7 @@ const SOUNDS = {
     file: 'switch_click02.mp3',
   }),
   progress: new AudioLoop({
+    gain: 0,
     file: 'progress.wav',
     // gain: 1,
     // loopStart: 0.01,
@@ -196,7 +198,7 @@ function changeState(param) {
   //
   prevLevel = level;
 
-  SOUNDS.click1.trigger()
+  SOUNDS.click1.play()
 
   // Après le temps
   setTimeout(() => {
@@ -210,7 +212,7 @@ function changeState(param) {
     oldDownBox?.remove();
 
     document.body.style.filter = "none";
-    SOUNDS.click2.trigger()
+    SOUNDS.click2.play()
   }, transitionTime);
 }
 

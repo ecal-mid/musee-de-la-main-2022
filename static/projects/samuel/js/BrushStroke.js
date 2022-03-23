@@ -17,6 +17,7 @@ export class BrushStroke {
       file: 'crystal-wine.wav',
       loopEnd: 30,
       pitch: -32,
+      gain: 0,
       volume: -100,
     })
 

@@ -5,8 +5,8 @@
   "main": "config.js",
   "scripts": {
     "serve": "live-server",
-    "chrome:mac:enableaudio": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --auto-open-devtools-for-tabs --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required \"http://127.0.0.1:8080\"",
-    "dev": "concurrently \"npm run --silent serve\" \"npm run --silent chrome:mac:enableaudio\""
+    "chrome:mac:dev": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --auto-open-devtools-for-tabs --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required \"http://127.0.0.1:8080\"",
+    "dev": "concurrently \"npm run --silent serve\" \"npm run --silent chrome:mac:dev\""
   },
   "keywords": [],
   "author": "",
