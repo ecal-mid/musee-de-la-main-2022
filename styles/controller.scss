@@ -258,6 +258,7 @@ body {
           > img {
             @include fullAbsolute;
             object-fit: cover;
+            object-position: center top;
           }
         }
 
