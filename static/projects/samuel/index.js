@@ -61,10 +61,10 @@ window.setup = function() {
 
 }
 
-function transformMirror(ctx = drawingContext) {
+function transformMirror(ctx = drawingContext, w = width) {
   if (mediaPipe.mirrored) {
     ctx.scale(-1, 1)
-    ctx.translate(-width, 0)
+    ctx.translate(-w, 0)
   }
 }
 
@@ -85,7 +85,6 @@ window.draw = function() {
   push()
 
   if (captures.length > 0) {
-    transformMirror()
     drawingContext.putImageData(captures[0], 0, 0)
   }
 
@@ -127,8 +126,11 @@ function updatePoints() {
 }
 
 function updateWebcamBuffer() {
-
+  videoCtx.save()
+  transformMirror(videoCtx, videoCanvas.width)
   videoCtx.drawImage(mediaPipe.video, 0, 0)
+
+  videoCtx.restore()
   const pixels = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height)
 
   while (captures.length > maxCaptures) {
@@ -156,9 +158,11 @@ function drawMaskLayer() {
 
   ctx.globalCompositeOperation = blendmode
 
+  ctx.save()
   transformMirror(ctx)
-
+  
   ctx.drawImage(mediaPipe.video, 0, 0, width, height)
+  ctx.restore()
 
   ctx.globalCompositeOperation = "source-over"
 

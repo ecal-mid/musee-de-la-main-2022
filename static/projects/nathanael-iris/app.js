@@ -85,7 +85,7 @@ function createAudio(fileName, {
 AudioLoop.setBaseURL('./sounds/')
 new AudioLoop({
     file: 'background/ambient-underwater.wav',
-    gain: 1,
+    gain: 0.8,
     reverb: 1,
     decay: 2,
 })
@@ -120,7 +120,7 @@ const NOISES = [
 ].map(file => {
     return new AudioTrigger({
         file,
-        gain: 0.1,
+        gain: 0.2,
         reverb: 0.5,
         decay: 0.2,
         pitch: -4,
@@ -891,7 +891,7 @@ export class App {
                 goal = lerp(goal, .3, .1)
                 if (this.prevState == "no bueno") {
                     log("ON")
-                    let i = 20
+                    let i = 8
                     while (i--) {
                         // for (let i = 0; i < 120 * Math.random(); i++) {
                         randomElement(NOISES).playVariation(randomRange(2, 10))
