@@ -4,12 +4,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
+      content="black"
     />
     <meta name="apple-mobile-web-app-title" content="Notentool" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="apple-touch-icon" href="~/assets/logo167.png" />
     <link rel="manifest" href="~/assets/manifest.json" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>ECAL Controller</title>
     <style>
       html,
@@ -48,10 +51,12 @@
 
       function loadFrame() {
         const iframe = document.querySelector('iframe')
-        if (window.navigator.onLine) iframe.src = `./iframe.html?version${Date.now()}`
+        if (window.navigator.onLine)
+          iframe.src = `./iframe.html?version${Date.now()}`
         else {
           //! not working but aint breaking
-          iframe.srcdoc = '<p style="color: white">Offline!<br>Make sure to be connected to the wifi<br>Then restart the ipad</p>'
+          iframe.srcdoc =
+            '<p style="color: white">Offline!<br>Make sure to be connected to the wifi<br>Then restart the ipad</p>'
           iframe.removeAttribute('src')
         }
       }
