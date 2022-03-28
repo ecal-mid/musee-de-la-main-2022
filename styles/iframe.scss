@@ -11,6 +11,20 @@ body {
   cursor: none;
 }
 
+body::after {
+  pointer-events: none;
+  content: '';
+  position: absolute;
+  width:100%;
+  height:22px;
+  top: -11px;
+  left: 0;
+  transform-origin: center top;
+  transform: rotate(-0.1deg);
+  background-color: black;
+  z-index: 1000;
+}
+
 .iframe {
   position: absolute;
   top: 0;

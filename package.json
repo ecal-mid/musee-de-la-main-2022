@@ -50,7 +50,7 @@
     "storage": "node server/storage.js",
     "click": "node server/clicker.cjs",
     "clean": "rimraf ./dist && rimraf \".parcel-cache\"",
-    "chrome:kiosk": "start chrome --kiosk http://localhost:1575/pages/Screen/index.html --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required --allow-insecure-localhost",
+    "chrome:kiosk": "start chrome --kiosk http://localhost:1575/pages/Screen/index.html --new-window --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required --allow-insecure-localhost",
     "chrome:dev": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --app=http://localhost:1575/ --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required",
     "dev": "npm run clean && concurrently --kill-others \"npm run server:watch\" \"npm run storage\" \"npm run parcel:watch\"",
     "backend": "concurrently \"npm run server\" \"npm run storage\"",
