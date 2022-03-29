@@ -27,6 +27,7 @@ class App {
   constructor({ width, height, video }) {
     this.mode = 2; // 1 tracking | 2 moving camera
     this.debugMode = true;
+    
     this.container, this.stats, this.clock, this.loader;
 
     this.mixers = [];
@@ -54,19 +55,14 @@ class App {
       z: [-5, -5],
     };
 
-    // this.cameraRange = {
-    //   x: [-4, 4],
-    //   y: [8, 14],
-    //   z: [-12, -12],
-    // };
-
-    // this.camPos = { x: 0, y: -1, z: -35 };
     this.camPos = {
       x: this.average(this.cameraRange.x),
       y: this.average(this.cameraRange.y),
       z: this.average(this.cameraRange.z),
     };
+
     this.camRot = { x: 3.14, y: 0, z: -3.14 };
+
     this.tracker = {
       x: this.average(this.cameraRange.x),
       y: this.average(this.cameraRange.y),
@@ -75,6 +71,7 @@ class App {
     this.skeleton;
     this.smoother;
     this.limitCounter = 0;
+    this.distance = 1.5;
 
     this.lightPrimary;
     this.lightSecondary;
@@ -134,10 +131,6 @@ class App {
 
     this.addListeners();
 
-    // this.toggle = document.getElementById("switch");
-    // this.toggle.addEventListener('change', ()=>{
-    //   this.toggleMode()
-    // })
     this.toggleMode();
   }
 
@@ -465,33 +458,59 @@ class App {
 
     // console.log(distance);
 
+    const extrem = this.cameraRangeExtreme;
+
     for (let d in this.cameraRange) {
       const lRange = this.cameraRange[d];
-      // console.log(range);
-      const extrem = this.cameraRangeExtreme;
+      //  console.log(d);
 
       lRange.forEach((value, index) => {
         lRange[index] = this.limit(
           this.map(
             this.distance,
-            1,
-            2,
+            // 1,2, // real value
+            3,
+            2, //fake
             extrem.min[d][index],
             extrem.max[d][index]
           ),
-          extrem.min[d][index],
-          extrem.max[d][index]
+          extrem.max[d][index],
+          extrem.min[d][index]
         );
+
+        // lRange[index] = this.map(
+        //   this.distance,
+        //   2,
+        //   1,
+        //   extrem.min[d][index],
+        //   extrem.max[d][index]
+        // );
+
+        if (d == "z") {
+          // console.log(lRange[index]);
+          // console.log(extrem.min[d][index], extrem.max[d][index]);
+        }
       });
     }
 
+    // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.1);
+    this.camPos.z = this.cameraRange.z[0];
+    this.ambiantSound.volume = this.limit(
+      this.map(this.distance, 2, 3, 0, 1),
+      0,
+      1
+    );
+
     // console.log(this.cameraRange.z);
-    const limit = this.cameraRangeExtreme;
-    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
+
     // console.log(this.camPos.z);
   }
 
-  limit(value, min, max) {
+  limit(value, b1, b2) {
+    const min = b1 > b2 ? b2 : b1;
+    const max = min == b1 ? b2 : b1;
+    // console.log(min, max);
+
     if (value > max) {
       return max;
     } else if (value < min) {
@@ -607,7 +626,7 @@ class App {
 
     /*
     // Experimentation with Z axis-position
-    // --SPOIL-- it doesn't work as we expected link below
+    // --SPOIL-- it doesn't work as we expecteda, as describre in the link below
     // https://developers.google.com/ml-kit/vision/pose-detection
 
     const extrem = {
@@ -653,7 +672,11 @@ class App {
       this.checkHitBox();
     }
 
-    this.distance = this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL);
+    this.distance = this.lerp(
+      this.distance,
+      this.roundx(this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL), 1),
+      0.07
+    );
     // this.moveCamera(pose.NOSE, distance);
 
     this.moveCameraWithHands(); // left hand
@@ -747,6 +770,11 @@ class App {
 
   round2(number) {
     return Math.round(number * 100) / 100;
+  }
+
+  roundx(number, x) {
+    const multiplier = Math.pow(10, x);
+    return Math.round(number * multiplier) / multiplier;
   }
 
   drawHands() {

@@ -111,3 +111,22 @@ dist
 
 storage/*
 !/storage/.gitkeep
+static/projects/elodie-soraya/sounds/leaf_10.mp3
+static/projects/elodie-soraya/sounds/leaf_09.mp3
+static/projects/elodie-soraya/sounds/leaf_08.mp3
+static/projects/elodie-soraya/sounds/leaf_07.mp3
+static/projects/elodie-soraya/sounds/leaf_06.mp3
+static/projects/elodie-soraya/sounds/leaf_05.mp3
+static/projects/elodie-soraya/sounds/leaf_04.mp3
+static/projects/elodie-soraya/sounds/leaf_03.mp3
+static/projects/elodie-soraya/sounds/leaf_02.mp3
+static/projects/elodie-soraya/sounds/leaf_01.mp3
+static/projects/elodie-soraya/sounds/bush_09.mp3
+static/projects/elodie-soraya/sounds/bush_07.mp3
+static/projects/elodie-soraya/sounds/bush_06.mp3
+static/projects/elodie-soraya/sounds/bush_05.mp3
+static/projects/elodie-soraya/sounds/bush_04.mp3
+static/projects/elodie-soraya/sounds/bush_03.mp3
+static/projects/elodie-soraya/sounds/bush_02.mp3
+static/projects/elodie-soraya/sounds/bush_01.mp3
+static/projects/elodie-soraya/sounds/cricket-close-recording.wav
