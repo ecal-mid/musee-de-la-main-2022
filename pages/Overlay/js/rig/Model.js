@@ -132,6 +132,7 @@ export default class Model {
 
         this.constructor.extractClips(model, (animation, index) => {
             const name = names[index]
+            // console.log(animation, name);
             if (!name) return
             animation.name = name
             this.actions[name] = this.mixer.clipAction(animation)

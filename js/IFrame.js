@@ -10,10 +10,11 @@ export default class IFrame {
       iFrameMessage: this.onIFrameMessage.bind(this),
     }
     this.overlay = document.getElementById("overlay")
+    this.projectId = null
 
     this.overlay.addEventListener('transitionend', (event) => {
       // console.log(event);
-      // if (this.overlay.classList.contains('hide')) this.overlay.src = this.overlay.src //! refresh overlay when hidden
+      if (this.overlay.classList.contains('hide') && this.projectId === 1) this.overlay.src = this.overlay.src //! refresh overlay when hidden
     })
 
     this.frame = document.getElementById("frame")
@@ -79,6 +80,9 @@ export default class IFrame {
       this.frame.classList.add('hide')
     })
     // send info to iFrame
+
+    this.projectId = id
+
     this.messageOverlay("changeproject", { id, project })
 
   }

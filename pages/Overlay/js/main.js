@@ -78,14 +78,14 @@ const SOUNDS = {
     }),
     matrix: new AudioTrigger({
         file: 'matrix-glitch.wav',
-        gain: 0.2,
+        gain: 0.4,
         reverb: 1,
         // decay: 0.2,
         pitch: -4,
     }),
     matrixEnabled: new AudioTrigger({
         file: 'matrix-mirror.wav',
-        gain: 0.2,
+        gain: 0.4,
         reverb: 1,
         // decay: 0.2,
         pitch: -4,
@@ -165,8 +165,10 @@ const clips = {
     'basemesh-idle-uv.fbx': ['idle'],
     'basemesh-jump-uv.fbx': ['jump'],
     'basemesh-rumba.fbx': ['rumba'],
-
+    'basemesh-backflip.fbx': ['backflip'],
     "silly-dancing.fbx": ['silly'],
+    "basemesh-waving.fbx": ['waving'],
+    "basemesh-hiphop.fbx": ['hiphop'],
     "opening.fbx": ['opening'],
     "pointing.fbx": ['pointing'],
     "salsa-dancing.fbx": ['salsa'],
@@ -386,7 +388,7 @@ async function init(canvas, width, height) {
 
         TEXT_CONSOLE.project.setAttributes({ textContent: `${project.title}` })
 
-        const clipName = random(['rumba', 'rumba', 'silly', 'pointing'])
+        const clipName = random(['backflip', 'rumba', 'silly', 'pointing', 'waving', 'hiphop'])
         model?.play(clipName)
         TITLE_MODE = false
 
