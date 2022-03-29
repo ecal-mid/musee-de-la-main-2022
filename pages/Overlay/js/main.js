@@ -54,7 +54,7 @@ AudioPlayer.setBaseURL('/overlay/sounds/')
 const SOUNDS = {
     typo: new AudioLoop({
         file: 'ambient-1.mp3',
-        gain: 0.3,
+        gain: 0.2,
         volume: -8,
         // reverb: 1,
         //     loopStart: 0.10000,

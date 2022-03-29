@@ -90,6 +90,13 @@ new AudioLoop({
     decay: 2,
 })
 
+new AudioLoop({
+    file: 'background/background.mp3',
+    gain: 0.4,
+    reverb: 1,
+    decay: 2,
+})
+
 const [WOOSHES, VELOCITY] = buildWooshes({
     'LEFT_WRIST': 'loop-2.wav',
     'RIGHT_WRIST': 'loop.wav',
@@ -120,7 +127,7 @@ const NOISES = [
 ].map(file => {
     return new AudioTrigger({
         file,
-        gain: 0.2,
+        gain: 0.6,
         reverb: 0.5,
         decay: 0.2,
         pitch: -4,
