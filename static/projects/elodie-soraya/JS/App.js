@@ -27,7 +27,7 @@ class App {
   constructor({ width, height, video }) {
     this.mode = 2; // 1 tracking | 2 moving camera
     this.debugMode = false;
-    
+
     this.container, this.stats, this.clock, this.loader;
 
     this.mixers = [];
@@ -73,7 +73,7 @@ class App {
     this.limitCounter = 0;
     // this.distance = 0.7;
     this.distanceXtm = [0.2, 0.5];
-    this.distance = this.average(this.distanceXtm)
+    this.distance = this.average(this.distanceXtm);
     this.lightPrimary;
     this.lightSecondary;
     this.lightIntensity1 = 0.01;
@@ -102,7 +102,7 @@ class App {
     this.composer;
 
     //! sound
-    this.ambiantSound = new Audio("./sounds/forest_long_loop.mp3");
+    this.ambiantSound = new Audio("./sounds/loop.mp3");
     this.ambiantSound.loop = true;
     this.ambiantSound.oncanplay = this.ambiantSound.play;
 
@@ -469,7 +469,8 @@ class App {
         lRange[index] = this.limit(
           this.map(
             this.distance,
-            this.distanceXtm[1],this.distanceXtm[0], // real value
+            this.distanceXtm[1],
+            this.distanceXtm[0], // real value
             // 3,2, //fake
             extrem.min[d][index],
             extrem.max[d][index]
@@ -496,7 +497,7 @@ class App {
     // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.1);
     this.camPos.z = this.cameraRange.z[0];
     this.ambiantSound.volume = this.limit(
-      this.map(this.distance,  this.distanceXtm[0],this.distanceXtm[1], 0, 1),
+      this.map(this.distance, this.distanceXtm[0], this.distanceXtm[1], 0, 1),
       0,
       1
     );
@@ -513,7 +514,7 @@ class App {
 
     if (value > max) {
       return max;
-    } else if (value < min) { 
+    } else if (value < min) {
       return min;
     } else {
       return value;
@@ -678,7 +679,7 @@ class App {
       0.1
     );
 
-    // this.distance = 
+    // this.distance =
     //   this.roundx(this.dist(pose.LEFT_SHOULDER, pose.RIGHT_SHOULDER),2);
     // this.moveCamera(pose.NOSE, distance);
 
