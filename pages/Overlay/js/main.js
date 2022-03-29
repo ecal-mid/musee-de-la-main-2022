@@ -9,7 +9,9 @@ import '../styles/main.scss'
 
 //* node_modules
 import { MediaPipeSmoothPose, MediaPipeClient } from '~/local_modules/@ecal-mid/mediapipe'
+import { AudioTrigger, AudioLoop, AudioPlayer } from '~/js/Audio'
 import * as THREE from 'three'
+import * as Tone from 'tone'
 
 import { CSS3DRenderer, CSS3DObject, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer.js'
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
@@ -38,13 +40,56 @@ const RENDERER = {}
 let scene, sceneBack, camera, composer
 let control, dot, orbit
 let model, skeletonRemapper
+let someoneTimeout
 
-console.log('INIT Overlay');
+console.log('INIT Overlay')
 
 // let TEXT_CONSOLE.project = new Text({ text: '' })
 
 const CONSOLES_3D = {
     head: null
+}
+
+AudioPlayer.setBaseURL('/overlay/sounds/')
+const SOUNDS = {
+    typo: new AudioLoop({
+        file: 'ambient-1.mp3',
+        gain: 0.3,
+        volume: -8,
+        // reverb: 1,
+        //     loopStart: 0.10000,
+        //     loopEnd: 0.39989
+    }),
+    disabled: new AudioTrigger({
+        file: 'descent.mp3',
+        gain: 0.2,
+        reverb: 1,
+        // decay: 0.2,
+        pitch: -4,
+    }),
+
+    enabled: new AudioTrigger({
+        file: 'laser.mp3',
+        gain: 0.2,
+        reverb: 1,
+        // decay: 0.2,
+        pitch: -4,
+
+    }),
+    matrix: new AudioTrigger({
+        file: 'matrix-glitch.wav',
+        gain: 0.2,
+        reverb: 1,
+        // decay: 0.2,
+        pitch: -4,
+    }),
+    matrixEnabled: new AudioTrigger({
+        file: 'matrix-mirror.wav',
+        gain: 0.2,
+        reverb: 1,
+        // decay: 0.2,
+        pitch: -4,
+    }),
 }
 
 const TEXT_CONSOLE = {
@@ -315,7 +360,7 @@ async function init(canvas, width, height) {
     // grids
     GRID.fineGrid = new CustomGridHelper(1000, 60, new THREE.Color(0.2, 0.2, 0.2), 0x111111, 3000)
     GRID.grid = new CustomGridHelper(1000, 10, new THREE.Color(0, 0.5, 0.3), new THREE.Color(0.2, 0.2, 0.2), 200)
-    GRID.grid.position.y = 1;
+    GRID.grid.position.y = 1
     scene.add(GRID.fineGrid)
     scene.add(GRID.grid)
 
@@ -328,7 +373,10 @@ async function init(canvas, width, height) {
         // console.log(project)
 
         consoles.loading.setVisibility(true)
+
         consoles.splash.setVisibility(false)
+        SOUNDS.enabled.playVariation()
+
         consoles.instruction.setVisibility(false)
 
         consoles.loading.addEntry(new TextLoading({
@@ -346,18 +394,25 @@ async function init(canvas, width, height) {
 
     BUS.addEventListener('showtitle', () => {
         model?.play('idle', { loop: true })
+
         consoles.loading.setVisibility(false)
+
         consoles.splash.setVisibility(true, 500)
+
         TITLE_MODE = true
     })
 
     BUS.addEventListener('pause', () => {
+        Tone.getDestination().volume.rampTo(-Infinity, 2)
         pause()
     })
 
     BUS.addEventListener('hide', () => {
         consoles.loading.setVisibility(false)
+
         consoles.splash.setVisibility(false)
+        SOUNDS.disabled.playVariation()
+
         model.setVisibility(false)
 
         GRID.grid.appear(false)
@@ -365,8 +420,11 @@ async function init(canvas, width, height) {
         showOverlay(false)
     })
 
+    Tone.getDestination().volume.value = CONFIG.volume
+
     BUS.addEventListener('resume', () => {
         // console.log('YWEAFGBSG')
+        Tone.getDestination().volume.rampTo(CONFIG.volume, 0.5)
         resume()
         GRID.grid.appear(true)
         GRID.fineGrid.appear(true, 500)
@@ -381,8 +439,29 @@ async function init(canvas, width, height) {
 
     mediaPipe.on('pose', (event) => {
         // smootherN.target(event.data.skeletonNormalized)
+        let currSomeone = Boolean(event.data.skeleton)
 
-        someone = Boolean(event.data.skeleton)
+        if (currSomeone !== someone) {
+
+            toggleRandomDances(!someone)
+
+            clearTimeout(someoneTimeout)
+            someoneTimeout = setTimeout(e => {
+                if (someone) {
+                    SOUNDS.typo.setVolume(0, 1)
+                    SOUNDS.typo.setReverb(1, 1)
+                    SOUNDS.matrixEnabled.playVariation()
+                }
+                else {
+                    SOUNDS.typo.setVolume(-8, 3)
+                    SOUNDS.typo.setReverb(0, 3)
+                    SOUNDS.matrix.playVariation()
+                }
+            }, 150)
+        }
+
+        someone = currSomeone
+
 
 
         // GRID.grid.appear(!someone)
@@ -398,9 +477,9 @@ async function init(canvas, width, height) {
 
     // appear
 
-    await delay(2000);
+    await delay(2000)
     GRID.grid.appear(true)
-    await delay(1000);
+    await delay(1000)
     GRID.fineGrid.appear(true)
 }
 
@@ -408,6 +487,25 @@ function resizeRenderer() {
     const { innerHeight, innerWidth } = window
     RENDERER.cssFront.setSize(innerWidth, innerHeight)
     RENDERER.cssBack.setSize(innerWidth, innerHeight)
+}
+
+let danceTimeout
+
+function toggleRandomDances(enabled) {
+    return
+
+    clearTimeout(danceTimeout)
+
+    if (enabled) {
+        model.play('idle')
+        return
+    }
+
+    danceTimeout = setTimeout(() => {
+        model.play('idle')
+
+        toggleRandomDances(true)
+    }, random(15, 60) * 1000)
 }
 
 function resume() {
@@ -431,11 +529,11 @@ function showOverlay(visible) {
     visible ? classList.remove('hidden') : classList.add('hidden')
 
     container.ontransitionend = (event) => {
-        if (event.target !== container) return;
+        if (event.target !== container) return
 
         const isHidden = classList.contains('hidden')
 
-        if (!isHidden) return;
+        if (!isHidden) return
         BUS.emit('pause')
     }
 }

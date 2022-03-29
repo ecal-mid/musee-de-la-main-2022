@@ -19,6 +19,7 @@
     "robotjs": "^0.6.0",
     "three": "^0.138.3",
     "three-spritetext": "^1.6.5",
+    "tone": "^14.7.77",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2"
   },
@@ -51,7 +52,8 @@
     "click": "node server/clicker.cjs",
     "clean": "rimraf ./dist && rimraf \".parcel-cache\"",
     "chrome:kiosk": "start chrome --kiosk http://localhost:1575/pages/Screen/index.html --new-window --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required --allow-insecure-localhost",
-    "chrome:dev": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --app=http://localhost:1575/ --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required",
+    "chrome:dev": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --new-window --auto-open-devtools-for-tabs \"http://localhost:1234/\" --use-fake-ui-for-media-stream --autoplay-policy=no-user-gesture-required",
+    "dev:overlay": "concurrently \"npm run parcel:serve\" \"npm run --quiet chrome:dev\"",
     "dev": "npm run clean && concurrently --kill-others \"npm run server:watch\" \"npm run storage\" \"npm run parcel:watch\"",
     "backend": "concurrently \"npm run server\" \"npm run storage\"",
     "expo": "npm run clean && concurrently \"npm run parcel:build\" && npm run chrome:kiosk & concurrently \"npm run click\" \"npm run backend\""

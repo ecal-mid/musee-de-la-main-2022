@@ -6,6 +6,7 @@ export default {
         bloomThreshold: 0,
         bloomRadius: 0
     },
+    volume: 0,
     transitionDelay: 3000,
     centerZ: 0.25,
     //centerZ: 0.5,
