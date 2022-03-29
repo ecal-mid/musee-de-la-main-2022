@@ -26,7 +26,7 @@ let MIRRORED = 1; // or -1
 class App {
   constructor({ width, height, video }) {
     this.mode = 2; // 1 tracking | 2 moving camera
-    this.debugMode = true;
+    this.debugMode = false;
     
     this.container, this.stats, this.clock, this.loader;
 
@@ -71,8 +71,9 @@ class App {
     this.skeleton;
     this.smoother;
     this.limitCounter = 0;
-    this.distance = 1.5;
-
+    // this.distance = 0.7;
+    this.distanceXtm = [0.2, 0.5];
+    this.distance = this.average(this.distanceXtm)
     this.lightPrimary;
     this.lightSecondary;
     this.lightIntensity1 = 0.01;
@@ -468,9 +469,8 @@ class App {
         lRange[index] = this.limit(
           this.map(
             this.distance,
-            // 1,2, // real value
-            3,
-            2, //fake
+            this.distanceXtm[1],this.distanceXtm[0], // real value
+            // 3,2, //fake
             extrem.min[d][index],
             extrem.max[d][index]
           ),
@@ -496,7 +496,7 @@ class App {
     // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.1);
     this.camPos.z = this.cameraRange.z[0];
     this.ambiantSound.volume = this.limit(
-      this.map(this.distance, 2, 3, 0, 1),
+      this.map(this.distance,  this.distanceXtm[0],this.distanceXtm[1], 0, 1),
       0,
       1
     );
@@ -513,7 +513,7 @@ class App {
 
     if (value > max) {
       return max;
-    } else if (value < min) {
+    } else if (value < min) { 
       return min;
     } else {
       return value;
@@ -674,9 +674,12 @@ class App {
 
     this.distance = this.lerp(
       this.distance,
-      this.roundx(this.dist3D(pose.LEFT_SHOULDER, pose.RIGHT_HEEL), 1),
-      0.07
+      this.roundx(this.dist(pose.LEFT_SHOULDER, pose.RIGHT_SHOULDER), 2),
+      0.1
     );
+
+    // this.distance = 
+    //   this.roundx(this.dist(pose.LEFT_SHOULDER, pose.RIGHT_SHOULDER),2);
     // this.moveCamera(pose.NOSE, distance);
 
     this.moveCameraWithHands(); // left hand
