@@ -74,6 +74,11 @@ class App {
     // this.distance = 0.7;
     this.distanceXtm = [0.2, 0.5];
     this.distance = this.average(this.distanceXtm);
+    this.lastAngle = 0;
+    this.lastPos = {
+      x: 0,
+      y: 0,
+    };
     this.lightPrimary;
     this.lightSecondary;
     this.lightIntensity1 = 0.01;
@@ -106,8 +111,12 @@ class App {
     this.ambiantSound.loop = true;
     this.ambiantSound.oncanplay = this.ambiantSound.play;
 
-    this.soundEffectLeft = new Audio("./sounds/forest_short_left.mp3");
-    this.soundEffectRight = new Audio("./sounds/forest_short_right.mp3");
+    this.sounds = [];
+
+    // a loop loading a new Audio object for 10 sounds and push it in this.sounds
+    for (let i = 0; i < 10; i++) {
+      this.sounds.push(new Audio(`./sounds/bush/${i}.mp3`));
+    }
 
     //! mediapipe
     this.skeleton = new Skeleton();
@@ -331,7 +340,7 @@ class App {
     //permet de debug les hitbox en utilisant les touches 1 à 6
     //touche 1
 
-    console.log(e.key);
+    // console.log(e.key);
 
     const usedNumber = [1, 2, 3, 4, 5, 6];
     const number = parseFloat(e.key);
@@ -361,11 +370,10 @@ class App {
         .to({ z: this.camPos.z - 1 }, duration)
         .easing(easing)
         .start();
+    } else if (e.key == "ArrowLeft") {
+      // this.sounds[0].play();
     }
-    // else if (e.key == "ArrowLeft") {
-    //   this.limitCounter++;
-    //   console.log(this.boundary(this.limitCounter, -5, 5));
-    // } else if (e.key == "ArrowRight") {
+    // else if (e.key == "ArrowRight") {
     //   this.limitCounter--;
     //   console.log(this.boundary(this.limitCounter, -5, 5));
     // }
@@ -403,61 +411,44 @@ class App {
   }
 
   moveCameraWithHands() {
-    // const distance = this.map(this.distance, 5, 1, 0, 1);
-    const hand = this.hands.left;
+    const hand = this.hands.left; // actually with mirror in the exhibition this the RIGHT hand
+
     // docu for animation curve
     // https://sbcode.net/threejs/tween/
     let easing = TWEEN.Easing.Sinusoidal.InOut;
 
     const range = this.cameraRange;
-    // console.log(range.z);
+    const h = this.hands.left.position;
 
     if (hand.visible) {
       const togo = {
-        x: this.limit(
-          this.map(hand.position.x, 0, 1, range.x[0], range.x[1]),
-          range.x[0],
-          range.x[1]
-        ),
-        y: this.limit(
-          this.map(hand.position.y, 1, 0, range.y[0], range.y[1]),
-          range.y[0],
-          range.y[1]
-        ),
+        x: this.map(h.x, 0, 1, range.x[0], range.x[1]),
+        y: this.map(h.y, 0, 1, range.y[1], range.y[0]),
       };
 
       const amount = 0.05;
-      // this.tracker.x = this.lerp(this.tracker.x, togo.x,amount);
-      // this.tracker.y = this.lerp(this.tracker.y, togo.y,amount);
-
-      const duration = 100;
-
-      //     var tweenCamPosition = new TWEEN.Tween(this.camPos)
-      //         .to({  x:this.tracker.x ,y: this.tracker.y}, duration)
-      //         .easing(easing)
-      //         .start();
-      // }
-
-      const h = this.hands.left.position;
-
-      this.camPos.x = this.lerp(
-        this.camPos.x,
-        this.map(h.x, 0, 1, range.x[0], range.x[1]),
-        amount
-      );
-      this.camPos.y = this.lerp(
-        this.camPos.y,
-        this.map(h.y, 0, 1, range.y[1], range.y[0]),
-        amount
-      );
+      this.camPos.x = this.lerp(this.camPos.x, togo.x, amount);
+      this.camPos.y = this.lerp(this.camPos.y, togo.y, amount);
 
       // var tweenCamPosition = new TWEEN.Tween(this.camPos)
       //   .to({ x: togo.x, y: togo.y }, duration)
       //   .easing(easing)
       //   .start();
-    }
+      this.deltaDist = Math.abs(this.dist(this.camPos, togo));
 
-    // console.log(distance);
+      // console.log(this.round2(this.dist(h, this.lastPos)));
+      if (this.dist(h, this.lastPos) > 0.05) {
+        if (this.checkDirectionChange(this.lastPos, h)) {
+          //play a random sound frotm the array sounds
+
+          this.sounds[Math.floor(Math.random() * this.sounds.length)].play();
+
+          console.log("suppose to play sound");
+        }
+      }
+
+      this.lastPos = h;
+    }
 
     const extrem = this.cameraRangeExtreme;
 
@@ -478,19 +469,6 @@ class App {
           extrem.max[d][index],
           extrem.min[d][index]
         );
-
-        // lRange[index] = this.map(
-        //   this.distance,
-        //   2,
-        //   1,
-        //   extrem.min[d][index],
-        //   extrem.max[d][index]
-        // );
-
-        if (d == "z") {
-          // console.log(lRange[index]);
-          // console.log(extrem.min[d][index], extrem.max[d][index]);
-        }
       });
     }
 
@@ -501,10 +479,21 @@ class App {
       0,
       1
     );
+  }
 
-    // console.log(this.cameraRange.z);
+  checkDirectionChange(p1, p2) {
+    // calculate the angle between the points p1 and p2
+    // console.log(p1, p2);
+    const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    // console.log(angle);
+    // if the differece between the current angle and the last angle is more than 0.1 radians return true
+    if (Math.abs(this.lastAngle - angle) > 2) {
+      return true;
+    } else {
+      return false;
+    }
 
-    // console.log(this.camPos.z);
+    this.lastAngle = angle;
   }
 
   limit(value, b1, b2) {
@@ -625,7 +614,8 @@ class App {
     //points map and name
     //https://google.github.io/mediapipe/images/mobile/pose_tracking_full_body_landmarks.png
 
-    /*
+    let justawrapper = [
+      /*
     // Experimentation with Z axis-position
     // --SPOIL-- it doesn't work as we expecteda, as describre in the link below
     // https://developers.google.com/ml-kit/vision/pose-detection
@@ -656,18 +646,19 @@ class App {
 
     console.table(extrem);
     console.log("");
-    */
+  */
+    ];
 
     this.hands = {
       left: this.findHandsCenter(pose, "LEFT"),
       right: MIRRORED * this.findHandsCenter(pose, "RIGHT"),
     };
 
-    // for (let hand in this.hands) {
-    //   const h = this.hands[hand];
-    //   console.log(h.position.x);
-    //   h.position.x = 1 - h.position.x;
-    // }
+    for (let hand in this.hands) {
+      // const h = this.hands[hand];
+      // console.log(h.position.x);
+      // h.position.x = 1 - h.position.x;
+    }
 
     if (this.hands != undefined) {
       this.checkHitBox();
@@ -678,10 +669,6 @@ class App {
       this.roundx(this.dist(pose.LEFT_SHOULDER, pose.RIGHT_SHOULDER), 2),
       0.1
     );
-
-    // this.distance =
-    //   this.roundx(this.dist(pose.LEFT_SHOULDER, pose.RIGHT_SHOULDER),2);
-    // this.moveCamera(pose.NOSE, distance);
 
     this.moveCameraWithHands(); // left hand
     this.checkCamPosition();
