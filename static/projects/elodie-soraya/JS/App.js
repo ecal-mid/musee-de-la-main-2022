@@ -26,7 +26,7 @@ let MIRRORED = 1; // or -1
 class App {
   constructor({ width, height, video }) {
     this.mode = 2; // 1 tracking | 2 moving camera
-    this.debugMode = false;
+    this.debugMode = true;
     this.container, this.stats, this.clock, this.loader;
 
     this.mixers = [];
@@ -35,17 +35,6 @@ class App {
     this.plantsMixer = [];
 
     this.cameraRangeExtreme = {
-      // min: {
-      //   x: [-5, 5],
-      //   y: [4, 15],
-      //   z: [-5, -5],
-      // },
-
-      // max: {
-      //   x: [-4, 4],
-      //   y: [8, 14],
-      //   z: [-12, -12],
-      // },
       min: {
         x: [-2, 2],
         y: [8, 14],
@@ -57,14 +46,7 @@ class App {
         y: [10, 11],
         z: [-28, -28],
       },
-      /*max: {
-        x: [-4, 4],
-        y: [8, 14],
-        z: [-26, -12],
-      },*/
     };
-
-    // 0.9 for shoulders
 
     this.cameraRange = {
       x: [-20, 20],
@@ -324,6 +306,7 @@ class App {
       if (this.debugMode) {
         this.skeleton.show(this.ctx, { color: "red" });
 
+        /*
         //grid and number overlay
         this.ctx.strokeStyle = "white";
         this.ctx.lineWidth = 2;
@@ -342,6 +325,7 @@ class App {
         this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
         this.ctx.stroke();
         this.ctx.closePath();
+        */
       }
       if (this.hands != undefined) {
         this.drawHands();
@@ -432,6 +416,7 @@ class App {
     let easing = TWEEN.Easing.Sinusoidal.InOut;
 
     const range = this.cameraRange;
+    // console.log(range.z);
 
     if (hand.visible) {
       const togo = {
@@ -481,28 +466,28 @@ class App {
     // console.log(distance);
 
     for (let d in this.cameraRange) {
-      const range = this.cameraRange[d];
+      const lRange = this.cameraRange[d];
       // console.log(range);
       const extrem = this.cameraRangeExtreme;
 
-      range.forEach((value, index) => {
-        range[index] = this.limit(this.map(
-          this.distance,
-          1,
-          2,
+      lRange.forEach((value, index) => {
+        lRange[index] = this.limit(
+          this.map(
+            this.distance,
+            1,
+            2,
+            extrem.min[d][index],
+            extrem.max[d][index]
+          ),
           extrem.min[d][index],
           extrem.max[d][index]
-        ), extrem.min[d][index], extrem.max[d][index]);
+        );
       });
     }
 
     // console.log(this.cameraRange.z);
     const limit = this.cameraRangeExtreme;
-    this.camPos.z = this.lerp(
-      this.camPos.z,
-      this.cameraRange.z[0],
-      0.07
-    );
+    this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.07);
     // console.log(this.camPos.z);
   }
 
