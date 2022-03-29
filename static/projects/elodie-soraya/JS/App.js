@@ -436,13 +436,18 @@ class App {
       //   .start();
       this.deltaDist = Math.abs(this.dist(this.camPos, togo));
 
-      // console.log(this.round2(this.dist(h, this.lastPos)));
-      if (this.dist(h, this.lastPos) > 0.05) {
+      // console.log((this.dist(h, this.lastPos)));
+      if (this.dist(h, this.lastPos) > 0.01) {
         if (this.checkDirectionChange(this.lastPos, h)) {
           //play a random sound frotm the array sounds
-
-          this.sounds[Math.floor(Math.random() * this.sounds.length)].play();
-
+          let sound = this.sounds[Math.floor(Math.random() * this.sounds.length)];
+          
+          sound.volume = this.limit(
+            this.map(this.distance, this.distanceXtm[0], this.distanceXtm[1], 0.4, 1),
+            0.4,
+            1
+          );
+            sound.play();
           console.log("suppose to play sound");
         }
       }
@@ -475,9 +480,9 @@ class App {
     // this.camPos.z = this.lerp(this.camPos.z, this.cameraRange.z[0], 0.1);
     this.camPos.z = this.cameraRange.z[0];
     this.ambiantSound.volume = this.limit(
-      this.map(this.distance, this.distanceXtm[0], this.distanceXtm[1], 0, 1),
-      0,
-      1
+      this.map(this.distance, this.distanceXtm[0], this.distanceXtm[1], 0.05, 0.8),
+      0.05,
+      0.8
     );
   }
 

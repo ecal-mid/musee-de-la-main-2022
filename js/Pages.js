@@ -86,7 +86,7 @@ export class StudentPage extends Page {
     </div>
     <div class="content">
         <h2 class="title glow">${title}</h2>
-        <h3 class="students glow">${joinList(students)}</h3>
+        <h3 class="students glow">ECAL/${joinList(students)}</h3>
         <p class="description">${description}</p>
         <p class="interaction">${interaction}</p>
     </div>`
