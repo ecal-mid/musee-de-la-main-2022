@@ -41,6 +41,7 @@ let scene, sceneBack, camera, composer
 let control, dot, orbit
 let model, skeletonRemapper
 let someoneTimeout
+let PROJECT_TITLE;
 
 console.log('INIT Overlay')
 
@@ -373,7 +374,8 @@ async function init(canvas, width, height) {
 
     BUS.addEventListener('projectchange', (project) => {
         // console.log(project)
-
+        PROJECT_TITLE = project.title
+        console.log(project)
         consoles.loading.setVisibility(true)
 
         consoles.splash.setVisibility(false)
@@ -434,8 +436,13 @@ async function init(canvas, width, height) {
         showOverlay(true)
     })
 
-    BUS.emit('resume')
-    BUS.emit('showtitle')
+    if (location.hash === '') {
+        BUS.emit('resume')
+        BUS.emit('showtitle')
+    } else {
+        // BUS.emit('pause')
+        showOverlay(false)
+    }
 
     window.addEventListener('resize', resizeRenderer)
 
@@ -525,6 +532,13 @@ function pause() {
     animationFrame = null
 }
 
+// document.querySelector('.visibilityContainer').addEventListener('transitionend', () => {
+//     // const { classList } = container
+//     // if(classList.contains('hidden') && PROJECT_ID === 0) {
+//     //     location.reload();
+//     // }
+// })
+
 function showOverlay(visible) {
     const container = document.querySelector('.visibilityContainer')
     const { classList } = container
@@ -536,6 +550,13 @@ function showOverlay(visible) {
         const isHidden = classList.contains('hidden')
 
         if (!isHidden) return
+
+        if (PROJECT_TITLE === 'Bubble Pool') {
+            location.hash = `#${Date.now()}`
+            location.reload()
+            return;
+        }
+
         BUS.emit('pause')
     }
 }

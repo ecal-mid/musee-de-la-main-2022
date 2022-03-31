@@ -12,10 +12,10 @@ export default class IFrame {
     this.overlay = document.getElementById("overlay")
     this.projectId = null
 
-    this.overlay.addEventListener('transitionend', (event) => {
-      // console.log(event);
-      if (this.overlay.classList.contains('hide') && this.projectId === 1) this.overlay.src = this.overlay.src //! refresh overlay when hidden
-    })
+    // this.overlay.addEventListener('transitionend', (event) => {
+    //   // console.log(event);
+    //   if (this.overlay.classList.contains('hide') && this.projectId === 1) this.overlay.src = this.overlay.src //! refresh overlay when hidden
+    // })
 
     this.frame = document.getElementById("frame")
     this.frame.src = frame.src // force iframe reload
