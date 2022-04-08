@@ -69,6 +69,7 @@ async function setup() {
 
     nobodyCountdown.start(() => {
       frame.sendMessage({ type: 'nobody' })
+      overlayFrame.contentWindow?.location?.reload()
     })
   })
 

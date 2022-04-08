@@ -551,11 +551,11 @@ function showOverlay(visible) {
 
         if (!isHidden) return
 
-        if (PROJECT_TITLE === 'Bubble Pool') {
-            location.hash = `#${Date.now()}`
-            location.reload()
+     //   if (PROJECT_TITLE === 'Bubble Pool') {
+           // location.hash = `#${Date.now()}`
+            // location.reload()
             return;
-        }
+        //}
 
         BUS.emit('pause')
     }

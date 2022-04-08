@@ -52,6 +52,7 @@ export default class IFrame {
 
     if ("client_id" in data) this.ID = data["client_id"]
 
+
     if (!("project_id" in data)) return
 
     const { projects } = this.studentsData
